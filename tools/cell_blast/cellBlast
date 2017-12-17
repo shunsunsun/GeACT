@@ -1,0 +1,90 @@
+#!/bin/bash
+set -e
+
+VERSION=v1.1.0
+DIR=$(dirname $(readlink -f $0))
+PATH=$PATH:$DIR/scripts
+
+function do_usage {
+cat << EOF
+
+Program: cellBlast (The Tool for identifying cell types based on similarity with reference)
+Version: $VERSION
+
+Usage:   cellBlast -i query.txt -f query_format -r reference.txt -t celltype.txt -m mode -o output
+         -i [query.txt]     The file with expression matrix of query cells.
+			    (row: genes; column: cells; Tab-sperated).
+         -f [query_format]  The query gene ID format,which can be:
+				ensembl  (e.g. ENSG00000163736)
+				ensmebl+ (e.g. ENSG00000163736.3) [Default]
+				symbol   (e.g. PPBP)
+                            Only used when -r is not specified.
+         -r [reference.txt] The file with expression matrix of reference cells.
+			    (row: genes; column: cell types; Tab-sperated).
+			    If not specificed or "null", the reference in our database will be used.
+			    If specificed, the gene ID format should be the same with that in the query file.
+         -t [celltype.txt]  The file with the cell types specified in reference cell types.
+			    (one cell type per line).
+                            If not specificed or "null", all the cell types in reference will be used.
+         -g [genes.txt]     The file with signature genes used for similarity calculation.
+			    If not specificed or "null", the 1000 highest variable genes in reference will be used.
+         -m [method]        The method by which query cell types were identified, which can be:
+				PCC (The maxmum Spearman correlation) [Default]
+         -o [output]        The output directory.
+         -h                 Show this help information.
+
+EOF
+echo Example: cellBlast -i demo/query.txt -f ensembl -r demo/reference.txt -t null -g demo/signature.txt -m PCC -o test
+exit
+}
+
+if [[ $# -eq 0 ]]; then do_usage; fi
+
+# default
+qft=ensembl+
+mtd=PCC
+
+# get options
+while getopts :i:f:r:t:g:m:o:h option
+do
+        case "$option" in
+                i) qef=$OPTARG;;
+                f) qft=$OPTARG;;
+                r) ref=$OPTARG;;
+                t) ctf=$OPTARG;;
+                g) glf=$OPTARG;;
+                m) mtd=$OPTARG;;
+                o) odr=$OPTARG;;
+                h) do_usage;;
+                \?) echo "Option -$OPTARG not recognized."; do_usage;;
+        esac
+done
+
+# print options
+cat << EOF
+cellblast $VERSION
+------
+[info] query file: $qef
+[info] query format: $qft
+[info] reference file: $ref
+[info] user specified cell type: $ctf
+[info] signature genes file: $glf
+[info] method: $mtd
+[info] output directory: $odr
+------
+EOF
+
+# main
+mkdir -p $odr
+
+# parse input
+if [[ $ref = "null" ]]
+then
+	echo "[info] use the reference in our database."
+	ref=$DIR/data/reference.txt
+fi
+
+cellBlast.r $qef $qft $ref $ctf $glf $mtd $odr
+
+echo "Done"
+
