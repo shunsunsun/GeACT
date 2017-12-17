@@ -27,7 +27,7 @@ Usage:   cellBlast -i query.txt -f query_format -r reference.txt -t celltype.txt
 			    (one cell type per line).
                             If not specificed or "null", all the cell types in reference will be used.
          -g [genes.txt]     The file with signature genes used for similarity calculation.
-			    If not specificed or "null", the 1000 highest variable genes in reference will be used.
+			    If not specificed or "null", the 1000 highest variable genes in query will be used.
          -m [method]        The method by which query cell types were identified, which can be:
 				PCC (The maxmum Spearman correlation) [Default]
          -o [output]        The output directory.
