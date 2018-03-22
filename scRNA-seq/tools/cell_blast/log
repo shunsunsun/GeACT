@@ -1,0 +1,1 @@
+awk -F "\t" '{ks=$1; gsub("\\.","",ks); print $1,ks,$2}' OFS="\t" /home/tianf/lustre/06-Human_cell_atlas/test_samples/Genomes/human/gene_ID2Name.txt > data/human_GeneID.txt
