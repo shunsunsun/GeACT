@@ -1,0 +1,276 @@
+#!/usr/bin/perl
+use strict;
+use 5.010;
+use warnings;
+#use Switch;
+#use Bio::SeqIO::fastq;
+
+if(@ARGV!=6) {
+	print "Add barcode and UMI to read names, and clean reads.\n";
+	print "Usage:   perl $0 fq1 fq2 barcode2sample.txt output_path trim_left trim_right\n";
+	print "Example: perl $0 test/test_R1.fastq.gz test/test_R2.fastq.gz test/barcode2sample.txt cleanFq 2 131\n";
+	exit;
+}
+
+my ($fq1, $fq2, $bcdToSp, $output_path, $trim_left, $trim_right) = @ARGV;
+print "('$fq1', '$fq2', '$bcdToSp', '$output_path', '$trim_left', '$trim_right')\n";
+#print "Start...\n";
+
+# 1. create_barcode_dict
+#my @outer_barcodes = ("GATATG", "ATACG", "CCGTCTG", "TGCG", "GAACTCG", "ATGTAG", "CCCG", "TGTAG", "GAGTAAG", "ATCG", "CCTAG", "TGACCG");
+#my @inner_barcodes = ("GTTGTT", "GTTAAA", "GTTTGG", "AGGGTT", "AGGAAA", "AGGTGG", "TAATGG", "GGAGAG");
+my (@outer_barcodes, @inner_barcodes);
+my $rt3            = ("AGTCGCTTGGGTGTAGTGC");
+
+# read barcode info from file
+my @barcode_file_ids;
+my %bcdToSp;
+open my $BCDTOSP , $ARGV[2];
+while(<$BCDTOSP>) {
+        chomp;
+        my @lines = split(/\t/ , $_);
+	push @outer_barcodes, $lines[0] unless $lines[0] ~~ @outer_barcodes;
+	push @inner_barcodes, $lines[1] unless $lines[1] ~~ @inner_barcodes;
+	push @barcode_file_ids , $lines[2];
+        $bcdToSp{$lines[0] . "__" . $lines[1]} = $lines[2];
+}
+#print "@outer_barcodes" , "\n";
+#print "@inner_barcodes" , "\n";
+
+#foreach my $i (sort keys %bcdToSp) {
+#	my @lines = split(/__/ , $i);
+#	print "$lines[0]\t$lines[1]\t$bcdToSp{$i}\n";
+#}
+#exit;
+#exit;
+
+# extend the outer barcode, which will produce identical length
+my $outer_longest_len;
+foreach my $outer_barcode (@outer_barcodes) {
+	my $outer_barcode_len = length($outer_barcode);
+	if( (! defined $outer_longest_len) || ($outer_barcode_len > $outer_longest_len) ) { $outer_longest_len = $outer_barcode_len }
+}
+#print "Longest length: $outer_longest_len\n";
+my(%outer_dict , %inner_dict);
+for(my $i=0; $i<@outer_barcodes; $i++) {
+	$outer_dict{substr( ($outer_barcodes[$i] . $rt3), 0, $outer_longest_len )} = ( $i . "_" . substr(($outer_barcodes[$i] . $rt3), $outer_longest_len) );	# outer_ext : id _ trimmed
+}
+#foreach my $key (keys %outer_dict) {
+#	print "'$key' : ($outer_dict{$key})\n";
+#}
+for(my $i=0; $i<@inner_barcodes; $i++) {
+	$inner_dict{$inner_barcodes[$i]} = $i;	# inner_barcode : id
+}
+#foreach my $key (keys %inner_dict) {
+#	print "'$key' : $inner_dict{$key}\n";
+#}
+
+# the length of barcodes after extension
+my $outer_len = length ( (keys %outer_dict)[0] );
+my $inner_len = length ( (keys %inner_dict)[0] );
+#print "$outer_len\t$inner_len\n";
+
+# 2. split_fastq
+sub split_fastq {
+	my ($seq) = @_;
+	my ($seq_left, $seq_right) = ( substr($seq,0,$outer_len), substr($seq,$outer_len) );	# split by outer barcode
+	if(! exists $outer_dict{$seq_left}) { return ("NA", "NA", "-outer")
+	} else{
+		my ($outer_id, $spacer) = split (/_/ , $outer_dict{$seq_left});
+		my $spacer_len = length($spacer);
+		#if( ($spacer_match eq "True") && ( (index $seq_right, $spacer) != 0) ) { return ($outer_id, -1, "-spacer") }
+		# if False, the "$spacer" might not be that in the sequence
+		my $seq_right_cut = substr($seq_right, $spacer_len, $inner_len);	# the inner barcode in sequences
+		if(! exists $inner_dict{$seq_right_cut}) {
+			return ($seq_left, "NA", "-inner")
+		} else {
+			my $inner_id = $inner_dict{$seq_right_cut};
+			return ($outer_id, $inner_id, $seq_left . substr($seq_right, 0, $spacer_len) . $seq_right_cut);	# outer+spacer+inner
+		}
+	}
+}
+
+# 3. extract UMI
+sub extract_umis {
+	my ($seq, $umi_length, $min_t) = @_;
+	#print STDERR "Warning: N in UMI region:\t[$seq]\n" if (substr($seq, 0, $umi_length)) =~ /[N]/;
+	if ($seq =~ /^([ACGTN]{$umi_length})([T]{$min_t,})(.*)/) {
+#		print ">>> $1 $2 $3\n";
+		return ($1, $2, $3);	# UMI polyT cDNA
+	} else {
+#		print "$seq\n";
+		return ("NULL", "NULL", "NULL");
+	}
+}
+
+# 4. trim adapter
+
+# 5. filter low quality and too many N reads
+sub filter_by_quality {
+	my ($seq, $quality) = @_;
+	#print "$seq\n";
+	#my $seq_len = length $seq;
+
+	# trim polyA
+	my $polyA = "A" x 7;
+	my $polyA_r1 = index $seq, $polyA;
+	if($polyA_r1 >= 50) {
+		$seq = substr($seq, 0, $polyA_r1);
+		$quality = substr($quality, 0, $polyA_r1);
+	}
+
+	# remove short reads
+	my $seq_len = length $seq;
+	if($seq_len < 40) { return ("NA", -1) };
+
+	# remove low quality reads
+	#my ($Q_20, $Q_30) = (53, 63);
+	my $Q_min = 33 + 5;
+	my $low_qual_num = 0;
+	for(my $i=0; $i<$seq_len; $i++) {
+		my $base_asc = substr($quality, $i, 1);
+		my $base_quality = ord($base_asc);
+		$low_qual_num ++ if($base_quality <= $Q_min);
+	}
+	if($low_qual_num >= ($seq_len * 0.5)) { return ("NA", -2) };
+
+	# remove reads contain >=10% N
+	my $N_num = ($seq =~ tr/N/N/) + 0;
+	if($N_num >= ($seq_len * 0.1)) { return ("NA", -3) };
+
+	return ($seq, $quality);
+}
+
+
+# X. main
+my %read;
+my %reap;
+my $seqnum = 0;	# read number
+my ($identified_num, $unidentified_num, $UMIed_num, $unUMIed_num, $qualified_num, $unqualified_num) = (0) x 6;
+my (%identified_num, %UMIed_num, %qualified_num);
+open my $READ1, "gzip -dc $ARGV[0] |" or die "Cannot open Read1 file.";
+open my $READ2, "gzip -dc $ARGV[1] |" or die "Cannot open Read2 file.";
+
+#open unidentified_read1_output , ">" , ($output_path . "/unidentified_read1.fastq") or die;
+#open unidentified_read2_output , ">" , ($output_path . "/unidentified_read2.fastq") or die;
+#open unUMIed_read1_output , ">" , ($output_path . "/unUMIed_read1.fastq") or die;
+#open unUMIed_read2_output , ">" , ($output_path . "/unUMIed_read2.fastq") or die;
+
+my (%read1_outputs, %read2_outputs);	# barcode level
+my (%UMIed_read1_outputs, %UMIed_read2_outputs);	# UMI level
+#my @barcode_file_ids;
+#for(my $i=0; $i<@outer_barcodes; $i++) {
+#	foreach my $j (("A".."Z")[0..(@inner_barcodes-1)]) {
+		#open $read1_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read1.fastq") or die;
+		#open $read2_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read2.fastq") or die;
+#		open $UMIed_read1_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read1.fastq") or die;
+#		open $UMIed_read2_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read2.fastq") or die;
+#		push @barcode_file_ids , (($i+1) . $j);
+#	}
+#}
+
+foreach my $i (sort keys %bcdToSp) {
+	my $output = $output_path . "/" . $bcdToSp{$i} . "_read1.fastq.gz";
+	open $UMIed_read1_outputs{$i} , " | gzip -c > $output" or die;
+}
+
+while(1) {
+	my $line1_1 = <$READ1>;
+	my $line1_2 = <$READ1>;
+	my $line1_3 = <$READ1>;
+	my $line1_4 = <$READ1>;
+
+	my $line2_1 = <$READ2>;
+	my $line2_2 = <$READ2>;
+	my $line2_3 = <$READ2>;
+	my $line2_4 = <$READ2>;
+
+	last if (! defined $line1_1);
+	chomp ($line1_1, $line1_2, $line1_3, $line1_4, $line2_1, $line2_2, $line2_3, $line2_4);
+
+	$read{name} = substr( (split(/ / , $line1_1))[0] , 1); $read{comment} = (split(/ / , $line1_1))[1];
+	$reap{name} = substr( (split(/ / , $line2_1))[0] , 1); $reap{comment} = (split(/ / , $line2_1))[1];
+	$read{sequence} = $line1_2;
+	$reap{sequence} = $line2_2;
+	$read{optional} = $line1_3;
+	$reap{optional} = $line2_3;
+	$read{quality} = $line1_4;
+	$reap{quality} = $line2_4;
+
+	$seqnum ++;
+	
+		#foreach my $key (qw /name comment sequence optional quality/ ) { print "[read1]\t$key\t$read{$key}\n"; }
+		#foreach my $key (qw /name comment sequence optional quality/ ) { print "[read2]\t$key\t$reap{$key}\n"; }
+		### name check for read pair
+		if($read{name} ne $reap{name}) { print STDERR "Warning: inconsistence read name [$seqnum] $read{name} $reap{name}\n"; }
+		my ($i1, $i2, $barcode_seq) = &split_fastq($reap{sequence});	# read2
+		if($i2 eq "NA") {
+			#print unidentified_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+			#print unidentified_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+			$unidentified_num ++;
+		} else {
+			my $bcds = $outer_barcodes[$i1] . "__" . $inner_barcodes[$i2];
+			my $sample = $bcdToSp{$bcds};
+			#$read{name} .= ("_" . substr($read{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
+			$read{name} .= ("_" . $barcode_seq);
+			# sequence no need trimming for R1
+			# quality no need trimming for R1
+			#$reap{name} .= ("_" . substr($reap{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
+			$reap{name} .= ("_" . $barcode_seq);
+			$reap{sequence} = substr($reap{sequence}, length($barcode_seq));
+			$reap{quality} = substr($reap{quality}, length($barcode_seq));
+			#print { $read1_outputs{($i1 . ("A".."Z")[$i2])} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+			#print { $read2_outputs{($i1 . ("A".."Z")[$i2])} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+			$identified_num{$sample} ++;
+			$identified_num ++;
+
+			my ($UMI, $polyT, $kept_seg) = &extract_umis($reap{sequence}, 20, 0);	# read2
+			if( ($UMI eq "NULL") || length($kept_seg)<20 ) {
+				$unUMIed_num ++;
+				#print ">>> $reap{sequence}\n";
+				#print unUMIed_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+				#print unUMIed_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+			} else {
+				$UMIed_num{$sample} ++;
+				$UMIed_num ++;
+
+				my ($filter_result, $filter_quality) = &filter_by_quality($read{sequence}, $read{quality});
+				if($filter_result eq "NA") {
+					#print ">>>[$filter_result]\n\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+					$unqualified_num ++;
+				} else {
+					#$read{name} = ($UMI . "_" . length($polyT) . "T_" . substr( $reap{quality}, 0, length($UMI) ) . "_" . $read{name});
+					$read{name} = ($UMI . "_" . length($polyT) . "T" . "_" . $read{name});
+					$read{sequence} = $filter_result;
+					$read{quality} = $filter_quality;
+					if($trim_right > 0) {
+						$read{sequence} = substr( $read{sequence}, $trim_left, ($trim_right - $trim_left) );
+						$read{quality} = substr( $read{quality}, $trim_left, ($trim_right - $trim_left) );
+					}
+					#$reap{name} = $read{name};	# read2 will NOT be printed XXX
+					#$reap{sequence} = substr( $kept_seg, 0, $trim_right);
+					#$reap{quality} = substr( substr($reap{quality}, (length($UMI)+length($polyT)), ), 0, $trim_right);
+					print { $UMIed_read1_outputs{$bcds} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+					#print { $UMIed_read2_outputs{$bcds} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+					$qualified_num{$sample} ++;
+					$qualified_num ++;
+				}
+			}
+		}
+}
+
+sub do_stat {
+# after all reads were processed
+print "Total\t$seqnum\n";
+print (("-" x 40) . "\n");
+print "State\tBarcode\tUMI\tQC\n";
+print "Pass\t$identified_num\t$UMIed_num\t$qualified_num\n";
+print "Fail\t$unidentified_num\t$unUMIed_num\t$unqualified_num\n";
+print (("-" x 40) . "\n");
+for (@barcode_file_ids) { print "$_\t$identified_num{$_}\t$UMIed_num{$_}\t$qualified_num{$_}\n"; }
+print (("-" x 40) . "\n");
+print "OK.\n";
+}
+
+do_stat;
+
