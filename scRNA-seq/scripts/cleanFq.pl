@@ -143,6 +143,7 @@ sub filter_by_quality {
 
 
 # X. main
+system "mkdir -p $output_path";
 my %read;
 my %reap;
 my $seqnum = 0;	# read number
