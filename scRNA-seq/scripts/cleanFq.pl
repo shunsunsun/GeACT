@@ -117,6 +117,9 @@ sub split_fastq {
 	# if False, the "$spacer" might not be that in the sequence
 	my $seq_right_cut = substr($seq_right, $spacer_len, $inner_len);	# the inner barcode in sequences
 	if(! exists $inner_dict{$seq_right_cut}) {
+		if($mm_index > 0) {
+			return ($outer_id, "NA", "-inner0", $mm_index);
+		}
 #print "mm_search for inner barcode...\n";
 		my $mm_res = &mm_search($seq_right_cut, (keys %inner_dict));
 #print "$mm_res\n";
@@ -132,6 +135,12 @@ sub split_fastq {
 }
 
 # 3. extract UMI
+sub UMI_error {
+	my ($seq) = @_;
+	my $umi1="HBDVHBDVHBDVHBDVHBDV";
+	my $umi2="VDBHVDBHVDBHVDBHVDBH";
+}
+
 sub extract_umis {
 	my ($seq, $umi_length, $min_t) = @_;
 	#print STDERR "Warning: N in UMI region:\t[$seq]\n" if (substr($seq, 0, $umi_length)) =~ /[N]/;
@@ -247,7 +256,7 @@ while(1) {
 		if($read{name} ne $reap{name}) { print STDERR "Warning: inconsistence read name [$seqnum] $read{name} $reap{name}\n"; }
 		my ($i1, $i2, $barcode_seq, $mm_idx) = &split_fastq($reap{sequence});	# read2
 #print "$i1, $i2, $barcode_seq, $mm_idx\n";
-		if( ($i2 eq "NA") || ($mm_idx == 3) ) {	# not allow mismatch in both outer and inner barcode
+		if($i2 eq "NA") {	# not allow mismatch in both outer and inner barcode (performed above)
 			#print unidentified_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 			#print unidentified_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			$unidentified_num ++;
