@@ -128,7 +128,7 @@ sub split_fastq {
 		}
 	}
 	my $inner_id = $inner_dict{$seq_right_cut};
-	return ($outer_id, $inner_id, $seq_left . substr($seq_right, 0, $spacer_len) . $seq_right_cut, $mm_index);	# outer+spacer+inner
+	return ($outer_id, $inner_id, $seq_left . "_" . substr($seq_right, 0, $spacer_len) . "_" . $seq_right_cut, $mm_index);	# outer+spacer+inner
 }
 
 # 3. extract UMI
@@ -247,7 +247,7 @@ while(1) {
 		if($read{name} ne $reap{name}) { print STDERR "Warning: inconsistence read name [$seqnum] $read{name} $reap{name}\n"; }
 		my ($i1, $i2, $barcode_seq, $mm_idx) = &split_fastq($reap{sequence});	# read2
 #print "$i1, $i2, $barcode_seq, $mm_idx\n";
-		if($i2 eq "NA") {
+		if( ($i2 eq "NA") || ($mm_idx == 3) ) {	# not allow mismatch in both outer and inner barcode
 			#print unidentified_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 			#print unidentified_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			$unidentified_num ++;
