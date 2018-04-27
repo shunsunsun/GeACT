@@ -73,16 +73,17 @@ my $inner_len = length ( (keys %inner_dict)[0] );
 sub mm_search {
 	my ($query, @cands) = @_;
 	my ($out, $dst);
-	foreach my $cand (@cands) {
-		my $distance = distance($query, $cand);
-#print "$query\t|\t$cand\t$distance\n";
+
+	my @distances = distance($query, @cands);
+	for(my $i=0; $i<@distances; $i++) {
+		my $distance = $distances[$i];
 		if($distance <= 1) {
 			if(defined $out) {	# avoid multiple mapping
 				$out = "NA";
 				$dst = -2;
 				last;
 			} else {
-				$out = $cand;
+				$out = $cands[$i];
 				$dst = $distance;
 			}
 		}
