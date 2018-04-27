@@ -1,6 +1,11 @@
 # scRNA-seq
 A pipeline for single-cell RNA-seq data analysis, tuning for MALBAC-DT protocol.
 
+## Prerequisite
+1. perl (5.010 or later)  
+   Text::Levenshtein
+2. R (3.0.1 or later)  
+
 ## Protocol
 1. preparation  
 The sample list for raw data should be created for following analysis.
