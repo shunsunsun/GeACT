@@ -256,11 +256,11 @@ while(1) {
 			my $bcds = $outer_barcodes[$i1] . "__" . $inner_barcodes[$i2];
 			my $sample = $bcdToSp{$bcds};
 			#$read{name} .= ("_" . substr($read{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
-			$read{name} .= ("_" . $barcode_seq);
+			$read{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
 			# sequence no need trimming for R1
 			# quality no need trimming for R1
 			#$reap{name} .= ("_" . substr($reap{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
-			$reap{name} .= ("_" . $barcode_seq);
+			$reap{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
 			$reap{sequence} = substr($reap{sequence}, length($barcode_seq));
 			$reap{quality} = substr($reap{quality}, length($barcode_seq));
 			#print { $read1_outputs{($i1 . ("A".."Z")[$i2])} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
