@@ -2,8 +2,7 @@
 use strict;
 use 5.010;
 use warnings;
-#use Switch;
-#use Bio::SeqIO::fastq;
+use Text::Levenshtein qw(distance);
 
 if(@ARGV!=6) {
 	print "Add barcode and UMI to read names, and clean reads.\n";
@@ -71,23 +70,64 @@ my $inner_len = length ( (keys %inner_dict)[0] );
 #print "$outer_len\t$inner_len\n";
 
 # 2. split_fastq
-sub split_fastq {
-	my ($seq) = @_;
-	my ($seq_left, $seq_right) = ( substr($seq,0,$outer_len), substr($seq,$outer_len) );	# split by outer barcode
-	if(! exists $outer_dict{$seq_left}) { return ("NA", "NA", "-outer")
-	} else{
-		my ($outer_id, $spacer) = split (/_/ , $outer_dict{$seq_left});
-		my $spacer_len = length($spacer);
-		#if( ($spacer_match eq "True") && ( (index $seq_right, $spacer) != 0) ) { return ($outer_id, -1, "-spacer") }
-		# if False, the "$spacer" might not be that in the sequence
-		my $seq_right_cut = substr($seq_right, $spacer_len, $inner_len);	# the inner barcode in sequences
-		if(! exists $inner_dict{$seq_right_cut}) {
-			return ($seq_left, "NA", "-inner")
-		} else {
-			my $inner_id = $inner_dict{$seq_right_cut};
-			return ($outer_id, $inner_id, $seq_left . substr($seq_right, 0, $spacer_len) . $seq_right_cut);	# outer+spacer+inner
+sub mm_search {
+	my ($query, @cands) = @_;
+	my ($out, $dst);
+	foreach my $cand (@cands) {
+		my $distance = distance($query, $cand);
+#print "$query\t|\t$cand\t$distance\n";
+		if($distance <= 1) {
+			if(defined $out) {	# avoid multiple mapping
+				$out = "NA";
+				$dst = -2;
+				last;
+			} else {
+				$out = $cand;
+				$dst = $distance;
+			}
 		}
 	}
+	if(! defined $out) {
+		$out = "NA";
+		$dst = -1;
+	}
+#print "$query\t->\t$out\t$dst\n";
+	return($out);
+}
+
+sub split_fastq {
+	my ($seq) = @_;
+	my $mm_index = 0;	# whether rescued by mm
+	my ($seq_left, $seq_right) = ( substr($seq,0,$outer_len), substr($seq,$outer_len) );	# split by outer barcode
+	if(! exists $outer_dict{$seq_left}) {
+#print "mm_search for ourter barcode...\n";
+		my $mm_res = &mm_search($seq_left, (keys %outer_dict));
+#print "$mm_res\n";
+		if($mm_res ne "NA") {
+			$seq_left = $mm_res;
+			$mm_index += 2;
+		} else {
+			return ("NA", "NA", "-outer", $mm_index);
+		}
+	}
+	my ($outer_id, $spacer) = split (/_/ , $outer_dict{$seq_left});
+	my $spacer_len = length($spacer);
+	#if( ($spacer_match eq "True") && ( (index $seq_right, $spacer) != 0) ) { return ($outer_id, -1, "-spacer") }
+	# if False, the "$spacer" might not be that in the sequence
+	my $seq_right_cut = substr($seq_right, $spacer_len, $inner_len);	# the inner barcode in sequences
+	if(! exists $inner_dict{$seq_right_cut}) {
+#print "mm_search for inner barcode...\n";
+		my $mm_res = &mm_search($seq_right_cut, (keys %inner_dict));
+#print "$mm_res\n";
+		if($mm_res ne "NA") {
+			$seq_right_cut = $mm_res;
+			$mm_index += 1;
+		} else {
+			return ($outer_id, "NA", "-inner", $mm_index);
+		}
+	}
+	my $inner_id = $inner_dict{$seq_right_cut};
+	return ($outer_id, $inner_id, $seq_left . substr($seq_right, 0, $spacer_len) . $seq_right_cut, $mm_index);	# outer+spacer+inner
 }
 
 # 3. extract UMI
@@ -147,8 +187,8 @@ system "mkdir -p $output_path";
 my %read;
 my %reap;
 my $seqnum = 0;	# read number
-my ($identified_num, $unidentified_num, $UMIed_num, $unUMIed_num, $qualified_num, $unqualified_num) = (0) x 6;
-my (%identified_num, %UMIed_num, %qualified_num);
+my ($identified_num, $unidentified_num, $identified_noMm_num, $unidentified_noMm_num, $UMIed_num, $unUMIed_num, $qualified_num, $unqualified_num) = (0) x 8;
+my (%identified_num, %identified_noMm_num, %UMIed_num, %qualified_num);
 open my $READ1, "gzip -dc $ARGV[0] |" or die "Cannot open Read1 file.";
 open my $READ2, "gzip -dc $ARGV[1] |" or die "Cannot open Read2 file.";
 
@@ -204,11 +244,13 @@ while(1) {
 		#foreach my $key (qw /name comment sequence optional quality/ ) { print "[read2]\t$key\t$reap{$key}\n"; }
 		### name check for read pair
 		if($read{name} ne $reap{name}) { print STDERR "Warning: inconsistence read name [$seqnum] $read{name} $reap{name}\n"; }
-		my ($i1, $i2, $barcode_seq) = &split_fastq($reap{sequence});	# read2
+		my ($i1, $i2, $barcode_seq, $mm_idx) = &split_fastq($reap{sequence});	# read2
+#print "$i1, $i2, $barcode_seq, $mm_idx\n";
 		if($i2 eq "NA") {
 			#print unidentified_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 			#print unidentified_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			$unidentified_num ++;
+			$unidentified_noMm_num ++;
 		} else {
 			my $bcds = $outer_barcodes[$i1] . "__" . $inner_barcodes[$i2];
 			my $sample = $bcdToSp{$bcds};
@@ -224,6 +266,12 @@ while(1) {
 			#print { $read2_outputs{($i1 . ("A".."Z")[$i2])} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			$identified_num{$sample} ++;
 			$identified_num ++;
+			if($mm_idx > 0) {
+				$unidentified_noMm_num ++;
+			} else {
+				$identified_noMm_num{$sample} ++;
+				$identified_noMm_num ++;
+			}
 
 			my ($UMI, $polyT, $kept_seg) = &extract_umis($reap{sequence}, 20, 0);	# read2
 			if( ($UMI eq "NULL") || length($kept_seg)<20 ) {
@@ -264,13 +312,13 @@ sub do_stat {
 # after all reads were processed
 print "Total\t$seqnum\n";
 print (("-" x 40) . "\n");
-print "State\tBarcode\tUMI\tQC\n";
-print "Pass\t$identified_num\t$UMIed_num\t$qualified_num\n";
-print "Fail\t$unidentified_num\t$unUMIed_num\t$unqualified_num\n";
+print "State\tBarcode_noMm\tBarcode\tUMI\tQC\n";
+print "Pass\t$identified_noMm_num\t$identified_num\t$UMIed_num\t$qualified_num\n";
+print "Fail\t$unidentified_noMm_num\t$unidentified_num\t$unUMIed_num\t$unqualified_num\n";
 print (("-" x 40) . "\n");
-for (@barcode_file_ids) { print "$_\t$identified_num{$_}\t$UMIed_num{$_}\t$qualified_num{$_}\n"; }
+for (@barcode_file_ids) { print "$_\t$identified_noMm_num{$_}\t$identified_num{$_}\t$UMIed_num{$_}\t$qualified_num{$_}\n"; }
 print (("-" x 40) . "\n");
-print "OK.\n";
+#print "OK.\n";
 }
 
 do_stat;
