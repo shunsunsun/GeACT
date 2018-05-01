@@ -1,0 +1,11 @@
+species	sample_source	batch	barcodeToSample	condition	sequencing_depth	experiment_time	operator	marker	primer	conductor	p5_adaptor	p7_adaptor
+human	293t	PD10_XXL_293-B9-1_S32_L007	barcodeToSample.txt	NA	NA	20180130	manual_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PD10_XXL_293-B9-2_S33_L008	barcodeToSample.txt	NA	NA	20180130	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-3_S17_L002	barcodeToSample.txt	NA	NA	20180213	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-6_S18_L003	barcodeToSample.txt	NA	NA	20180213	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-8_S19_L004	barcodeToSample.txt	NA	NA	20180213	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-9_S20_L005	barcodeToSample.txt	NA	NA	20180213	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-4_S1_L001	barcodeToSample.txt	NA	NA	20180306	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-5_S2_L002	barcodeToSample.txt	NA	NA	20180306	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-7_S3_L003	barcodeToSample.txt	NA	NA	20180306	machine_amplified	NA	NA	mawp	NextEra	TruSeq
+human	293t	PR10_XXL_293-B9-10_S4_L004	barcodeToSample.txt	NA	NA	20180306	machine_amplified	NA	NA	mawp	NextEra	TruSeq
