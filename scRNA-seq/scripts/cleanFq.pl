@@ -2,7 +2,6 @@
 use strict;
 use 5.010;
 use warnings;
-use Text::Levenshtein qw(distance);
 
 if(@ARGV!=6) {
 	print "Add barcode and UMI to read names, and clean reads.\n";
@@ -14,6 +13,34 @@ if(@ARGV!=6) {
 my ($fq1, $fq2, $bcdToSp, $output_path, $trim_left, $trim_right) = @ARGV;
 print "('$fq1', '$fq2', '$bcdToSp', '$output_path', '$trim_left', '$trim_right')\n";
 #print "Start...\n";
+
+# 0. functions
+sub hamming_distances {
+	my ($seq1, @seqks) = @_;
+	my @dsts;
+	for(my $i=0; $i<@seqks; $i++) {
+		my $seq2 = $seqks[$i];
+		my @seq1s = split(//, $seq1);
+		my @seq2s = split(//, $seq2);
+		my $dst = 0;
+		for(my $j=0; $j<@seq1s; $j++) {
+			$dst ++ if $seq1s[$j] ne $seq2s[$j];
+		}
+		push @dsts, $dst;
+	}
+	return(@dsts);
+}
+
+sub hamming_match {
+	my ($seq1, $seq2) = @_;
+	my @seq1s = split(//, $seq1);
+	my @seq2s = split(//, $seq2);
+	my $match = 0;
+	for(my $i=0; $i<@seq1s; $i++) {
+		$match ++ if $seq1s[$i] eq $seq2s[$i];
+	}
+	return($match);
+}
 
 # 1. create_barcode_dict
 #my @outer_barcodes = ("GATATG", "ATACG", "CCGTCTG", "TGCG", "GAACTCG", "ATGTAG", "CCCG", "TGTAG", "GAGTAAG", "ATCG", "CCTAG", "TGACCG");
@@ -74,7 +101,7 @@ sub mm_search {
 	my ($query, @cands) = @_;
 	my ($out, $dst);
 
-	my @distances = distance($query, @cands);
+	my @distances = &hamming_distances($query, @cands);
 	for(my $i=0; $i<@distances; $i++) {
 		my $distance = $distances[$i];
 		if($distance <= 1) {
@@ -135,10 +162,15 @@ sub split_fastq {
 }
 
 # 3. extract UMI
-sub UMI_error {
+sub UMI_search {
 	my ($seq) = @_;
-	my $umi1="HBDVHBDVHBDVHBDVHBDV";
-	my $umi2="VDBHVDBHVDBHVDBHVDBH";
+	#my $umi1="HBDVHBDVHBDVHBDVHBDV";
+	#my $umi2="VDBHVDBHVDBHVDBHVDBH";
+	my $nec = "TCAG" x 5;
+	my $len = length $seq;
+	my $comm = &hamming_match($seq, $nec);	# comm level
+#print "$nec\t$seq\t$comm/$len\n";
+	return($comm);
 }
 
 sub extract_umis {
@@ -146,10 +178,15 @@ sub extract_umis {
 	#print STDERR "Warning: N in UMI region:\t[$seq]\n" if (substr($seq, 0, $umi_length)) =~ /[N]/;
 	if ($seq =~ /^([ACGTN]{$umi_length})([T]{$min_t,})(.*)/) {
 #		print ">>> $1 $2 $3\n";
-		return ($1, $2, $3);	# UMI polyT cDNA
+		my ($UMI, $polyT, $cDNA) = ($1, $2, $3);
+		my $mm_res = &UMI_search($UMI);
+		if($mm_res < 21) {
+			return ($UMI, $polyT, $cDNA, $mm_res);
+		} else {
+			return ("NA", "NA", "NA", $mm_res);
+		}
 	} else {
-#		print "$seq\n";
-		return ("NULL", "NULL", "NULL");
+		return ("NA", "NA", "NA", -1);
 	}
 }
 
@@ -283,8 +320,8 @@ while(1) {
 				$identified_noMm_num ++;
 			}
 
-			my ($UMI, $polyT, $kept_seg) = &extract_umis($reap{sequence}, 20, 0);	# read2
-			if( ($UMI eq "NULL") || length($kept_seg)<20 ) {
+			my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 0);	# read2
+			if( ($UMI eq "NA") || length($kept_seg)<20 ) {
 				$unUMIed_num ++;
 				#print ">>> $reap{sequence}\n";
 				#print unUMIed_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
@@ -299,7 +336,7 @@ while(1) {
 					$unqualified_num ++;
 				} else {
 					#$read{name} = ($UMI . "_" . length($polyT) . "T_" . substr( $reap{quality}, 0, length($UMI) ) . "_" . $read{name});
-					$read{name} = ($UMI . "_" . length($polyT) . "T" . "_" . $read{name});
+					$read{name} = ($UMI . "_" . $mm_idx . "_" . length($polyT) . "T" . "_" . $read{name});
 					$read{sequence} = $filter_result;
 					$read{quality} = $filter_quality;
 					if($trim_right > 0) {
