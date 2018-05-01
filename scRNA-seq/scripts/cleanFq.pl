@@ -180,7 +180,7 @@ sub extract_umis {
 #		print ">>> $1 $2 $3\n";
 		my ($UMI, $polyT, $cDNA) = ($1, $2, $3);
 		my $mm_res = &UMI_search($UMI);
-		if($mm_res < 21) {
+		if($mm_res <= 10) {
 			return ($UMI, $polyT, $cDNA, $mm_res);
 		} else {
 			return ("NA", "NA", "NA", $mm_res);
@@ -234,8 +234,9 @@ system "mkdir -p $output_path";
 my %read;
 my %reap;
 my $seqnum = 0;	# read number
-my ($identified_num, $unidentified_num, $identified_noMm_num, $unidentified_noMm_num, $UMIed_num, $unUMIed_num, $qualified_num, $unqualified_num) = (0) x 8;
-my (%identified_num, %identified_noMm_num, %UMIed_num, %qualified_num);
+my ($identified_num, $unidentified_num, $identified_noMm_num, $unidentified_noMm_num) = (0) x 4;
+my ($UMIed_num, $unUMIed_num, $UMIed_noMm_num, $unUMIed_noMm_num, $qualified_num, $unqualified_num) = (0) x 6;
+my (%identified_num, %identified_noMm_num, %UMIed_num, %UMIed_noMm_num, %qualified_num);
 open my $READ1, "gzip -dc $ARGV[0] |" or die "Cannot open Read1 file.";
 open my $READ2, "gzip -dc $ARGV[1] |" or die "Cannot open Read2 file.";
 
@@ -313,7 +314,7 @@ while(1) {
 			#print { $read2_outputs{($i1 . ("A".."Z")[$i2])} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			$identified_num{$sample} ++;
 			$identified_num ++;
-			if($mm_idx > 0) {
+			if($mm_idx > 0) {	# should be missed without mm
 				$unidentified_noMm_num ++;
 			} else {
 				$identified_noMm_num{$sample} ++;
@@ -323,12 +324,21 @@ while(1) {
 			my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 0);	# read2
 			if( ($UMI eq "NA") || length($kept_seg)<20 ) {
 				$unUMIed_num ++;
+				if($mm_idx > 10) {	# should be kept without mm
+					$UMIed_noMm_num{$sample} ++;
+					$UMIed_noMm_num ++;
+				}
+				else {
+					$unUMIed_noMm_num ++;
+				}
 				#print ">>> $reap{sequence}\n";
 				#print unUMIed_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 				#print unUMIed_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			} else {
 				$UMIed_num{$sample} ++;
 				$UMIed_num ++;
+				$UMIed_noMm_num{$sample} ++;
+				$UMIed_noMm_num ++;
 
 				my ($filter_result, $filter_quality) = &filter_by_quality($read{sequence}, $read{quality});
 				if($filter_result eq "NA") {
@@ -359,11 +369,11 @@ sub do_stat {
 # after all reads were processed
 print "Total\t$seqnum\n";
 print (("-" x 40) . "\n");
-print "State\tBarcode_noMm\tBarcode\tUMI\tQC\n";
-print "Pass\t$identified_noMm_num\t$identified_num\t$UMIed_num\t$qualified_num\n";
-print "Fail\t$unidentified_noMm_num\t$unidentified_num\t$unUMIed_num\t$unqualified_num\n";
+print "State\tBarcode_noMm\tBarcode\tUMI_noMm\tUMI\tQC\n";
+print "Pass\t$identified_noMm_num\t$identified_num\t$UMIed_noMm_num\t$UMIed_num\t$qualified_num\n";
+print "Fail\t$unidentified_noMm_num\t$unidentified_num\t$unUMIed_noMm_num\t$unUMIed_num\t$unqualified_num\n";
 print (("-" x 40) . "\n");
-for (@barcode_file_ids) { print "$_\t$identified_noMm_num{$_}\t$identified_num{$_}\t$UMIed_num{$_}\t$qualified_num{$_}\n"; }
+for (@barcode_file_ids) { print "$_\t$identified_noMm_num{$_}\t$identified_num{$_}\t$UMIed_noMm_num{$_}\t$UMIed_num{$_}\t$qualified_num{$_}\n"; }
 print (("-" x 40) . "\n");
 #print "OK.\n";
 }
