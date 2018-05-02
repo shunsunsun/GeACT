@@ -18,7 +18,7 @@ Unique molecular identifier (UMI) were extracted and added into the correspondin
 PolyA sequences were trimmed and reads were filtered based on read length and quality.  
 ```
 bash do_cleanFq.sh
-ls 02-cleandata/*/*/*.gz | tr '/' '\t' | sed 's/_read1\.fastq\.gz//' > sample_list_cleandata.txt
+ls 01-cleandata/*/*/*.gz | tr '/' '\t' | sed 's/_read1\.fastq\.gz//' > sample_list_cleandata.txt
 ```
 3. alignment  
 Reads (R1) were mapped to genome.
