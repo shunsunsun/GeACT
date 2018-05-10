@@ -245,7 +245,7 @@ open my $READ2, "gzip -dc $ARGV[1] |" or die "Cannot open Read2 file.";
 #open unUMIed_read1_output , ">" , ($output_path . "/unUMIed_read1.fastq") or die;
 #open unUMIed_read2_output , ">" , ($output_path . "/unUMIed_read2.fastq") or die;
 
-my (%read1_outputs, %read2_outputs);	# barcode level
+#my (%read1_outputs, %read2_outputs);	# barcode level
 my (%UMIed_read1_outputs, %UMIed_read2_outputs);	# UMI level
 #my @barcode_file_ids;
 #for(my $i=0; $i<@outer_barcodes; $i++) {
@@ -288,81 +288,81 @@ while(1) {
 
 	$seqnum ++;
 	
-		#foreach my $key (qw /name comment sequence optional quality/ ) { print "[read1]\t$key\t$read{$key}\n"; }
-		#foreach my $key (qw /name comment sequence optional quality/ ) { print "[read2]\t$key\t$reap{$key}\n"; }
-		### name check for read pair
-		if($read{name} ne $reap{name}) { print STDERR "Warning: inconsistence read name [$seqnum] $read{name} $reap{name}\n"; }
-		my ($i1, $i2, $barcode_seq, $mm_idx) = &split_fastq($reap{sequence});	# read2
+	#foreach my $key (qw /name comment sequence optional quality/ ) { print "[read1]\t$key\t$read{$key}\n"; }
+	#foreach my $key (qw /name comment sequence optional quality/ ) { print "[read2]\t$key\t$reap{$key}\n"; }
+	### name check for read pair
+	if($read{name} ne $reap{name}) { print STDERR "Warning: inconsistence read name [$seqnum] $read{name} $reap{name}\n"; }
+	my ($i1, $i2, $barcode_seq, $mm_idx) = &split_fastq($reap{sequence});	# read2
 #print "$i1, $i2, $barcode_seq, $mm_idx\n";
-		if($i2 eq "NA") {	# not allow mismatch in both outer and inner barcode (performed above)
-			#print unidentified_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
-			#print unidentified_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
-			$unidentified_num ++;
+	if($i2 eq "NA") {	# not allow mismatch in both outer and inner barcode (performed above)
+		#print unidentified_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+		#print unidentified_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+		$unidentified_num ++;
+		$unidentified_noMm_num ++;
+	} else {
+		my $bcds = $outer_barcodes[$i1] . "__" . $inner_barcodes[$i2];
+		my $sample = $bcdToSp{$bcds};
+		#$read{name} .= ("_" . substr($read{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
+		$read{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
+		# sequence no need trimming for R1
+		# quality no need trimming for R1
+		#$reap{name} .= ("_" . substr($reap{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
+		$reap{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
+		$reap{sequence} = substr($reap{sequence}, length($barcode_seq)-2);
+		$reap{quality} = substr($reap{quality}, length($barcode_seq)-2);
+		#print { $read1_outputs{($i1 . ("A".."Z")[$i2])} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+		#print { $read2_outputs{($i1 . ("A".."Z")[$i2])} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+		$identified_num{$sample} ++;
+		$identified_num ++;
+		if($mm_idx > 0) {	# should be missed without mm
 			$unidentified_noMm_num ++;
 		} else {
-			my $bcds = $outer_barcodes[$i1] . "__" . $inner_barcodes[$i2];
-			my $sample = $bcdToSp{$bcds};
-			#$read{name} .= ("_" . substr($read{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
-			$read{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
-			# sequence no need trimming for R1
-			# quality no need trimming for R1
-			#$reap{name} .= ("_" . substr($reap{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
-			$reap{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
-			$reap{sequence} = substr($reap{sequence}, length($barcode_seq)-2);
-			$reap{quality} = substr($reap{quality}, length($barcode_seq)-2);
-			#print { $read1_outputs{($i1 . ("A".."Z")[$i2])} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
-			#print { $read2_outputs{($i1 . ("A".."Z")[$i2])} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
-			$identified_num{$sample} ++;
-			$identified_num ++;
-			if($mm_idx > 0) {	# should be missed without mm
-				$unidentified_noMm_num ++;
-			} else {
-				$identified_noMm_num{$sample} ++;
-				$identified_noMm_num ++;
-			}
+			$identified_noMm_num{$sample} ++;
+			$identified_noMm_num ++;
+		}
 
-			my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 0);	# read2
-			if( ($UMI eq "NA") || length($kept_seg)<20 ) {
-				$unUMIed_num ++;
-				if( ($mm_idx >= 3) && (length($kept_seg)>=20) ) {	# should be kept without mm
-					$UMIed_noMm_num{$sample} ++;
-					$UMIed_noMm_num ++;
-				}
-				else {
-					$unUMIed_noMm_num ++;
-				}
-				#print ">>> $reap{sequence} $UMI $polyT $kept_seg $mm_idx\n";
-				#print unUMIed_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
-				#print unUMIed_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
-			} else {
-				$UMIed_num{$sample} ++;
-				$UMIed_num ++;
+		my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 0);	# read2
+		if( ($UMI eq "NA") || length($kept_seg)<20 ) {
+			$unUMIed_num ++;
+			if( ($mm_idx >= 3) && (length($kept_seg)>=20) ) {	# should be kept without mm
 				$UMIed_noMm_num{$sample} ++;
 				$UMIed_noMm_num ++;
+			}
+			else {
+				$unUMIed_noMm_num ++;
+			}
+			#print ">>> $reap{sequence} $UMI $polyT $kept_seg $mm_idx\n";
+			#print unUMIed_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+			#print unUMIed_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+		} else {
+			$UMIed_num{$sample} ++;
+			$UMIed_num ++;
+			$UMIed_noMm_num{$sample} ++;
+			$UMIed_noMm_num ++;
 
-				my ($filter_result, $filter_quality) = &filter_by_quality($read{sequence}, $read{quality});	# read1
-				if($filter_result eq "NA") {
-					#print ">>>[$filter_result]\n\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
-					$unqualified_num ++;
-				} else {
-					#$read{name} = ($UMI . "_" . length($polyT) . "T_" . substr( $reap{quality}, 0, length($UMI) ) . "_" . $read{name});
-					$read{name} = ($UMI . "_" . $mm_idx . "_" . length($polyT) . "T" . "_" . $read{name});
-					$read{sequence} = $filter_result;
-					$read{quality} = $filter_quality;
-					if($trim_right > 0) {
-						$read{sequence} = substr( $read{sequence}, $trim_left, ($trim_right - $trim_left) );
-						$read{quality} = substr( $read{quality}, $trim_left, ($trim_right - $trim_left) );
-					}
-					#$reap{name} = $read{name};	# read2 will NOT be printed XXX
-					#$reap{sequence} = substr( $kept_seg, 0, $trim_right);
-					#$reap{quality} = substr( substr($reap{quality}, (length($UMI)+length($polyT)), ), 0, $trim_right);
-					print { $UMIed_read1_outputs{$bcds} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
-					#print { $UMIed_read2_outputs{$bcds} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
-					$qualified_num{$sample} ++;
-					$qualified_num ++;
+			my ($filter_result, $filter_quality) = &filter_by_quality($read{sequence}, $read{quality});	# read1
+			if($filter_result eq "NA") {
+				#print ">>>[$filter_result]\n\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+				$unqualified_num ++;
+			} else {
+				#$read{name} = ($UMI . "_" . length($polyT) . "T_" . substr( $reap{quality}, 0, length($UMI) ) . "_" . $read{name});
+				$read{name} = ($UMI . "_" . $mm_idx . "_" . length($polyT) . "T" . "_" . $read{name});
+				$read{sequence} = $filter_result;
+				$read{quality} = $filter_quality;
+				if($trim_right > 0) {
+					$read{sequence} = substr( $read{sequence}, $trim_left, ($trim_right - $trim_left) );
+					$read{quality} = substr( $read{quality}, $trim_left, ($trim_right - $trim_left) );
 				}
+				#$reap{name} = $read{name};	# read2 will NOT be printed XXX
+				#$reap{sequence} = substr( $kept_seg, 0, $trim_right);
+				#$reap{quality} = substr( substr($reap{quality}, (length($UMI)+length($polyT)), ), 0, $trim_right);
+				print { $UMIed_read1_outputs{$bcds} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
+				#print { $UMIed_read2_outputs{$bcds} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+				$qualified_num{$sample} ++;
+				$qualified_num ++;
 			}
 		}
+	}
 }
 
 sub do_stat {
