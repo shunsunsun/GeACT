@@ -166,7 +166,7 @@ sub UMI_search {
 	my ($seq) = @_;
 	#my $umi1="HBDVHBDVHBDVHBDVHBDV";
 	#my $umi2="VDBHVDBHVDBHVDBHVDBH";
-	my $nec = "TCAG" x 5;
+	my $nec = "GACT" x 5;
 	my $len = length $seq;
 	my $comm = &hamming_match($seq, $nec);	# comm level
 #print "$nec\t$seq\t$comm/$len\n";
@@ -180,10 +180,10 @@ sub extract_umis {
 #		print ">>> $1 $2 $3\n";
 		my ($UMI, $polyT, $cDNA) = ($1, $2, $3);
 		my $mm_res = &UMI_search($UMI);
-		if($mm_res <= 10) {
+		if($mm_res < 3) {
 			return ($UMI, $polyT, $cDNA, $mm_res);
 		} else {
-			return ("NA", "NA", "NA", $mm_res);
+			return ("NA", "NA", $cDNA, $mm_res);
 		}
 	} else {
 		return ("NA", "NA", "NA", -1);
@@ -308,8 +308,8 @@ while(1) {
 			# quality no need trimming for R1
 			#$reap{name} .= ("_" . substr($reap{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
 			$reap{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
-			$reap{sequence} = substr($reap{sequence}, length($barcode_seq));
-			$reap{quality} = substr($reap{quality}, length($barcode_seq));
+			$reap{sequence} = substr($reap{sequence}, length($barcode_seq)-2);
+			$reap{quality} = substr($reap{quality}, length($barcode_seq)-2);
 			#print { $read1_outputs{($i1 . ("A".."Z")[$i2])} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 			#print { $read2_outputs{($i1 . ("A".."Z")[$i2])} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			$identified_num{$sample} ++;
@@ -324,14 +324,14 @@ while(1) {
 			my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 0);	# read2
 			if( ($UMI eq "NA") || length($kept_seg)<20 ) {
 				$unUMIed_num ++;
-				if($mm_idx > 10) {	# should be kept without mm
+				if( ($mm_idx >= 3) && (length($kept_seg)>=20) ) {	# should be kept without mm
 					$UMIed_noMm_num{$sample} ++;
 					$UMIed_noMm_num ++;
 				}
 				else {
 					$unUMIed_noMm_num ++;
 				}
-				#print ">>> $reap{sequence}\n";
+				#print ">>> $reap{sequence} $UMI $polyT $kept_seg $mm_idx\n";
 				#print unUMIed_read1_output "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 				#print unUMIed_read2_output "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
 			} else {
@@ -340,7 +340,7 @@ while(1) {
 				$UMIed_noMm_num{$sample} ++;
 				$UMIed_noMm_num ++;
 
-				my ($filter_result, $filter_quality) = &filter_by_quality($read{sequence}, $read{quality});
+				my ($filter_result, $filter_quality) = &filter_by_quality($read{sequence}, $read{quality});	# read1
 				if($filter_result eq "NA") {
 					#print ">>>[$filter_result]\n\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 					$unqualified_num ++;
