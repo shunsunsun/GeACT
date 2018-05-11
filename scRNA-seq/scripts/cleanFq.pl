@@ -42,6 +42,38 @@ sub hamming_match {
 	return($match);
 }
 
+sub additional_dict {
+	my (%input) = @_;
+	my %dict_res;
+	my @blacklists;
+	foreach my $seq (keys %input) {	# for each barcode
+		my $value = $input{$seq};
+		my @seqs = split(//, $seq);
+		for(my $i=0; $i<@seqs; $i++) {	# for each base pair
+			my @seks = @seqs;
+			foreach my $base (qw /A C G T N/) {
+				$seks[$i] = $base;
+				my $out = join "", @seks;
+				next if $seq eq $out;
+	#print "$out\t$value\n";
+				if(exists $dict_res{$out}) {
+					#print "[Warning] Sequence collision: $seq:$value ($i $base) $out -> $dict_res{$out}\n";
+					if(! ($out ~~ @blacklists)) {
+						push @blacklists, $out;
+					}
+				} else {
+					$dict_res{$out} = $value;
+				}
+			}
+		}
+	}
+	foreach my $blacklist (@blacklists) {
+	#	print "> $blacklist\n";
+		delete $dict_res{$blacklist};
+	}
+	return(%dict_res);
+}
+
 # 1. create_barcode_dict
 #my @outer_barcodes = ("GATATG", "ATACG", "CCGTCTG", "TGCG", "GAACTCG", "ATGTAG", "CCCG", "TGTAG", "GAGTAAG", "ATCG", "CCTAG", "TGACCG");
 #my @inner_barcodes = ("GTTGTT", "GTTAAA", "GTTTGG", "AGGGTT", "AGGAAA", "AGGTGG", "TAATGG", "GGAGAG");
@@ -78,17 +110,32 @@ foreach my $outer_barcode (@outer_barcodes) {
 }
 #print "Longest length: $outer_longest_len\n";
 my(%outer_dict , %inner_dict);
+# 1a. outer dict (basic)
 for(my $i=0; $i<@outer_barcodes; $i++) {
 	$outer_dict{substr( ($outer_barcodes[$i] . $rt3), 0, $outer_longest_len )} = ( $i . "_" . substr(($outer_barcodes[$i] . $rt3), $outer_longest_len) );	# outer_ext : id _ trimmed
 }
 #foreach my $key (keys %outer_dict) {
 #	print "'$key' : ($outer_dict{$key})\n";
 #}
+
+# 1b. outer dict (additional)
+my %outer_dict_mm = &additional_dict(%outer_dict);
+#foreach my $key (sort keys %outer_dict_mm) {
+#	print "$key\t$outer_dict_mm{$key}\n";
+#}
+
+# 2a. inner dict (basic)
 for(my $i=0; $i<@inner_barcodes; $i++) {
 	$inner_dict{$inner_barcodes[$i]} = $i;	# inner_barcode : id
 }
 #foreach my $key (keys %inner_dict) {
 #	print "'$key' : $inner_dict{$key}\n";
+#}
+
+# 2b. inner dict (additional)
+my %inner_dict_mm = &additional_dict(%inner_dict);
+#foreach my $key (sort keys %inner_dict_mm) {
+#	print "$key\t$inner_dict_mm{$key}\n";
 #}
 
 # the length of barcodes after extension
@@ -125,20 +172,20 @@ sub mm_search {
 
 sub split_fastq {
 	my ($seq) = @_;
+	my ($outer_id, $spacer, $inner_id);
 	my $mm_index = 0;	# whether rescued by mm
 	my ($seq_left, $seq_right) = ( substr($seq,0,$outer_len), substr($seq,$outer_len) );	# split by outer barcode
 	if(! exists $outer_dict{$seq_left}) {
 #print "mm_search for ourter barcode...\n";
-		my $mm_res = &mm_search($seq_left, (keys %outer_dict));
-#print "$mm_res\n";
-		if($mm_res ne "NA") {
-			$seq_left = $mm_res;
-			$mm_index += 2;
-		} else {
+		if(! exists $outer_dict_mm{$seq_left}) {
 			return ("NA", "NA", "-outer", $mm_index);
+		} else {
+			($outer_id, $spacer) = split (/_/ , $outer_dict_mm{$seq_left});
+			$mm_index += 2;
 		}
+	} else {
+		($outer_id, $spacer) = split (/_/ , $outer_dict{$seq_left});
 	}
-	my ($outer_id, $spacer) = split (/_/ , $outer_dict{$seq_left});
 	my $spacer_len = length($spacer);
 	#if( ($spacer_match eq "True") && ( (index $seq_right, $spacer) != 0) ) { return ($outer_id, -1, "-spacer") }
 	# if False, the "$spacer" might not be that in the sequence
@@ -148,16 +195,15 @@ sub split_fastq {
 			return ($outer_id, "NA", "-inner0", $mm_index);
 		}
 #print "mm_search for inner barcode...\n";
-		my $mm_res = &mm_search($seq_right_cut, (keys %inner_dict));
-#print "$mm_res\n";
-		if($mm_res ne "NA") {
-			$seq_right_cut = $mm_res;
-			$mm_index += 1;
-		} else {
+		if(! exists $inner_dict_mm{$seq_right_cut}) {
 			return ($outer_id, "NA", "-inner", $mm_index);
+		} else {
+			$inner_id = $inner_dict_mm{$seq_right_cut};
+			$mm_index += 1;
 		}
+	} else {
+		$inner_id = $inner_dict{$seq_right_cut};
 	}
-	my $inner_id = $inner_dict{$seq_right_cut};
 	return ($outer_id, $inner_id, $seq_left . "_" . substr($seq_right, 0, $spacer_len) . "_" . $seq_right_cut, $mm_index);	# outer+spacer+inner
 }
 
