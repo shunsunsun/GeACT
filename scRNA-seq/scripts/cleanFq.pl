@@ -78,19 +78,19 @@ sub additional_dict {
 #my @outer_barcodes = ("GATATG", "ATACG", "CCGTCTG", "TGCG", "GAACTCG", "ATGTAG", "CCCG", "TGTAG", "GAGTAAG", "ATCG", "CCTAG", "TGACCG");
 #my @inner_barcodes = ("GTTGTT", "GTTAAA", "GTTTGG", "AGGGTT", "AGGAAA", "AGGTGG", "TAATGG", "GGAGAG");
 my (@outer_barcodes, @inner_barcodes);
-my $rt3            = ("AGTCGCTTGGGTGTAGTGC");
+my $rt3 = ("AGTCGCTTGGGTGTAGTGC");
 
 # read barcode info from file
 my @barcode_file_ids;
 my %bcdToSp;
 open my $BCDTOSP , $ARGV[2];
 while(<$BCDTOSP>) {
-        chomp;
-        my @lines = split(/\t/ , $_);
+	chomp;
+	my @lines = split(/\t/ , $_);
 	push @outer_barcodes, $lines[0] unless $lines[0] ~~ @outer_barcodes;
 	push @inner_barcodes, $lines[1] unless $lines[1] ~~ @inner_barcodes;
 	push @barcode_file_ids , $lines[2];
-        $bcdToSp{$lines[0] . "__" . $lines[1]} = $lines[2];
+	$bcdToSp{$lines[0] . "__" . $lines[1]} = $lines[2];
 }
 #print "@outer_barcodes" , "\n";
 #print "@inner_barcodes" , "\n";
@@ -99,7 +99,6 @@ while(<$BCDTOSP>) {
 #	my @lines = split(/__/ , $i);
 #	print "$lines[0]\t$lines[1]\t$bcdToSp{$i}\n";
 #}
-#exit;
 #exit;
 
 # extend the outer barcode, which will produce identical length
@@ -112,7 +111,8 @@ foreach my $outer_barcode (@outer_barcodes) {
 my(%outer_dict , %inner_dict);
 # 1a. outer dict (basic)
 for(my $i=0; $i<@outer_barcodes; $i++) {
-	$outer_dict{substr( ($outer_barcodes[$i] . $rt3), 0, $outer_longest_len )} = ( $i . "_" . substr(($outer_barcodes[$i] . $rt3), $outer_longest_len) );	# outer_ext : id _ trimmed
+	my $seq = substr( ($outer_barcodes[$i] . $rt3), 0, $outer_longest_len );
+	$outer_dict{$seq} = ( $i . "_" . substr(($outer_barcodes[$i] . $rt3), $outer_longest_len) );	# outer_extended : id _ trimmed
 }
 #foreach my $key (keys %outer_dict) {
 #	print "'$key' : ($outer_dict{$key})\n";
@@ -126,7 +126,7 @@ my %outer_dict_mm = &additional_dict(%outer_dict);
 
 # 2a. inner dict (basic)
 for(my $i=0; $i<@inner_barcodes; $i++) {
-	$inner_dict{$inner_barcodes[$i]} = $i;	# inner_barcode : id
+	$inner_dict{$inner_barcodes[$i]} = $i;	# inner : id
 }
 #foreach my $key (keys %inner_dict) {
 #	print "'$key' : $inner_dict{$key}\n";
@@ -180,11 +180,11 @@ sub split_fastq {
 		if(! exists $outer_dict_mm{$seq_left}) {
 			return ("NA", "NA", "-outer", $mm_index);
 		} else {
-			($outer_id, $spacer) = split (/_/ , $outer_dict_mm{$seq_left});
+			($outer_id, $spacer) = split (/_/ , $outer_dict_mm{$seq_left});	# mapped id, supposed spacer seq
 			$mm_index += 2;
 		}
 	} else {
-		($outer_id, $spacer) = split (/_/ , $outer_dict{$seq_left});
+		($outer_id, $spacer) = split (/_/ , $outer_dict{$seq_left});	# mapped id, supposed spacer seq
 	}
 	my $spacer_len = length($spacer);
 	#if( ($spacer_match eq "True") && ( (index $seq_right, $spacer) != 0) ) { return ($outer_id, -1, "-spacer") }
@@ -198,12 +198,13 @@ sub split_fastq {
 		if(! exists $inner_dict_mm{$seq_right_cut}) {
 			return ($outer_id, "NA", "-inner", $mm_index);
 		} else {
-			$inner_id = $inner_dict_mm{$seq_right_cut};
+			$inner_id = $inner_dict_mm{$seq_right_cut};	# mapped id
 			$mm_index += 1;
 		}
 	} else {
-		$inner_id = $inner_dict{$seq_right_cut};
+		$inner_id = $inner_dict{$seq_right_cut};	# mapped id
 	}
+#print "$seq_left -> $outer_id | $seq_right_cut -> $inner_id | $mm_index\n";
 	return ($outer_id, $inner_id, $seq_left . "_" . substr($seq_right, 0, $spacer_len) . "_" . $seq_right_cut, $mm_index);	# outer+spacer+inner
 }
 
@@ -242,7 +243,6 @@ sub extract_umis {
 sub filter_by_quality {
 	my ($seq, $quality) = @_;
 	#print "$seq\n";
-	#my $seq_len = length $seq;
 
 	# trim polyA
 	my $polyA = "A" x 7;
@@ -293,16 +293,6 @@ open my $READ2, "gzip -dc $ARGV[1] |" or die "Cannot open Read2 file.";
 
 #my (%read1_outputs, %read2_outputs);	# barcode level
 my (%UMIed_read1_outputs, %UMIed_read2_outputs);	# UMI level
-#my @barcode_file_ids;
-#for(my $i=0; $i<@outer_barcodes; $i++) {
-#	foreach my $j (("A".."Z")[0..(@inner_barcodes-1)]) {
-		#open $read1_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read1.fastq") or die;
-		#open $read2_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read2.fastq") or die;
-#		open $UMIed_read1_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read1.fastq") or die;
-#		open $UMIed_read2_outputs{"${i}${j}"} , ">" , ($output_path . "/" . ($i+1) . $j . "_read2.fastq") or die;
-#		push @barcode_file_ids , (($i+1) . $j);
-#	}
-#}
 
 foreach my $i (sort keys %bcdToSp) {
 	my $output = $output_path . "/" . $bcdToSp{$i} . "_read1.fastq.gz";
@@ -348,16 +338,14 @@ while(1) {
 	} else {
 		my $bcds = $outer_barcodes[$i1] . "__" . $inner_barcodes[$i2];
 		my $sample = $bcdToSp{$bcds};
-		#$read{name} .= ("_" . substr($read{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
+
 		$read{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
 		# sequence no need trimming for R1
 		# quality no need trimming for R1
-		#$reap{name} .= ("_" . substr($reap{comment},2) . "_" . $barcode_seq . "_" . substr( $reap{quality}, 0, length($barcode_seq)) );
 		$reap{name} .= ("_" . $barcode_seq . "_" . $mm_idx);
 		$reap{sequence} = substr($reap{sequence}, length($barcode_seq)-2);
 		$reap{quality} = substr($reap{quality}, length($barcode_seq)-2);
-		#print { $read1_outputs{($i1 . ("A".."Z")[$i2])} } "\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
-		#print { $read2_outputs{($i1 . ("A".."Z")[$i2])} } "\@$reap{name} $reap{comment}\n$reap{sequence}\n$reap{optional}\n$reap{quality}\n";
+
 		$identified_num{$sample} ++;
 		$identified_num ++;
 		if($mm_idx > 0) {	# should be missed without mm
@@ -391,7 +379,6 @@ while(1) {
 				#print ">>>[$filter_result]\n\@$read{name} $read{comment}\n$read{sequence}\n$read{optional}\n$read{quality}\n";
 				$unqualified_num ++;
 			} else {
-				#$read{name} = ($UMI . "_" . length($polyT) . "T_" . substr( $reap{quality}, 0, length($UMI) ) . "_" . $read{name});
 				$read{name} = ($UMI . "_" . $mm_idx . "_" . length($polyT) . "T" . "_" . $read{name});
 				$read{sequence} = $filter_result;
 				$read{quality} = $filter_quality;
