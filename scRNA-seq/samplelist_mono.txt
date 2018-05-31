@@ -1,9 +1,9 @@
 species	sample_source	batch	barcodeToSample	condition	sequencing_depth	experiment_time	operator	marker	primer	conductor	p5_adaptor	p7_adaptor	remark
-human	blood	PD10_XXL_Mono-1	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	First cell is an RNA control.
-human	blood	PD10_XXL_Mono-2	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	NA
-human	blood	PD10_XXL_Mono-3	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	NA
-human	blood	PD10_XXL_Mono-4	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	NA
-human	blood	PD10_XXL_Mono-5	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	NA
-human	blood	PD10_XXL_Mono-6	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	NA
-human	blood	PD10_XXL_Mono-7	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	NA
-human	blood	PD10_XXL_Mono-8	barcodeToSample.txt	NA	NA	20180518	machine_amplified	NA	NA	mawp	NextEra	TruSeq	NA
+human	blood	PD10_XXL_Mono-1	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	First cell is an RNA control.
+human	blood	PD10_XXL_Mono-2	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	NA
+human	blood	PD10_XXL_Mono-3	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	NA
+human	blood	PD10_XXL_Mono-4	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	NA
+human	blood	PD10_XXL_Mono-5	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	NA
+human	blood	PD10_XXL_Mono-6	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	NA
+human	blood	PD10_XXL_Mono-7	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	NA
+human	blood	PD10_XXL_Mono-8	barcodeToSample.txt	NA	NA	20180518	machine_amplified	CD45+CD14+	NA	mawp	NextEra	TruSeq	NA
