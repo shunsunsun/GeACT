@@ -276,8 +276,10 @@ while(1) {
 	last if (! defined $line1_1);
 	chomp ($line1_1, $line1_2, $line1_3, $line1_4, $line2_1, $line2_2, $line2_3, $line2_4);
 
-	$read{name} = substr( (split(/ / , $line1_1))[0] , 1); $read{comment} = (split(/ / , $line1_1))[1];
-	$reap{name} = substr( (split(/ / , $line2_1))[0] , 1); $reap{comment} = (split(/ / , $line2_1))[1];
+	($read{name}, $read{comment}) = split(/ / , $line1_1);
+	($reap{name}, $reap{comment}) = split(/ / , $line2_1);
+	$read{name} = substr($read{name}, 1);
+	$reap{name} = substr($reap{name}, 1);
 	$read{sequence} = $line1_2;
 	$reap{sequence} = $line2_2;
 	$read{optional} = $line1_3;
