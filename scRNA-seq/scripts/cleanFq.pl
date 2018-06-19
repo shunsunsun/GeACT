@@ -209,15 +209,27 @@ sub split_fastq {
 }
 
 # 3. extract UMI
-sub UMI_search {
+sub UMI_match {
 	my ($seq) = @_;
-	#my $umi1="HBDVHBDVHBDVHBDVHBDV";
-	#my $umi2="VDBHVDBHVDBHVDBHVDBH";
-	my $nec = "GACT" x 5;
-	my $len = length $seq;
-	my $comm = &hamming_match($seq, $nec);	# comm level
-#print "$nec\t$seq\t$comm/$len\n";
-	return($comm);
+	#pattern_A : "HBDV" x 5;	# normal
+	#pattern_B : "VDBH" x 5;	# abnormal
+	my $mask_a = "GACT" x 5;
+	my $mask_b = "TCAG" x 5;
+
+	my $abnm_a = ($seq ^ $mask_a) =~ tr/\0//;	# number of red bases
+	my $abnm_b = ($seq ^ $mask_b) =~ tr/\0//;	# number of blue bases
+
+	my $flag;
+	if( ($abnm_a == 0) && ($abnm_b >= 3) ) {
+		$flag = "A";
+	} elsif( ($abnm_b == 0) && ($abnm_a >= 3) ) {
+		$flag = "B";
+	} else {
+		$flag = "NA";
+	}
+#print ">>> $seq\t$abnm_a\t$abnm_b\t$flag\n";
+
+	return($abnm_a, $flag);
 }
 
 sub extract_umis {
@@ -226,14 +238,14 @@ sub extract_umis {
 	if ($seq =~ /^([ACGTN]{$umi_length})([T]{$min_t,})(.*)/) {
 #		print ">>> $1 $2 $3\n";
 		my ($UMI, $polyT, $cDNA) = ($1, $2, $3);
-		my $mm_res = &UMI_search($UMI);
+		my ($mm_res, $uflag) = &UMI_match($UMI);
 		if($mm_res < 3) {
-			return ($UMI, $polyT, $cDNA, $mm_res);
+			return ($UMI, $polyT, $cDNA, $mm_res, $uflag);
 		} else {
-			return ("NA", "NA", $cDNA, $mm_res);
+			return ("NA", "NA", $cDNA, $mm_res, $uflag);
 		}
 	} else {
-		return ("NA", "NA", "NA", -1);
+		return ("NA", "NA", "NA", -1, "NA");
 	}
 }
 
@@ -279,10 +291,14 @@ sub filter_by_quality {
 system "mkdir -p $output_path";
 my %read;
 my %reap;
-my $seqnum = 0;	# read number
+
+my $seqnum = 0;	# total read number
 my ($identified_num, $unidentified_num, $identified_noMm_num, $unidentified_noMm_num) = (0) x 4;
-my ($UMIed_num, $unUMIed_num, $UMIed_noMm_num, $unUMIed_noMm_num, $qualified_num, $unqualified_num) = (0) x 6;
-my (%identified_num, %identified_noMm_num, %UMIed_num, %UMIed_noMm_num, %qualified_num);
+my ($primerA_num, $primerB_num) = (0) x 2;
+my ($UMIed_num, $unUMIed_num, $UMIed_noMm_num, $unUMIed_noMm_num) = (0) x 4;
+my ($qualified_num, $unqualified_num) = (0) x 2;
+my (%identified_num, %identified_noMm_num, %primerA_num, %primerB_num, %UMIed_num, %UMIed_noMm_num, %qualified_num);
+
 open my $READ1, "gzip -dc $ARGV[0] |" or die "Cannot open Read1 file.";
 open my $READ2, "gzip -dc $ARGV[1] |" or die "Cannot open Read2 file.";
 
@@ -355,7 +371,15 @@ while(1) {
 			$identified_noMm_num ++;
 		}
 
-		my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 5);	# read2
+		my ($UMI, $polyT, $kept_seg, $mm_idx, $mm_flag) = &extract_umis($reap{sequence}, 20, 5);	# read2
+		if($mm_flag eq "A") {
+			$primerA_num{$sample} ++;
+			$primerA_num ++;
+		} elsif($mm_flag eq "B") {
+			$primerB_num{$sample} ++;
+			$primerB_num ++;
+		}
+
 		if($UMI eq "NA") {
 			$unUMIed_num ++;
 			if($mm_idx >= 3) {	# should be kept without mm
@@ -397,16 +421,18 @@ while(1) {
 		}
 	}
 }
+close $READ1;
+close $READ2;
 
 sub do_stat {
 # after all reads were processed
 print "Total\t$seqnum\n";
 print (("-" x 40) . "\n");
-print "State\tBarcode_noMm\tBarcode\tUMI_noMm\tUMI\tQC\n";
-print "Pass\t$identified_noMm_num\t$identified_num\t$UMIed_noMm_num\t$UMIed_num\t$qualified_num\n";
-print "Fail\t$unidentified_noMm_num\t$unidentified_num\t$unUMIed_noMm_num\t$unUMIed_num\t$unqualified_num\n";
+print "State\tBarcode_noMm\tBarcode\tPrimerA\tPrimerB\tUMI_noMm\tUMI\tQC\n";
+print "Pass\t$identified_noMm_num\t$identified_num\t$primerA_num\t$primerB_num\t$UMIed_noMm_num\t$UMIed_num\t$qualified_num\n";
+print "Fail\t$unidentified_noMm_num\t$unidentified_num\t-\t-\t$unUMIed_noMm_num\t$unUMIed_num\t$unqualified_num\n";
 print (("-" x 40) . "\n");
-for (@barcode_file_ids) { print "$_\t$identified_noMm_num{$_}\t$identified_num{$_}\t$UMIed_noMm_num{$_}\t$UMIed_num{$_}\t$qualified_num{$_}\n"; }
+for (@barcode_file_ids) { print "$_\t$identified_noMm_num{$_}\t$identified_num{$_}\t$primerA_num{$_}\t$primerB_num{$_}\t$UMIed_noMm_num{$_}\t$UMIed_num{$_}\t$qualified_num{$_}\n"; }
 print (("-" x 40) . "\n");
 #print "OK.\n";
 }
