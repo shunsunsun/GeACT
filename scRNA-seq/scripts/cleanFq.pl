@@ -355,10 +355,10 @@ while(1) {
 			$identified_noMm_num ++;
 		}
 
-		my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 0);	# read2
-		if( ($UMI eq "NA") || length($kept_seg)<20 ) {
+		my ($UMI, $polyT, $kept_seg, $mm_idx) = &extract_umis($reap{sequence}, 20, 5);	# read2
+		if($UMI eq "NA") {
 			$unUMIed_num ++;
-			if( ($mm_idx >= 3) && (length($kept_seg)>=20) ) {	# should be kept without mm
+			if($mm_idx >= 3) {	# should be kept without mm
 				$UMIed_noMm_num{$sample} ++;
 				$UMIed_noMm_num ++;
 			}
