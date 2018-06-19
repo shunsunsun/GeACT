@@ -15,33 +15,6 @@ print "('$fq1', '$fq2', '$bcdToSp', '$output_path', '$trim_left', '$trim_right')
 #print "Start...\n";
 
 # 0. functions
-sub hamming_distances {
-	my ($seq1, @seqks) = @_;
-	my @seq1s = split(//, $seq1);
-	my @dsts;
-	for(my $i=0; $i<@seqks; $i++) {
-		my $seq2 = $seqks[$i];
-		my @seq2s = split(//, $seq2);
-		my $dst = 0;
-		for(my $j=0; $j<@seq1s; $j++) {	# for each base pair
-			$dst ++ if $seq1s[$j] ne $seq2s[$j];
-		}
-		push @dsts, $dst;
-	}
-	return(@dsts);
-}
-
-sub hamming_match {
-	my ($seq1, $seq2) = @_;
-	my @seq1s = split(//, $seq1);
-	my @seq2s = split(//, $seq2);
-	my $match = 0;
-	for(my $i=0; $i<@seq1s; $i++) {
-		$match ++ if $seq1s[$i] eq $seq2s[$i];
-	}
-	return($match);
-}
-
 sub additional_dict {
 	my (%input) = @_;
 	my %dict_res;
@@ -144,32 +117,6 @@ my $inner_len = length ( (keys %inner_dict)[0] );
 #print "$outer_len\t$inner_len\n";
 
 # 2. split_fastq
-sub mm_search {
-	my ($query, @cands) = @_;
-	my $out;
-	#my $dst;
-	my @distances = &hamming_distances($query, @cands);
-	for(my $i=0; $i<@distances; $i++) {
-		my $distance = $distances[$i];
-		if($distance <= 1) {
-			if(defined $out) {	# avoid multiple mapping
-				$out = "NA";
-				#$dst = -2;
-				last;
-			} else {
-				$out = $cands[$i];
-				#$dst = $distance;
-			}
-		}
-	}
-	if(! defined $out) {
-		$out = "NA";
-		#$dst = -1;
-	}
-#print "$query\t->\t$out\t$dst\n";
-	return($out);
-}
-
 sub split_fastq {
 	my ($seq) = @_;
 	my ($outer_id, $spacer, $inner_id);
