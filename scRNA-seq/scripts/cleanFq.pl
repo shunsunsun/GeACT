@@ -320,7 +320,7 @@ while(1) {
 			$identified_noMm_num ++;
 		}
 
-		my ($UMI, $polyT, $kept_seg, $mm_idx, $mm_flag) = &extract_umis($reap{sequence}, 20, 5);	# read2
+		my ($UMI, $polyT, $kept_seg, $mm_idx, $mm_flag) = &extract_umis($reap{sequence}, 20, 3);	# read2
 		if($mm_flag eq "A") {
 			$primerA_num{$sample} ++;
 			$primerA_num ++;
