@@ -182,9 +182,15 @@ sub UMI_match {
 sub extract_umis {
 	my ($seq, $umi_length, $min_t) = @_;
 	#print STDERR "Warning: N in UMI region:\t[$seq]\n" if (substr($seq, 0, $umi_length)) =~ /[N]/;
-	if ($seq =~ /^([ACGTN]{$umi_length})([T]{$min_t,})(.*)/) {
-#		print ">>> $1 $2 $3\n";
+	if ($seq =~ /^([ACGTN]{$umi_length})(.{5})(.*)/) {
+#print ">>> $1 $2 $3\n";
 		my ($UMI, $polyT, $cDNA) = ($1, $2, $3);
+		my $t_num = ($polyT =~ tr/T/T/);
+#print "$UMI\t$polyT\t$cDNA\t$t_num\n";
+		if($t_num < $min_t) {
+			return ("NA", "NA", "NA", -2, "NA");
+		}
+
 		my ($mm_res, $uflag) = &UMI_match($UMI);
 		if($mm_res < 3) {
 			return ($UMI, $polyT, $cDNA, $mm_res, $uflag);
@@ -320,7 +326,7 @@ while(1) {
 			$identified_noMm_num ++;
 		}
 
-		my ($UMI, $polyT, $kept_seg, $mm_idx, $mm_flag) = &extract_umis($reap{sequence}, 20, 3);	# read2
+		my ($UMI, $polyT, $kept_seg, $mm_idx, $mm_flag) = &extract_umis($reap{sequence}, 20, 4);	# read2
 		if($mm_flag eq "A") {
 			$primerA_num{$sample} ++;
 			$primerA_num ++;
