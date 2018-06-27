@@ -16,8 +16,8 @@ my ($UMI, $gene);
 open my $FILE , $ARGV[0];
 while(<$FILE>) {
 	chomp;
-	if(/^(\S+).*XF:Z:(\S+)/) {
-		$UMI = (split(/_/, $1))[0];
+	if(/^([^_]+)_.*XF:Z:(\S+)/) {
+		$UMI = $1;
 #		print STDERR "Warning: [$.] Inconsistence UMI length\n" if length($UMI) != $UMI_len_def;
 		$gene = $2;
 		next if $gene =~ /^__/;
