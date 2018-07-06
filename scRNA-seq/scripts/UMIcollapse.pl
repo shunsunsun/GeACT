@@ -59,7 +59,7 @@ close $FILE;
 foreach my $id (keys %gene) {	# for each gene
 #print "> $id\n";
 	my @seqs = split("-", $gene{$id});
-	my @sequ = do { my %seen; grep { !$seen{$_}++ } @seqs };	# unique
+	#my @sequ = do { my %seen; grep { !$seen{$_}++ } @seqs };	# unique
 	my $UMI_rmdup = &cluster_UMI(\@seqs, $ctof);
 
 #print "> $id\t" . scalar @seqs . "\t->\t" . scalar @sequ . "\t->\t" . $UMI_rmdup . "\n";
