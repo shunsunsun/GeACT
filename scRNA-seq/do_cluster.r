@@ -1,27 +1,20 @@
-
-setwd("/lustre/user/tianf/06-Human_cell_atlas/test_samples")
+# cell classification
+setwd("~/lustre/06-Human_cell_atlas/test_FACS/")
 
 # cluster ----
-
 library(Seurat)
 library(dplyr)
 library(Matrix)
 
 # Load the dataset
-expr_data <- read.table(file = "03-expression/merged/UMIcount_filtered.txt", header = T, row.names = 1, sep = "\t", stringsAsFactors = F)
+expr_data <- read.table(file = "03-expression/merged/UMIcount_filtered.txt", header = T, row.names = 1, sep = "\t", stringsAsFactors = F, check.names = F)
 dim(expr_data)
-
-# Examine the memory savings between regular and sparse matrices
-#dense.size <- object.size(x = as.matrix(x = pbmc.data))
-#dense.size
-#sparse.size <- object.size(x = pbmc.data)
-#sparse.size
-#dense.size/sparse.size
+#colnames(expr_data) <- gsub(pattern = "cell", replacement = "_cell", x = colnames(expr_data))
 
 # Initialize the Seurat object with the raw (non-normalized data).  Keep all
 # genes expressed in >= 3 cells (~0.1% of the data). Keep all cells with at
 # least 200 detected genes
-expr <- CreateSeuratObject(raw.data = expr_data, min.cells = 3, min.genes = 7000, project = "Test",names.delim = "/")
+expr <- CreateSeuratObject(raw.data = expr_data, min.cells = 3, min.genes = 500, project = "test_FACS", names.delim = "/")
 dim(expr@raw.data)
 
 # Standard pre-processing workflow
@@ -29,18 +22,45 @@ dim(expr@raw.data)
 # QC and selecting cells for further analysis
 
 # calculate the percent.mito values.
-#gene_ID2name <- read.table(file = "Genomes/human/gene_ID2Name.txt", header = F, sep = "\t", stringsAsFactors = F)
-#mito.genes <- gene_ID2name[grep(pattern = "^MT-", x = gene_ID2name$V2), 1]
-#mito.genes <- mito.genes[mito.genes%in%rownames(expr@raw.data)]
-mito.genes <- grep(pattern = "^MT-", x = rownames(expr@raw.data))
-length(mito.genes)
-percent.mito <- Matrix::colSums(expr@raw.data[mito.genes, ])/Matrix::colSums(expr@raw.data)
+cellStat <- read.table("03-expression/merged/filtering_cells.txt", header = T, sep = "\t", row.names = 1, stringsAsFactors = F)
+dim(cellStat)
+percent.mito <- cellStat[cellStat$filter, "mito"]
+names(percent.mito) <- rownames(cellStat)[cellStat$filter]
+
+### estimate these two strategies
+# mito.genes <- grep(pattern = "^MT-", x = rownames(expr@raw.data))
+# length(mito.genes)
+# percent.mito_alt <- Matrix::colSums(expr@raw.data[mito.genes, ])/Matrix::colSums(expr@raw.data)
+# all(names(percent.mito_alt) == names(percent.mito))
+# plot(percent.mito_alt, percent.mito)
+# cor(percent.mito_alt, percent.mito)
+###
+
+# batch info
+batch <- gsub("_cell.*", "", colnames(expr@raw.data))
+names(batch) <- colnames(expr@raw.data)
+bigBatch <- gsub("-[0-9]*_cell.*", "", colnames(expr@raw.data))
+names(bigBatch) <- colnames(expr@raw.data)
+#people <- rep(c("A", "B"), c(792, 2463-792))
+#names(people) <- colnames(expr@raw.data)
+outer_id <- ceiling(as.numeric(gsub(".*cell", "", colnames(expr@raw.data))) / 8); outer_id <- factor(outer_id)
+names(outer_id) <- colnames(expr@raw.data)
+inner_id <- ceiling(as.numeric(gsub(".*cell", "", colnames(expr@raw.data))) %% 8); inner_id[inner_id==0] <- 8; inner_id <- factor(inner_id, levels = 1:8)
+names(inner_id) <- colnames(expr@raw.data)
+bigInner_id <- ifelse(as.numeric(inner_id)<=4, "1-4", "5-8")
+names(bigInner_id) <- colnames(expr@raw.data)
 
 # AddMetaData adds columns to object@meta.data, and is a great place to
 # stash QC stats
-pdf("03-expression/merged/seurat_QC_stats.pdf",width = 8, height = 6, useDingbats = F)
+#pdf("03-expression/merged/Seurat_QCstats.pdf",width = 6, height = 6, useDingbats = F)
 
 expr <- AddMetaData(object = expr, metadata = percent.mito, col.name = "percent.mito")
+expr <- AddMetaData(object = expr, metadata = batch, col.name = "batch")
+expr <- AddMetaData(object = expr, metadata = bigBatch, col.name = "bigBatch")
+#expr <- AddMetaData(object = expr, metadata = people, col.name = "people")
+expr <- AddMetaData(object = expr, metadata = outer_id, col.name = "outer_id")
+expr <- AddMetaData(object = expr, metadata = inner_id, col.name = "inner_id")
+expr <- AddMetaData(object = expr, metadata = bigInner_id, col.name = "bigInner_id")
 VlnPlot(object = expr, features.plot = c("nGene", "nUMI", "percent.mito"), nCol = 3, size.title.use = 16)
 
 # GenePlot is typically used to visualize gene-gene relationships, but can
@@ -51,35 +71,33 @@ VlnPlot(object = expr, features.plot = c("nGene", "nUMI", "percent.mito"), nCol 
 par(mfrow = c(1, 2))
 GenePlot(object = expr, gene1 = "nUMI", gene2 = "percent.mito")
 GenePlot(object = expr, gene1 = "nUMI", gene2 = "nGene")
+par(mfrow = c(1, 1))
 
-dev.off()
+#dev.off()
 
 # We filter out cells that have unique gene counts over 2,500 or less than
 # 200 Note that low.thresholds and high.thresholds are used to define a
 # 'gate' -Inf and Inf should be used if you don't want a lower or upper
 # threshold.
 dim(expr@meta.data)
-expr <- FilterCells(object = expr, subset.names = c("nGene", "percent.mito"), low.thresholds = c(7000, -Inf), high.thresholds = c(12000, 0.15))
+expr <- FilterCells(object = expr, subset.names = c("nGene", "percent.mito"), low.thresholds = c(500, -Inf), high.thresholds = c(Inf, Inf))
 dim(expr@meta.data)
 
 #Normalizing the data
 expr <- NormalizeData(object = expr, normalization.method = "LogNormalize", scale.factor = 10000)
 
 #Detection of variable genes across the single cells
-pdf("03-expression/merged/seurat_PCA.pdf",width = 6, height = 6, useDingbats = F)
+#pdf("03-expression/merged/Seurat_PCA.pdf",width = 6, height = 6, useDingbats = F)
 
 expr <- FindVariableGenes(object = expr, mean.function = ExpMean, dispersion.function = LogVMR, 
-                          x.low.cutoff = 0.2, x.high.cutoff = 8, y.cutoff = 1.25)
+                          x.low.cutoff = 0.0125, x.high.cutoff = 5, y.cutoff = 1)
 length(x = expr@var.genes)
 
 #Scaling the data and removing unwanted sources of variation
-expr <- ScaleData(object = expr, vars.to.regress = c("nUMI", "percent.mito"))
-
-# write meta table
-#write.table(x = expr@meta.data, file = "03-expression/merged/seurat_metaData.txt",row.names = T, col.names = NA,quote = F,sep = "\t")
+expr <- ScaleData(object = expr, vars.to.regress = c("nUMI", "percent.mito"), num.cores = 20, do.par = T)
 
 #Perform linear dimensional reduction
-expr <- RunPCA(object = expr, pc.genes = expr@var.genes, do.print = TRUE, pcs.print = 1:5, genes.print = 5)
+expr <- RunPCA(object = expr, pc.genes = expr@var.genes, pcs.compute = 100, do.print = F)
 
 # Examine and visualize PCA results a few different ways
 PrintPCA(object = expr, pcs.print = 1:5, genes.print = 5, use.full = FALSE)
@@ -96,9 +114,9 @@ expr <- ProjectPCA(object = expr, do.print = FALSE)
 # PCHeatmap allows for easy exploration of the primary sources of heterogeneity in a dataset, 
 # and can be useful when trying to decide which PCs to include for further downstream analyses. 
 # Both cells and genes are ordered according to their PCA scores.
-PCHeatmap(object = expr, pc.use = 1, cells.use = 500, do.balanced = TRUE, label.columns = FALSE)
+PCHeatmap(object = expr, pc.use = 1, cells.use = 232, do.balanced = TRUE, label.columns = FALSE)
 
-PCHeatmap(object = expr, pc.use = 1:12, cells.use = 500, do.balanced = TRUE, 
+PCHeatmap(object = expr, pc.use = 1:12, cells.use = 232, do.balanced = TRUE, 
           label.columns = FALSE, use.full = FALSE)
 
 #Determine statistically significant principal components
@@ -106,18 +124,20 @@ PCHeatmap(object = expr, pc.use = 1:12, cells.use = 500, do.balanced = TRUE,
 # NOTE: This process can take a long time for big datasets, comment out for
 # expediency.  More approximate techniques such as those implemented in
 # PCElbowPlot() can be used to reduce computation time
-expr <- JackStraw(object = expr, num.replicate = 100, do.print = T)
+expr <- JackStraw(object = expr, num.replicate = 100, num.cores = 20, do.par = T, maxit = 1000)
 
 # The JackStrawPlot function provides a visualization tool
 # for comparing the distribution of p-values for each PC with a uniform distribution (dashed line).
 # ‘Significant’ PCs will show a strong enrichment of genes with low p-values (solid curve above the dashed line).
-JackStrawPlot(object = expr, PCs = 1:15)
+JackStrawPlot(object = expr, PCs = 1:20)
 
 # A more ad hoc method for determining which PCs to use is to look at a plot
 # of the standard deviations of the principle components and draw your cutoff where there is a clear elbow in the graph.
-PCElbowPlot(object = expr)
+PCElbowPlot(object = expr, num.pc = 26)
 
-dev.off()
+#dev.off()
+
+dims_use <- 1:25
 
 # Cluster the cells
 # The FindClusters function implements the procedure, and contains a resolution parameter 
@@ -129,10 +149,17 @@ dev.off()
 # save.SNN = T saves the SNN so that the clustering algorithm can be rerun
 # using the same graph but with a different resolution value (see docs for
 # full details)
-expr <- FindClusters(object = expr, reduction.type = "pca", dims.use = 1:11, 
+if(! exists("expr_ori")) {
+  print("Create copy for original expr")
+  expr_ori <- expr
+} else {
+  print("Use original expr")
+  expr <- expr_ori
+}
+expr <- FindClusters(object = expr, reduction.type = "pca", dims.use = dims_use, 
                      resolution = 0.6, print.output = 0, save.SNN = TRUE, temp.file.location = "/tmp/")
-
 PrintFindClustersParams(object = expr)
+table(expr@meta.data$res.0.6)
 
 # Run Non-linear dimensional reduction (tSNE)
 # Seurat continues to use tSNE as a powerful tool to visualize and explore these datasets.
@@ -143,18 +170,81 @@ PrintFindClustersParams(object = expr)
 # we suggest using the same PCs as input to the clustering analysis,
 # although computing the tSNE based on scaled gene expression is also supported using the genes.use argument.
 
-expr <- RunTSNE(object = expr, dims.use = 1:11, do.fast = TRUE)
+expr <- RunTSNE(object = expr, dims.use = dims_use, do.fast = TRUE)
+TSNEPlot(object = expr, pt.size = 2, do.label = T, no.legend = T)
 
-pdf("03-expression/merged/seurat_tSNE.pdf",width = 6, height = 6, useDingbats = F)
+### check batch effect
+cellMetaData <- merge(expr@meta.data, expr@dr$tsne@cell.embeddings, by = 0, sort = F)
+#cellMetaData$batch <- factor(cellMetaData$batch, levels = unique(cellMetaData$batch))
+cellStat <- read.table("03-expression/merged/filtering_cells.txt", header = T, sep = "\t", row.names = 1, stringsAsFactors = F)
+dim(cellStat)
+cellMetaData <- merge(cellMetaData, cellStat[, -c(4, 5)], by.x = 1, by.y = 0, sort = F)
+
+pdf("03-expression/merged/Seurat_batchEffect.pdf", width = 6, height = 6, useDingbats = F)
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = res.0.6)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top")) + guides(color = guide_legend(ncol=1,byrow=TRUE))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = batch)) + geom_point(show.legend = T) + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect(fill=alpha('white', 0.4))) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top")) + guides(color = guide_legend(ncol=1,byrow=TRUE))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = bigBatch)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top")) + guides(color = guide_legend(ncol=1,byrow=TRUE))
+#ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = people)) + geom_point() + theme_bw() + 
+#  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+#  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top")) + guides(color = guide_legend(ncol=1,byrow=TRUE))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = outer_id)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect(fill = alpha('white', 0.4))) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top")) + guides(color = guide_legend(ncol=1,byrow=TRUE))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = inner_id)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect(fill = alpha('white', 0.4))) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top")) + guides(color = guide_legend(ncol=1,byrow=TRUE))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = bigInner_id)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect(fill = NA)) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top")) + guides(color = guide_legend(ncol=1,byrow=TRUE))
+
+# expression info
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = nGene)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top"))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = nUMI)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top"))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = ABratio)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top"))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = cleanReads)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top"))
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = mpRatio)) + geom_point() + theme_bw() + 
+  theme(legend.background = element_blank(), legend.box.background = element_rect()) + 
+  theme(panel.grid = element_blank(), legend.position = c(0.01, 0.99), legend.justification = c("left", "top"))
+
+dev.off()
+###
+
+### check marker (expressed ratio)
+do_checkMarker <- function(x, marker, cell) {
+  expr_sub <- x[marker, grep(cell, colnames(x))]
+  rownames(expr_sub) <- marker
+  #cat("Data dimension: ", dim(expr_sub), "\n")
+  expr_ratio <- t(apply(expr_sub, 1, function(x) { y0 <- sum(x==0); y1 <- sum(x>0); y2 <- y1/(y0 + y1); return(c(y0, y1, y2)) }))
+  colnames(expr_ratio) <- c("Non_expressed", "Expressed", "ratio")
+  expr_ratio <- data.frame(bigBatch=cell, marker=rownames(expr_ratio), expr_ratio)
+  return(expr_ratio)
+}
+
+marker_genes <- c("PTPRC", "CD3D", "CD3E", "CD3G", "CD4", "CD8A", "CD14", "CD19")
+do_checkMarker(x = expr_data, marker = marker_genes, cell = "FACS")
+###
+
+pdf("03-expression/merged/Seurat_tSNE.pdf",width = 6, height = 6, useDingbats = F)
 
 # note that you can set do.label=T to help label individual clusters
-TSNEPlot(object = expr, pt.size = 2)
-
-# You can save the object at this point.
-# save(expr, file = "03-expression/merged/seurat_expr.Robj")
+TSNEPlot(object = expr, pt.size = 2, do.label = T, no.legend = T)
+table(expr@meta.data$res.0.6)
 
 # Finding differentially expressed genes (cluster biomarkers)
-
 # find all markers of cluster 1
 #cluster1.markers <- FindMarkers(object = expr, ident.1 = 1, min.pct = 0.25)
 #print(x = head(x = cluster1.markers, n = 5))
@@ -162,16 +252,22 @@ TSNEPlot(object = expr, pt.size = 2)
 #cluster5.markers <- FindMarkers(object = expr, ident.1 = 5, ident.2 = c(0, 3), min.pct = 0.25)
 #print(x = head(x = cluster5.markers, n = 5))
 
-# find markers for every cluster compared to all remaining cells, report
-# only the positive ones
-expr.markers <- FindAllMarkers(object = expr, only.pos = TRUE, min.pct = 0.25, thresh.use = 0.25)
+# find markers for every cluster compared to all remaining cells, report only the positive ones
+expr.markers <- FindAllMarkers(object = expr, test.use = "roc", only.pos = TRUE, min.pct = 0.25)
 dim(expr.markers)
-expr.markers %>% group_by(cluster) %>% top_n(5, avg_logFC)
+table(expr.markers$cluster)
+expr.markers %>% group_by(cluster) %>% top_n(1, avg_logFC)
 # filter by q-value
-expr.markers_ftd <- expr.markers[expr.markers$p_val_adj<=0.05,]
+#expr.markers_ftd <- expr.markers[expr.markers$p_val_adj<=0.05,]
+#dim(expr.markers_ftd)
+#table(expr.markers_ftd$cluster)
+# filter by power
+expr.markers_ftd <- expr.markers[expr.markers$power>=0.4 & expr.markers$avg_logFC>=log(1.5), ]
 dim(expr.markers_ftd)
+table(expr.markers_ftd$cluster)
 
 top1 <- expr.markers_ftd %>% group_by(cluster) %>% top_n(1, avg_logFC)
+top10 <- expr.markers_ftd %>% group_by(cluster) %>% top_n(10, avg_logFC)
 # Seurat has four tests for differential expression which can be set with the test.use parameter:
 # ROC test (“roc”), t-test (“t”), LRT test based on zero-inflated data (“bimod”, default),
 # LRT test based on tobit-censoring models (“tobit”) The ROC test returns the ‘classification power’
@@ -187,88 +283,187 @@ VlnPlot(object = expr, features.plot = top1$gene, size.title.use = 16)
 VlnPlot(object = expr, features.plot = top1$gene, use.raw = TRUE, y.log = TRUE, size.title.use = 16)
 
 for(i in top1$gene) {
-  FeaturePlot(object = expr, features.plot = i, cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2) 
+  FeaturePlot(object = expr, features.plot = i, cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2)
 }
 
 # DoHeatmap generates an expression heatmap for given cells and genes.
 # In this case, we are plotting the top 20 markers (or all markers if less than 20) for each cluster.
-top10 <- expr.markers_ftd %>% group_by(cluster) %>% top_n(10, avg_logFC)
+#top10 <- expr.markers_ftd %>% group_by(cluster) %>% top_n(10, avg_logFC)
 # setting slim.col.label to TRUE will print just the cluster IDS instead of
 # every cell name
 DoHeatmap(object = expr, genes.use = top10$gene, slim.col.label = TRUE, remove.key = TRUE)
+DoHeatmap(object = expr, genes.use = c(top10$gene, "PTPRC", "CD3D", "CD3E", "CD3G", "CD4", "CD8A", "IL2RA"), slim.col.label = TRUE, remove.key = T)
+#DoHeatmap(object = expr, genes.use = c(expr.markers_ftd$gene, "PTPRC", "CD3D", "CD3E", "CD3G", "CD4", "CD8A", "IL2RA"), slim.col.label = TRUE, remove.key = T)
 
-# known cell-cycle gene list from literature
-s.genes <- read.table("Data/human/cell_cycle_gene_G1_S.txt", header = F, sep = "\t", stringsAsFactors = F)[,1]
-g2m.genes <- read.table("Data/human/cell_cycle_gene_G2_M.txt", header = F, sep = "\t", stringsAsFactors = F)[,1]
+## find marker genes for sub-types
+# markers_1_vs_2_3 <- FindMarkers(object = expr, test.use = "roc", only.pos = TRUE, ident.1 = 1, ident.2 = c(2, 3), min.pct = 0.25)
+# subset(markers_1_vs_2_3, power>=0.4 & avg_logFC>=log(2))
+# markers_2_vs_1_3 <- FindMarkers(object = expr, test.use = "roc", only.pos = TRUE, ident.1 = 2, ident.2 = c(1, 3), min.pct = 0.25)
+# subset(markers_2_vs_1_3, power>=0.4 & avg_logFC>=log(2))
+# markers_3_vs_1_2 <- FindMarkers(object = expr, test.use = "roc", only.pos = TRUE, ident.1 = 3, ident.2 = c(1, 2), min.pct = 0.25)
+# subset(markers_3_vs_1_2, power>=0.4 & avg_logFC>=log(2))
 
+### known cell-cycle gene list from literature
+data(cc.genes)
+s.genes <- cc.genes$s.genes
+g2m.genes <- cc.genes$g2m.genes
 DoHeatmap(object = expr, genes.use = c(s.genes, g2m.genes), slim.col.label = TRUE, remove.key = TRUE, cex.row = 4)
 
-# Assigning cell type identity to clusters
-current.cluster.ids <- c(0, 1)
-new.cluster.ids <- c("G2/M", "G1/S")
-expr@ident <- plyr::mapvalues(x = expr@ident, from = current.cluster.ids, to = new.cluster.ids)
-expr@ident <- factor(expr@ident, levels = c("G1/S", "G2/M"))
-expr@meta.data$ident <- expr@ident
-TSNEPlot(object = expr, pt.size = 2)
-expr.markers_ftd$cluster <- plyr::mapvalues(x = expr.markers_ftd$cluster, from = current.cluster.ids, to = new.cluster.ids)
-expr.markers_ftd$cluster <- factor(expr.markers_ftd$cluster, levels = c("G1/S", "G2/M"))
-expr.markers_ftd <- expr.markers_ftd[order(expr.markers_ftd$cluster), ]
-DoHeatmap(object = expr, genes.use = c(s.genes, g2m.genes), slim.col.label = TRUE, remove.key = TRUE, cex.row = 4)
+dev.off()
 
-# compare markers with literature
-expr.markers_plus <- unique(c(expr.markers_ftd$gene,s.genes,g2m.genes))
-expr.markers_in_literature <- apply(as.matrix(expr.markers_plus), 1, function(x) {
-  if(x[1]%in%s.genes) { y <- "G1/S" } else if(x[1]%in%g2m.genes) { y <- "G2/M" } else { y <- "NA" }
-  return(y)
-})
-expr.markers_in_work <- apply(as.matrix(expr.markers_plus), 1, function(x) {
-  if(! x[1]%in%expr.markers_ftd$gene) { y <- "NA" } else { y <- as.character(expr.markers_ftd$cluster)[expr.markers_ftd$gene==x[1]] }
-  return(y)
-})
-expr.markers_DF <- data.frame(row.names = expr.markers_plus, literature=expr.markers_in_literature, work=expr.markers_in_work, stringsAsFactors = F)
-expr.markers_DF$literature <- factor(expr.markers_DF$literature, levels = c("G1/S","G2/M","NA"))
-expr.markers_DF$work <- factor(expr.markers_DF$work, levels = c("G1/S","G2/M","NA"))
-expr.markers_TB <- table(expr.markers_DF)
-expr.markers_TB
+### check abnormal sub-types
+pdf("03-expression/merged/Seurat_mito.pdf",width = 6, height = 6, useDingbats = F)
 
-# in literature
-top1_in_literature <- expr.markers_ftd[expr.markers_ftd$gene%in%c(s.genes, g2m.genes), ] %>% group_by(cluster) %>% top_n(1, avg_logFC)
-VlnPlot(object = expr, features.plot = top1_in_literature$gene, size.title.use = 16)
-for(i in top1_in_literature$gene) {
-  FeaturePlot(object = expr, features.plot = i, cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2)
+ggplot(cellMetaData, aes(x = res.0.6, y = percent.mito, fill = res.0.6)) + geom_boxplot(show.legend = F, notch = T)
+ggplot(cellMetaData, aes(x = res.0.6, y = nUMI, fill = res.0.6)) + geom_boxplot(show.legend = F, notch = T)
+ggplot(cellMetaData, aes(x = res.0.6, y = nUMI*percent.mito, fill = res.0.6)) + geom_boxplot(show.legend = F, notch = T)
+
+# library(gtools)
+# tmp <- table(gsub("cell.*", "", WhichCells(expr, ident = 0)))
+# plot(tmp[mixedsort(names(tmp))], las = 2, ylab = "Cell number")
+
+dev.off()
+
+
+pdf(file = "03-expression/merged/Seurat_clusterDebug.pdf", width = 5, height = 4, useDingbats = F)
+## bigBatch level
+# outer
+for(i in unique(cellMetaData$bigBatch)) {
+  print(i)
+  gp <- ggplot(cellMetaData[cellMetaData$bigBatch==i, ]) + 
+    geom_violin(aes(x = outer_id, y = mito), fill = "navy", alpha = 0.3) + 
+    ggtitle(paste(i, "(outer barcode: mito)"))
+  print(gp)
 }
 
-# not in literature
-top1_notIn_literature <- expr.markers_ftd[ ! expr.markers_ftd$gene%in%c(s.genes, g2m.genes), ] %>% group_by(cluster) %>% top_n(1, avg_logFC)
-VlnPlot(object = expr, features.plot = top1_notIn_literature$gene, size.title.use = 16)
-for(i in top1_notIn_literature$gene) {
-  FeaturePlot(object = expr, features.plot = i, cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2)
+for(i in unique(cellMetaData$bigBatch)) {
+  print(i)
+  gp <- ggplot(cellMetaData[cellMetaData$bigBatch==i, ]) + 
+    geom_bar(aes(x = outer_id, fill = res.0.6)) + 
+    ggtitle(paste(i, "(outer barcode)")) + 
+    scale_y_continuous(expand = c(0, 0)) + 
+    ylab("Cell number")
+  print(gp)
+}
+
+for(i in unique(cellMetaData$bigBatch)) {
+  print(i)
+  gp <- ggplot(cellMetaData[cellMetaData$bigBatch==i, ]) + 
+    geom_bar(aes(x = outer_id, fill = res.0.6), position="fill") + 
+    ggtitle(paste(i, "(outer barcode)")) + 
+    scale_y_continuous(expand = c(0, 0)) + 
+    ylab("Cell frequency")
+  print(gp)
+}
+
+# inner
+for(i in unique(cellMetaData$bigBatch)) {
+  print(i)
+  gp <- ggplot(cellMetaData[cellMetaData$bigBatch==i, ]) + 
+    geom_violin(aes(x = inner_id, y = mito), fill = "navy", alpha = 0.3) + 
+    ggtitle(paste(i, "(inner barcode: mito)"))
+  print(gp)
+}
+
+for(i in unique(cellMetaData$bigBatch)) {
+  print(i)
+  gp <- ggplot(cellMetaData[cellMetaData$bigBatch==i, ]) + 
+    geom_bar(aes(x = inner_id, fill = res.0.6)) + 
+    ggtitle(paste(i, "(inner barcode)")) + 
+    scale_y_continuous(expand = c(0, 0)) + 
+    ylab("Cell number")
+  print(gp)
+}
+
+for(i in unique(cellMetaData$bigBatch)) {
+  print(i)
+  gp <- ggplot(cellMetaData[cellMetaData$bigBatch==i, ]) + 
+    geom_bar(aes(x = inner_id, fill = res.0.6), position="fill") + 
+    ggtitle(paste(i, "(inner barcode)")) + 
+    scale_y_continuous(expand = c(0, 0)) + 
+    ylab("Cell frequency")
+  print(gp)
+}
+
+## batch level
+for(i in unique(cellMetaData$batch)) {
+  print(i)
+  gp <- ggplot(cellMetaData[cellMetaData$batch==i, ]) + 
+    geom_bar(aes(x = 1, y = sqrt(cleanReads), fill = mito, color = res.0.6), alpha = 1, stat = "identity", show.legend = T) + 
+    coord_polar("x") + 
+    geom_text(x=0, y=0, vjust = 2, aes(label = round(mito*100,2)), size=2) + 
+    facet_grid(inner_id ~ outer_id, drop = F) + ggtitle(i) + 
+    theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) + 
+    theme(strip.text = element_text(size = 6)) + 
+    theme(plot.margin = unit(c(0.1,0.1,0,0), "cm")) + 
+    scale_fill_gradientn(colours = c("white", "blue"))
+  print(gp)
 }
 
 dev.off()
 
+### Assigning cell type identity to clusters
+if(! exists("expr_unassigned")) {
+  print("Create copy for unassigned expr")
+  expr_unassigned <- expr
+}
+
+# check marker genes
+expr.markers_ftd %>% group_by(cluster) %>% top_n(2, avg_logFC)
+
+library("enrichR")
+#dbs <- listEnrichrDbs()
+enriched_LS <- lapply(split(x = expr.markers_ftd$gene, f = expr.markers_ftd$cluster), function(x) {
+  y <- enrichr(genes = x, databases = "GO_Biological_Process_2018")
+  return(y)
+})
+lapply(enriched_LS, function(x) { x[[1]][1:15, 1:4] })
+###
+
+### marker genes in similar clusters
+# # 1
+# tmp <- FindMarkers(object = expr_unassigned, test.use = "roc", only.pos = TRUE, min.pct = 0.25, ident.1 = 1, ident.2 = 0)
+# tmp_ftd <- subset(tmp, power>=0.4 & avg_logFC>=log(2))
+# dim(tmp_ftd)
+# FeaturePlot(object = expr_unassigned, features.plot = "UTP18", cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2, 
+#             cells.use = WhichCells(object = expr_unassigned, ident = c(0, 3)))
+# 
+# tmp <- FindMarkers(object = expr_unassigned, test.use = "roc", only.pos = TRUE, min.pct = 0.25, ident.1 = 3, ident.2 = 0)
+# tmp_ftd <- subset(tmp, power>=0.4 & avg_logFC>=log(2))
+# dim(tmp_ftd)
+# FeaturePlot(object = expr_unassigned, features.plot = "ANXA1", cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2, 
+#             cells.use = WhichCells(object = expr_unassigned))
+# # [merge]
+# tmp <- FindMarkers(object = expr_unassigned, test.use = "roc", only.pos = TRUE, min.pct = 0.25, ident.1 = c(1,4), ident.2 = 6)
+# tmp_ftd <- subset(tmp, power>=0.4 & avg_logFC>=log(2))
+# FeaturePlot(object = expr_unassigned, features.plot = "CCR7", cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2, 
+#             cells.use = WhichCells(object = expr_unassigned, ident = c(1,4,6)))
+###
+
+#levels(expr@ident) <- seq(0, length(levels(expr@ident)) - 1)
+#expr <- expr_unassigned
+current.cluster.ids <- as.numeric(levels(expr@ident))
+new.cluster.ids <- c("Test")
+expr@ident <- plyr::mapvalues(x = expr@ident, from = current.cluster.ids, to = new.cluster.ids)
+TSNEPlot(object = expr, do.label = TRUE, pt.size = 1, no.legend = T)
+
+cellMetaData <- merge(cellMetaData, data.frame(expr@ident), by.x = 1, by.y = 0, sort = F)
+expr.markers_ftd_labelled <- merge(x = expr.markers_ftd, y = unique(cellMetaData[, c("res.0.6", "expr.ident")]), by.x = "cluster", by.y = "res.0.6", sort = F)
+
 # save and write meta table
-save(expr, file = "03-expression/merged/seurat_expr.Robj")
-write.table(x = expr@meta.data, file = "03-expression/merged/seurat_metaData.txt",row.names = T, col.names = NA,quote = F,sep = "\t")
-write.table(x = expr.markers_ftd, file = "03-expression/merged/marker_genes.txt",  row.names = F, col.names = T, quote = F, sep = "\t")
+save(expr, file = "03-expression/merged/Seurat_expr.Robj")
+write.table(x = cellMetaData, file = "03-expression/merged/Seurat_metaData.txt",row.names = F, col.names = T, quote = F,sep = "\t")
+write.table(x = expr.markers_ftd_labelled, file = "03-expression/merged/Seurat_markerGenes.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+write.table(x = expr@scale.data, file = "03-expression/merged/UMIcount_scaled.txt", row.names = T, col.names = NA, quote = F, sep = "\t")
 
+pdf("03-expression/merged/Seurat_tSNE_assigned.pdf",width = 6, height = 6, useDingbats = F)
+TSNEPlot(object = expr, do.label = TRUE, pt.size = 1, no.legend = T)
+dev.off()
 
+################################################################
 
-
-
-
-
-
-
-# Assigning cell type identity to clusters
-
-###
-current.cluster.ids <- c(0, 1, 2, 3, 4, 5, 6, 7)
-new.cluster.ids <- c("CD4 T cells", "CD14+ Monocytes", "B cells", "CD8 T cells", 
-                     "FCGR3A+ Monocytes", "NK cells", "Dendritic cells", "Megakaryocytes")
-pbmc@ident <- plyr::mapvalues(x = pbmc@ident, from = current.cluster.ids, to = new.cluster.ids)
-TSNEPlot(object = pbmc, do.label = TRUE, pt.size = 0.5)
-###
+####
+do_future <- function() {
 
 # Further subdivisions within cell types
 # If you perturb some of our parameter choices above
@@ -453,3 +648,6 @@ GenePlot(object = pbmc, gene1 = "MDS1", gene2 = "PC1")
 # by setting this to FALSE, as this prevents the initial PCs
 # (which often explain a disproportionate amount of variance)
 # from masking rare cell types or subtle sources of heterogeneity that appear in later PCs.
+
+}
+####
