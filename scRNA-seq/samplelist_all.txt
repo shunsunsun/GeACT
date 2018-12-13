@@ -86,3 +86,13 @@ human	F1	Small_intestine	20181109_SI_LI_TEST	PR10_XXL_SI-1	barcodeToSample.txt	N
 human	F1	Small_intestine	20181109_SI_LI_TEST	PR10_XXL_SI-20	barcodeToSample.txt	NA	0.3	20181109	machine_amplified	NA	BD_Aria_SORP_Phoenix	0.5	mawp	NextEra	TruSeq	NA
 human	Lovo	LoVo	20181119_FACS-TEST	PD10_XXL_FACSTEST-1	barcodeToSample.txt	NA	0.3	20181119	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	ERCC_is_old.
 human	Lovo	LoVo	20181119_FACS-TEST	PD10_XXL_FACSTEST-2	barcodeToSample.txt	NA	0.3	20181119	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	ERCC_is_old.
+human	F2	Transverse_colon	20181213_Embryo_2500_test	PD10_XXL_HJC-1_lane1	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Transverse_colon	20181213_Embryo_2500_test	PD10_XXL_HJC-1_lane2	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Esophagus	20181213_Embryo_2500_test	PD10_XXL_SD-1_lane1	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Esophagus	20181213_Embryo_2500_test	PD10_XXL_SD-1_lane2	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Duodenum	20181213_Embryo_2500_test	PD10_XXL_SEZC-1_lane1	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Duodenum	20181213_Embryo_2500_test	PD10_XXL_SEZC-1_lane2	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Fundus_stomach	20181213_Embryo_2500_test	PD10_XXL_WD-1_lane1	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Fundus_stomach	20181213_Embryo_2500_test	PD10_XXL_WD-1_lane2	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Upper_segment_of_small_intestine	20181213_Embryo_2500_test	PD10_XXL_XCS-1_lane1	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
+human	F2	Upper_segment_of_small_intestine	20181213_Embryo_2500_test	PD10_XXL_XCS-1_lane2	barcodeToSample.txt	NA	0.3	20181213	machine_amplified	NA	BD_Aria_III_Phoenix	0.5	mawp	NextEra	TruSeq	Sequenced_in_2_lanes_due_to_data_volume.
