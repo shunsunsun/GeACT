@@ -47,6 +47,7 @@ my %gene;
 open my $FILE , $ARGV[0];
 while(<$FILE>) {
 	chomp;
+	next if /^__/;
 	my ($id, $seq) = split(/\t/, $_);
 	if(! exists $gene{$id}) {
 		$gene{$id} = $seq;

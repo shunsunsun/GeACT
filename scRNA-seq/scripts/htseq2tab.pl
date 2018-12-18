@@ -20,7 +20,7 @@ while(<$FILE>) {
 		$UMI = $1;
 #		print STDERR "Warning: [$.] Inconsistence UMI length\n" if length($UMI) != $UMI_len_def;
 		$gene = $2;
-		next if $gene =~ /^__/;
+		#next if $gene =~ /^__/;
 	} else {
 		print STDERR "Warning: [$.] No pattern found.\n";
 	}
