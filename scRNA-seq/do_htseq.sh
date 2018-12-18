@@ -67,7 +67,6 @@ echo -e "$id\t\$nd_tt\t\$nd_nf\t\$nd_ab\t\$nd_er\t\$nd_ge\t\$nu_tt\t\$nu_er\t\$n
 echo "$OUT/$bpp/$id/${id}_UMIcount_allGenes.txt"
 echo -ne "[End]\t"; date
 echo "Done."
-
 EOF
 
 #exit	# XXX
