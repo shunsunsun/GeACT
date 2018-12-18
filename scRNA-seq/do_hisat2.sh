@@ -3,7 +3,7 @@ IN=01-cleandata
 OUT=02-alignment
 mkdir -p $OUT
 
-cpu=2
+cpu=4
 mem=10g
 
 act=`basename $0 .sh`
@@ -15,7 +15,7 @@ id=$2	# GSM
 ### sbatch
 cat << EOF > ${act}_${bpp}_${id}.tmp.sh
 #!/bin/bash
-echo -ne ">:>\t"; date
+echo -ne "[Start]\t"; date
 export PATH=/home/gaog_pkuhpc/users/tianf/tools:\$PATH
 
 echo $bpp $id
@@ -33,9 +33,9 @@ mkdir -p $OUT/$bpp/$id
 read=\`ls $IN/$bpp/*/${id}_read1.fastq.gz\`
 echo "Input file: \$read"
 
-hisat2 -p $cpu -x Genomes/$bpp/genome -U \$read --summary-file $OUT/$bpp/$id/${id}.stat | samtools view -@ $cpu -bh - | samtools sort -@ $cpu - $OUT/$bpp/$id/${id}_sorted
+hisat2 -p $cpu -x ../Genomes/$bpp/genome -U \$read --new-summary --summary-file $OUT/$bpp/$id/${id}.stat | samtools view -@ $cpu -bh - | samtools sort -@ $cpu - $OUT/$bpp/$id/${id}_sorted
 
-echo -ne ">:>\t"; date
+echo -ne "[End]\t"; date
 echo "$OUT/$bpp/$id/${id}_sorted.bam"
 echo "Done"
 
@@ -54,23 +54,47 @@ sbatch -x $(cat node_blacklist.txt) -p $partition -A $account --qos=$qos --cpus-
 }
 
 function do_go {
-cat sample_list_cleandata.txt | cut -f 2,4 | while read Fsp Fid
+### create clean data table
+if [[ ! -e sample_list_cleandata.txt ]]
+then
+	ls 01-cleandata/*/*/*.gz | sort -V | tr '/' '\t' | sed 's/_read1\.fastq\.gz//' > sample_list_cleandata.txt
+fi
+###
+
+function do_subgo {
+Nto=500
+Ned=$(squeue -o "%.9i %.9P %.100j" -u gaog_pkuhpc | grep $act | wc -l)
+Nsm=$(expr $Nto - $Ned)
+echo -e "> [Total] $Nto; [Running] $Ned; [Submit] $Nsm"
+
+Fic=0
+Fcd=0
+while read Fsp Fid
 do
-	if [[ ! -e $OUT/$Fsp/$Fid/${Fid}_sorted.bam ]] && [[ ! -e do_hisat2_${Fsp}_${Fid}.tmp.sh ]]
+	if [[ $Fic -ge $Nsm ]]
 	then
+		Fcd=1
+		break
+	fi
+
+	if [[ ! -e $OUT/$Fsp/$Fid/${Fid}_sorted.bam ]] && [[ ! -e ${act}_${Fsp}_${Fid}.tmp.sh ]]
+	then
+		Fic=$(expr $Fic + 1)
 		do_main $Fsp $Fid
 		#exit
 	else
-		echo "[skip] $Fsp $Fid"
+		continue
+		#echo "[skip] $Fsp $Fid"
 	fi
-done
+done < <(cat sample_list_cleandata.txt | cut -f 2,4)
+return $Fcd
 }
 
 #do_go; exit
+while [[ 1 ]]; do sleep 2; do_subgo; if [[ $? -eq 0 ]]; then echo "> [All submitted]"; break; fi; done; exit
 
 # rescue errors
 function do_rescue {
-#grep -l 'ERR' do_hisat2_*.e.txt | sed -e 's/^do_hisat2_//' -e 's/\.e\.txt//' -e 's/_/\t/' > hisat2_error.txt
 cat hisat2_error.txt | while read Fsp Fid
 do
 	echo "$Fsp $Fid"
@@ -78,8 +102,25 @@ do
 done
 }
 
-do_rescue; exit
+#do_rescue; exit
+}
 
-# stat
-mkdir 02-alignment/merged; find 02-alignment -name "*.stat" | sort -V | while read fl; do perl scripts/do_mapStat.pl $fl; done > 02-alignment/merged/mapStat.txt
+function do_merge {
+echo "[info] Merge results..."
+# merge info
+mkdir -p 02-alignment/merged; find 02-alignment -name "*.stat" | sort -V | while read fl; do perl scripts/mapStat.pl $fl; done > 02-alignment/merged/mapStat.txt1
+ls Logs/do_hisat2/do_hisat2_*.o.txt | sort -V | while read fl; do perl scripts/timeStat.pl $fl; done > 02-alignment/merged/mapStat.txt2
+myjoin -m -F 2 -f 2 02-alignment/merged/mapStat.txt1 02-alignment/merged/mapStat.txt2 | cut -f 1-9,12 > 02-alignment/merged/mapStat.txt
+rm -f 02-alignment/merged/mapStat.txt[12]
+
+workdir=$(pwd -P | cut -d '/' -f 7); echo "Directory: $workdir"
+scp 02-alignment/merged/mapStat.txt tianf@162.105.250.222:/rd/user/tianf/06-Human_cell_atlas/$workdir/02-alignment/merged/
+}
+
+if [[ $1 != "merge" ]]
+then
+	do_go
+else
+	do_merge
+fi
 
