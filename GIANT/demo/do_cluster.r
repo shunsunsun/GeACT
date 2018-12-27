@@ -3,7 +3,7 @@ library(Seurat)
 library(dplyr)
 library(Matrix)
 library("gi")
-source("src/cluster.r") # >>>
+# source("~/GeACT/GIANT/demo/src/cluster.r") # >>>
 
 # Load the dataset
 projectID <- "geact2"
@@ -12,8 +12,9 @@ expr_data <- t(getExprMatrix(projectID, sessionID))
 cellStat <- getMeta(projectID, sessionID)
 
 # running
-expr <- step1_preprocess(expr_data, cellStat) # filter genes/cells and normalization
-expr <- step2_chooseDim(expr) # run PCA and show significant dimensions
-expr <- step3_clustering(expr, dims_use = 1:20, resolution = 0.6) # cluster cells and run tSNE
+expr <- step_c1_preprocess(expr_data, cellStat) # filter genes/cells and normalization
+expr <- step_c2_chooseDim(expr) # run PCA and show significant dimensions
+expr <- step_c3_clustering(expr, dims_use = 1:20, resolution = 0.6) # cluster cells and run tSNE
+
 # save results as RDS
-saveRDS(object = expr, file = "do_cluster.Rds")
+# saveRDS(object = expr, file = "do_cluster.Rds")

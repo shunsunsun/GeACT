@@ -1,5 +1,4 @@
-
-step1_preprocess <- function(expr_data, cellMetaData, outdir = "03-expression/merged/modules") {
+step_m1_preprocess <- function(expr_data, cellMetaData, outdir = "03-expression/merged/modules") {
   # cell filtering and normalization
   dir.create(path = outdir, showWarnings = F, recursive = T)
   # CPM
@@ -11,7 +10,7 @@ step1_preprocess <- function(expr_data, cellMetaData, outdir = "03-expression/me
   # split the gene expression table by cell type
   cellCluster_LS <- split(rownames(cellMetaData), cellMetaData$expr.ident)
   lengths(cellCluster_LS)
-  
+
   expr_sub_LS <- lapply(cellCluster_LS, function(x) {
     y <- expr_data[, colnames(expr_data)%in%x]
     return(y)
@@ -19,7 +18,7 @@ step1_preprocess <- function(expr_data, cellMetaData, outdir = "03-expression/me
   return(expr_sub_LS)
 }
 
-step2_clustering <- function(expr_sub_LS) {
+step_m2_clustering <- function(expr_sub_LS) {
   # HC clustering
   hc_LS <- list()
   cor_LS <- list()
@@ -39,7 +38,7 @@ step2_clustering <- function(expr_sub_LS) {
   return(list(hc=hc_LS, cor=cor_LS))
 }
 
-step3_module <- function(hc_cor_LS, cor_cutoff = 0.225, outdir = "03-expression/merged/modules") {
+step_m3_module <- function(hc_cor_LS, cor_cutoff = 0.225, outdir = "03-expression/merged/modules") {
   # Gene module detection
   # cat(">> Gene module detection\n")
   cluster_table_LS <- list()
@@ -71,16 +70,16 @@ step3_module <- function(hc_cor_LS, cor_cutoff = 0.225, outdir = "03-expression/
     cluster_table_LS[[cell_type]] <- cluster_table_ftd
     # filtering correlation matrix
     expr_cor_ftd <- expr_cor_clustered[rownames(expr_cor_clustered)%in%cluster_table_ftd$gene, colnames(expr_cor_clustered)%in%cluster_table_ftd$gene]
-    
+
     png(paste0(outdir, "/geneCorrelation_", cell_type_label, ".png"), height = 1600, width = 1600, res = 300)
     # all modules
     pheatmap(mat = expr_cor_ftd, cluster_rows = F, cluster_cols = F, breaks = c(-1, seq(from = -0.6, to = 0.6, length.out = 100), 1),
              color = c("blue",colorRampPalette(c("blue", "white", "red"))(100),"red"), show_rownames = F, show_colnames = F, legend = T,
              main = cell_type)
     dev.off()
-    
-    rm(cell_type, cell_type_label, hc, expr_cor_clustered, 
-       cor_cutoff, cluster_table, cluster_table_ftd, cluster_size, cluster_bdl, cluster_bdr, cluster_bd, 
+
+    rm(cell_type, cell_type_label, hc, expr_cor_clustered,
+       cor_cutoff, cluster_table, cluster_table_ftd, cluster_size, cluster_bdl, cluster_bdr, cluster_bd,
        expr_cor_ftd)
   }
   return(cluster_table_LS)
