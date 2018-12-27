@@ -6,7 +6,7 @@ The description for each column in the meta table:
 | 2 | seqID | The unique ID for each sequencing |
 | 3 | species | The species of the cell |
 | 4 | tissue | The tissue of the cell |
-| 5 | samplingPos | Sampling position |
+| 5 | samplingPos | The sampling position of the cell |
 | 6 | plate | The unique ID for each 96-well plate |
 | 7 | ABratio | The ratio of primerA in primer A and B |
 | 8 | cleanReads | The number of reads after read-QC |
