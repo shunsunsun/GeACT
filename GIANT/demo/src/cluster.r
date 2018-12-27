@@ -1,77 +1,59 @@
-celltyping.preprocess <- function(expr_data, cellStat, project = "unnamed", min.cells = 3, min.genes = 500) {
-  # output dir
-  #dir.create(path = "03-expression/merged", showWarnings = F, recursive = T)
-
-  # Initialize the Seurat object with the raw (non-normalized data).  Keep all
-  # genes expressed in >= 3 cells (~0.1% of the data). Keep all cells with at
-  # least 200 detected genes
+cc.preprocess <- function(expr_data, cellStat, project = "TestProject", min.cells = 3, min.genes = 500) {
+  # Initialize the Seurat object with the raw (non-normalized data).
   expr <- CreateSeuratObject(raw.data = expr_data, min.cells = min.cells, min.genes = min.genes, project = project, names.delim = "/")
-  dim(expr@raw.data)
 
-  # Standard pre-processing workflow
   # QC and selecting cells for further analysis
   # calculate the percent.mito values.
   mito.genes <- grep(pattern = "^MT-", x = rownames(expr@raw.data))
-  length(mito.genes)
   percent.mito <- Matrix::colSums(expr@raw.data[mito.genes, ])/Matrix::colSums(expr@raw.data)
-  ###
-
-##TODO: describe the assumption on name explictly
-
-  # batch info
-  batch <- gsub("_cell.*", "", colnames(expr@raw.data))
-  names(batch) <- colnames(expr@raw.data)
-  bigBatch <- gsub("-[0-9]*_cell.*", "", colnames(expr@raw.data))
-  names(bigBatch) <- colnames(expr@raw.data)
-  #people <- rep(c("A", "B"), c(792, 2463-792))
-  #names(people) <- colnames(expr@raw.data)
-  outer_id <- ceiling(as.numeric(gsub(".*cell", "", colnames(expr@raw.data))) / 8); outer_id <- factor(outer_id)
-  names(outer_id) <- colnames(expr@raw.data)
-  inner_id <- ceiling(as.numeric(gsub(".*cell", "", colnames(expr@raw.data))) %% 8); inner_id[inner_id==0] <- 8; inner_id <- factor(inner_id, levels = 1:8)
-  names(inner_id) <- colnames(expr@raw.data)
-  bigInner_id <- ifelse(as.numeric(inner_id)<=4, "1-4", "5-8")
-  names(bigInner_id) <- colnames(expr@raw.data)
-
-  # AddMetaData adds columns to object@meta.data, and is a great place to
-  # stash QC stats
-  #pdf("03-expression/merged/Seurat_QCstats.pdf",width = 6, height = 6, useDingbats = F)
-
-##TODO: add a few checks here for the existence of the required columns
-
   expr <- AddMetaData(object = expr, metadata = percent.mito, col.name = "percent.mito")
-  expr <- AddMetaData(object = expr, metadata = batch, col.name = "batch")
-  expr <- AddMetaData(object = expr, metadata = bigBatch, col.name = "bigBatch")
-  #expr <- AddMetaData(object = expr, metadata = people, col.name = "people")
-  expr <- AddMetaData(object = expr, metadata = outer_id, col.name = "outer_id")
-  expr <- AddMetaData(object = expr, metadata = inner_id, col.name = "inner_id")
-  expr <- AddMetaData(object = expr, metadata = bigInner_id, col.name = "bigInner_id")
-  VlnPlot(object = expr, features.plot = c("nGene", "nUMI", "percent.mito"), nCol = 3, size.title.use = 16)
-  #dev.off()
+  
+  # add batch info
+  if(length(grep("_cell[0-9]+$", colnames(expr@raw.data))) == ncol(expr@raw.data)) {
+    batch <- gsub("_cell.*", "", colnames(expr@raw.data))
+    names(batch) <- colnames(expr@raw.data)
+    bigBatch <- gsub("-[0-9]*_cell.*", "", colnames(expr@raw.data))
+    names(bigBatch) <- colnames(expr@raw.data)
+    #people <- rep(c("A", "B"), c(792, 2463-792))
+    #names(people) <- colnames(expr@raw.data)
+    outer_id <- ceiling(as.numeric(gsub(".*cell", "", colnames(expr@raw.data))) / 8); outer_id <- factor(outer_id)
+    names(outer_id) <- colnames(expr@raw.data)
+    inner_id <- ceiling(as.numeric(gsub(".*cell", "", colnames(expr@raw.data))) %% 8); inner_id[inner_id==0] <- 8; inner_id <- factor(inner_id, levels = 1:8)
+    names(inner_id) <- colnames(expr@raw.data)
+    bigInner_id <- ifelse(as.numeric(inner_id)<=4, "1-4", "5-8")
+    names(bigInner_id) <- colnames(expr@raw.data)
+    
+    expr <- AddMetaData(object = expr, metadata = batch, col.name = "batch")
+    expr <- AddMetaData(object = expr, metadata = bigBatch, col.name = "bigBatch")
+    #expr <- AddMetaData(object = expr, metadata = people, col.name = "people")
+    expr <- AddMetaData(object = expr, metadata = outer_id, col.name = "outer_id")
+    expr <- AddMetaData(object = expr, metadata = inner_id, col.name = "inner_id")
+    expr <- AddMetaData(object = expr, metadata = bigInner_id, col.name = "bigInner_id")
+  } else {
+    warning("The cell ID do not match _cell[0-9], so the batch label will be skipped.")
+  }
+  
+  #VlnPlot(object = expr, features.plot = c("nGene", "nUMI", "percent.mito"), nCol = 3, size.title.use = 16)
 
-  # We filter out cells that have unique gene counts over 2,500 or less than
-  # 200 Note that low.thresholds and high.thresholds are used to define a
-  # 'gate' -Inf and Inf should be used if you don't want a lower or upper
-  # threshold.
-  #dim(expr@meta.data)
+  # cell filtering
   expr <- FilterCells(object = expr, subset.names = c("nGene", "percent.mito"), low.thresholds = c(500, -Inf), high.thresholds = c(Inf, Inf))
-  #dim(expr@meta.data)
 
-  #Normalizing the data
+  # Normalizing the data
   expr <- NormalizeData(object = expr, normalization.method = "LogNormalize", scale.factor = 10000)
 
-  #Detection of variable genes across the single cells
+  # Detection of variable genes across the single cells
   expr <- FindVariableGenes(object = expr, mean.function = ExpMean, dispersion.function = LogVMR,
                             x.low.cutoff = 0.1, x.high.cutoff = 5, y.cutoff = 1)
-  length(x = expr@var.genes)
+  # length(x = expr@var.genes)
 
   #Scaling the data and removing unwanted sources of variation
-  #expr <- ScaleData(object = expr, vars.to.regress = c("nUMI", "percent.mito"), num.cores = 20, do.par = T)
-  expr <- ScaleData(object = expr, vars.to.regress = c("nUMI"), num.cores = 15, do.par = T)
+  expr <- ScaleData(object = expr, vars.to.regress = c("nUMI", "percent.mito"), num.cores = 15, do.par = T)
+  #expr <- ScaleData(object = expr, vars.to.regress = c("nUMI"), num.cores = 15, do.par = T)
 
   return(expr)
 }
 
-celltyping.project <- function(expr, pcs.compute = 100) {
+cc.projection <- function(expr, pcs.compute = 100) {
   #Perform linear dimensional reduction
   expr <- RunPCA(object = expr, pc.genes = expr@var.genes, pcs.compute = pcs.compute, do.print = F)
 
@@ -87,26 +69,18 @@ celltyping.project <- function(expr, pcs.compute = 100) {
   return(expr)
 }
 
-celltyping.project.visual <- function(expr, force.recalc = F) {
+cc.projection.visual <- function(expr, force.recalc = F) {
   # Determine statistically significant principal components
-
-##TODO: avoid re-computation unless being specified by user
-
-  expr <- JackStraw(object = expr, num.replicate = 100, num.cores = 20, do.par = T, maxit = 1000)
+  if(force.recalc | is.null(expr@dr$pca@jackstraw)) {
+    expr <- JackStraw(object = expr, num.replicate = 100, num.cores = 15, do.par = T, maxit = 1000)
+  }
   JackStrawPlot(object = expr, PCs = 1:20)
   PCElbowPlot(object = expr, num.pc = 30)
   return(expr)
 }
 
-celltyping.cluster <- function(expr, dims_use=1:20, resolution = 0.6) {
+cc.clustering <- function(expr, dims_use=1:20, resolution = 0.6) {
   # Cluster the cells
-  if(! exists("expr_ori")) {
-    print("Create copy for original expr")
-    expr_ori <- expr
-  } else {
-    print("Use original expr")
-    expr <- expr_ori
-  }
   expr <- FindClusters(object = expr, reduction.type = "pca", dims.use = dims_use,
                        resolution = resolution, print.output = 0, save.SNN = TRUE, temp.file.location = "/tmp/")
   #PrintFindClustersParams(object = expr)
