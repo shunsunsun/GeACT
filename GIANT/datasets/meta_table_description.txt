@@ -8,9 +8,10 @@ Column	Feature	Description
 7	Abratio	The ratio of primerA in primer A and B
 8	cleanReads	The number of reads after read-QC
 9	mpRatio	The ratio of the reads mapped to the genome
-10	genes	The number of detected genes
+10	nGene	The number of detected genes
 11	nUMI	The number of detected UMI
 12	mitoRatio	The ratio of expression level of mitochondrial genes
 13	ERCCratio	The ratio of expression level of ERCC spike-in 
-14	avg_cor	The average of Pearson correlation with cells in the same seqID
-15	filter	Whether the cell passed the filtering process
+14	avgCor	The average of Pearson correlation with cells in the same seqID
+15	doublet	Whether the cell is a doublet
+16	filter	Whether the cell passed the filtering process
