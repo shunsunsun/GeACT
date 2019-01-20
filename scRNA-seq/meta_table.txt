@@ -82,11 +82,11 @@ PR10_XXL_SI-1	human	F1	Fetal	small intestine	small intestine	mixture	normal	0.3	
 PR10_XXL_SI-20	human	F1	Fetal	small intestine	small intestine	mixture	normal	0.3	20181109	BD_Aria_SORP_Phoenix	machine 	NA	0.5	mawp	NA	NA
 PD10_XXL_FACSTEST-1	human	NA	Cell line	LoVo	LoVo	LoVo	normal	0.3	20181119	BD_Aria_III_Phoenix	machine 	NA	0.5	mawp	NA	ERCC_is_old.
 PD10_XXL_FACSTEST-2	human	NA	Cell line	LoVo	LoVo	LoVo	normal	0.3	20181119	BD_Aria_III_Phoenix	machine 	NA	0.5	mawp	NA	ERCC_is_old.
-PD10_XXL_HJC-1	human	F2	Fetal	large intestine	transverse colon	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_1	NA
-PD10_XXL_SD-1	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_11	NA
-PD10_XXL_SEZC-1	human	F2	Fetal	small intestine	duodenum	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_7	NA
-PD10_XXL_WD-1	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_8	NA
-PD10_XXL_XCS-1	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_4	NA
+PD10_XXL_HJC-s1	human	F2	Fetal	large intestine	transverse colon	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_1	NA
+PD10_XXL_SD-s1	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_11	NA
+PD10_XXL_SEZC-s1	human	F2	Fetal	small intestine	duodenum	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_7	NA
+PD10_XXL_WD-s1	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_8	NA
+PD10_XXL_XCS-s1	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_4	NA
 PR10_XXL_SD-1	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
 PR10_XXL_SD-2	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
 PR10_XXL_SD-3	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
@@ -98,16 +98,16 @@ PR10_XXL_SD-8	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_
 PR10_XXL_SD-9	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
 PR10_XXL_SD-10	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
 PR10_XXL_SD-11	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_WD-1	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-2	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-3	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-4	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-5	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-6	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-7	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-8	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-9	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-10	human	F2	Fetal	stomach	fundus stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-1	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-2	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-3	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-4	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-5	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-6	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-7	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-8	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-9	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
+PR10_XXL_WD-10	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
 PR10_XXL_XCS-1	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
 PR10_XXL_XCS-2	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
 PR10_XXL_XCS-3	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
