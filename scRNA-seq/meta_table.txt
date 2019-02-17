@@ -1,134 +1,170 @@
-plate	species	individual	sample_type	tissue	samplingPos	identity	barcodeToSample	sequence_depth_G	experiment_time	flow_cytometer	amplification	marker	ERCC_ratio	conductor	sort_order	remark
-PD10_XXL_293-B9-1	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180130	BD_Aria_III_Phoenix	manual 	NA	1	mawp	NA	NA
-PD10_XXL_293-B9-2	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180130	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-3	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180213	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-6	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180213	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-8	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180213	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-9	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180213	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-4	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180306	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-5	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180306	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-7	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180306	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PR10_XXL_293-B9-10	human	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	20180306	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	NA
-PD10_XXL_Mono-1	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	manual 	CD45+CD14+	1	mawp	NA	First_cell_is_an_RNA_control.
-PD10_XXL_Mono-2	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	machine 	CD45+CD14+	1	mawp	NA	NA
-PD10_XXL_Mono-3	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	machine 	CD45+CD14+	1	mawp	NA	NA
-PD10_XXL_Mono-4	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	machine 	CD45+CD14+	1	mawp	NA	NA
-PD10_XXL_Mono-5	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	machine 	CD45+CD14+	1	mawp	NA	NA
-PD10_XXL_Mono-6	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	machine 	CD45+CD14+	1	mawp	NA	NA
-PD10_XXL_Mono-7	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	machine 	CD45+CD14+	1	mawp	NA	NA
-PD10_XXL_Mono-8	human	test-Z	Adult	blood	blood	Monocyte	normal	0.3	20180518	BD_Aria_III_Phoenix	machine 	CD45+CD14+	1	mawp	NA	NA
-PR10_XXL_T-1	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-2	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-3	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-4	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-5	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-6	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-7	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-8	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-9	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_T-10	human	test-Z	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	1	mawp	NA	NA
-PR10_XXL_X-mono-1	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-2	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-3	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-4	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-5	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-6	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-7	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-8	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-9	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-10	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-11	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-mono-12	human	test-X	Adult	blood	blood	Monocyte	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD14+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-1	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-2	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-3	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-4	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-5	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-6	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-7	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-8	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-9	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-10	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-11	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-NK-12	human	test-X	Adult	blood	blood	NK cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD56+	0.2	mawp	NA	NA
-PR10_XXL_X-T-1	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-2	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-3	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-4	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-5	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-6	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-7	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-8	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-9	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-10	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-11	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-T-12	human	test-X	Adult	blood	blood	T cell	normal	0.3	20180724	BD_Aria_III_Phoenix	machine 	CD45+CD3+	0.2	mawp	NA	NA
-PR10_XXL_X-B-2	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-3	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-4	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-5	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-6	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-7	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-8	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-9	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-10	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-11	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PR10_XXL_X-B-12	human	test-X	Adult	blood	blood	B cell	normal	0.3	20180829	BD_Aria_III_Phoenix	machine 	CD45+CD19+	0.2	mawp	NA	NA
-PD10_XXL_GM-normal	human	NA	Cell line	GM12878	GM12878	GM12878	normal	0.03	20181023	BD_Aria_III_Phoenix	manual 	NA	1	mawp	NA	NA
-PD10_XXL_GM-revPCR	human	NA	Cell line	GM12878	GM12878	GM12878	normal	0.03	20181023	BD_Aria_III_Phoenix	machine 	NA	1	mawp	NA	Rotate_180_degree_on_the_PCR_instrument.
-PR10_XXL_LI-1	human	F1	Fetal	large intestine	large intestine	mixture	normal	0.3	20181109	BD_Aria_SORP_Phoenix	machine 	NA	0.5	mawp	NA	NA
-PR10_XXL_LI-20	human	F1	Fetal	large intestine	large intestine	mixture	normal	0.3	20181109	BD_Aria_SORP_Phoenix	machine 	NA	0.5	mawp	NA	NA
-PR10_XXL_SI-1	human	F1	Fetal	small intestine	small intestine	mixture	normal	0.3	20181109	BD_Aria_SORP_Phoenix	machine 	NA	0.5	mawp	NA	NA
-PR10_XXL_SI-20	human	F1	Fetal	small intestine	small intestine	mixture	normal	0.3	20181109	BD_Aria_SORP_Phoenix	machine 	NA	0.5	mawp	NA	NA
-PD10_XXL_FACSTEST-1	human	NA	Cell line	LoVo	LoVo	LoVo	normal	0.3	20181119	BD_Aria_III_Phoenix	machine 	NA	0.5	mawp	NA	ERCC_is_old.
-PD10_XXL_FACSTEST-2	human	NA	Cell line	LoVo	LoVo	LoVo	normal	0.3	20181119	BD_Aria_III_Phoenix	machine 	NA	0.5	mawp	NA	ERCC_is_old.
-PD10_XXL_HJC-s1	human	F2	Fetal	large intestine	transverse colon	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_1	NA
-PD10_XXL_SD-s1	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_11	NA
-PD10_XXL_SEZC-s1	human	F2	Fetal	small intestine	duodenum	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_7	NA
-PD10_XXL_WD-s1	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_8	NA
-PD10_XXL_XCS-s1	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.06	20181213	BD_Aria_II	machine 	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_SD-1	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-2	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-3	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-4	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-5	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-6	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-7	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-8	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-9	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-10	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_SD-11	human	F2	Fetal	esophagus	esophagus	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_11	NA
-PR10_XXL_WD-1	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-2	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-3	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-4	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-5	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-6	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-7	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-8	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-9	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_WD-10	human	F2	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_8	NA
-PR10_XXL_XCS-1	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-2	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-3	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-4	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-5	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-6	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-7	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-8	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-9	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-10	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-11	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCS-12	human	F2	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_4	NA
-PR10_XXL_XCX-1	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-2	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-3	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-4	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-5	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-6	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-7	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-8	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-9	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-10	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-11	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
-PR10_XXL_XCX-12	human	F2	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20190114	BD_Aria_II	machine	NA	0.5	mawp	20181204_5	NA
+plate	species	individual	sex	week_age	sample_type	tissue	samplingPos	identity	barcodeToSample	sequence_depth_G	sampling_time	sampling_stuff	sequencing_time	library_stuff	flow_cytometer	FACS_stuff	amplification	marker	ERCC_ratio		sort_order	remark
+PD10_XXL_293-B9-1	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180130	mawp	BD_Aria_III_Phoenix	NA	manual 	NA	1		NA	NA
+PD10_XXL_293-B9-2	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180130	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-3	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180213	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-6	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180213	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-8	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180213	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-9	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180213	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-4	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180306	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-5	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180306	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-7	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180306	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PR10_XXL_293-B9-10	human	NA	F	NA	Cell line	HEK293T	HEK293T	HEK293T	normal	0.3	NA	NA	20180306	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	NA
+PD10_XXL_Mono-1	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	manual 	CD45+CD14+	1		NA	First cell is an RNA control.
+PD10_XXL_Mono-2	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	1		NA	NA
+PD10_XXL_Mono-3	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	1		NA	NA
+PD10_XXL_Mono-4	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	1		NA	NA
+PD10_XXL_Mono-5	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	1		NA	NA
+PD10_XXL_Mono-6	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	1		NA	NA
+PD10_XXL_Mono-7	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	1		NA	NA
+PD10_XXL_Mono-8	human	test-Z	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180518	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	1		NA	NA
+PR10_XXL_T-1	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-2	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-3	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-4	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-5	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-6	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-7	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-8	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-9	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_T-10	human	test-Z	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	1		NA	NA
+PR10_XXL_X-mono-1	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-2	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-3	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-4	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-5	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-6	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-7	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-8	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-9	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-10	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-11	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-mono-12	human	test-X	M	NA	Adult	blood	blood	Monocyte	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD14+	0.2		NA	NA
+PR10_XXL_X-NK-1	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-2	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-3	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-4	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-5	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-6	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-7	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-8	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-9	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-10	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-11	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-NK-12	human	test-X	M	NA	Adult	blood	blood	NK cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD56+	0.2		NA	NA
+PR10_XXL_X-T-1	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-2	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-3	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-4	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-5	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-6	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-7	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-8	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-9	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-10	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-11	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-T-12	human	test-X	M	NA	Adult	blood	blood	T cell	normal	0.3	NA	NA	20180724	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD3+	0.2		NA	NA
+PR10_XXL_X-B-2	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-3	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-4	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-5	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-6	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-7	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-8	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-9	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-10	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-11	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PR10_XXL_X-B-12	human	test-X	M	NA	Adult	blood	blood	B cell	normal	0.3	NA	NA	20180829	mawp	BD_Aria_III_Phoenix	zhouf	machine 	CD45+CD19+	0.2		NA	NA
+PD10_XXL_GM-normal	human	NA	F	NA	Cell line	GM12878	GM12878	GM12878	normal	0.03	NA	NA	20181023	mawp	BD_Aria_III_Phoenix	NA	manual 	NA	1		NA	NA
+PD10_XXL_GM-revPCR	human	NA	F	NA	Cell line	GM12878	GM12878	GM12878	normal	0.03	NA	NA	20181023	mawp	BD_Aria_III_Phoenix	NA	machine 	NA	1		NA	Rotate 180 degree on the PCR instrument.
+PR10_XXL_LI-1	human	F1	NA	NA	Fetal	large intestine	large intestine	mixture	normal	0.3	NA	NA	20181109	mawp	BD_Aria_SORP_Phoenix	zhouf	machine 	NA	0.5		NA	NA
+PR10_XXL_LI-20	human	F1	NA	NA	Fetal	large intestine	large intestine	mixture	normal	0.3	NA	NA	20181109	mawp	BD_Aria_SORP_Phoenix	zhouf	machine 	NA	0.5		NA	NA
+PR10_XXL_SI-1	human	F1	NA	NA	Fetal	small intestine	small intestine	mixture	normal	0.3	NA	NA	20181109	mawp	BD_Aria_SORP_Phoenix	zhouf	machine 	NA	0.5		NA	NA
+PR10_XXL_SI-20	human	F1	NA	NA	Fetal	small intestine	small intestine	mixture	normal	0.3	NA	NA	20181109	mawp	BD_Aria_SORP_Phoenix	zhouf	machine 	NA	0.5		NA	NA
+PD10_XXL_FACSTEST-1	human	NA	M		Cell line	LoVo	LoVo	LoVo	normal	0.3	NA	NA	20181119	mawp	BD_Aria_III_Phoenix	zhouf	machine 	NA	0.5		NA	ERCC is old.
+PD10_XXL_FACSTEST-2	human	NA	M		Cell line	LoVo	LoVo	LoVo	normal	0.3	NA	NA	20181119	mawp	BD_Aria_III_Phoenix	zhouf	machine 	NA	0.5		NA	ERCC is old.
+PD10_XXL_HJC-s1	human	F2	M	19	Fetal	large intestine	transverse colon	mixture	normal	0.06	20181204	yongj/yangm	20181213	mawp	BD_Aria_II	zhouf	machine 	NA	0.5		20181204_1	NA
+PD10_XXL_SD-s1	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.06	20181204	yongj/yangm	20181213	mawp	BD_Aria_II	zhouf	machine 	NA	0.5		20181204_11	NA
+PD10_XXL_SEZC-s1	human	F2	M	19	Fetal	small intestine	duodenum	mixture	normal	0.06	20181204	yongj/yangm	20181213	mawp	BD_Aria_II	zhouf	machine 	NA	0.5		20181204_7	NA
+PD10_XXL_WD-s1	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.06	20181204	yongj/yangm	20181213	mawp	BD_Aria_II	zhouf	machine 	NA	0.5		20181204_8	NA
+PD10_XXL_XCS-s1	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.06	20181204	yongj/yangm	20181213	mawp	BD_Aria_II	zhouf	machine 	NA	0.5		20181204_4	NA
+PR10_XXL_SD-1	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-2	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-3	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-4	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-5	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-6	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-7	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-8	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-9	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-10	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_SD-11	human	F2	M	19	Fetal	esophagus	esophagus	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_11	NA
+PR10_XXL_WD-1	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-2	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-3	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-4	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-5	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-6	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-7	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-8	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-9	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_WD-10	human	F2	M	19	Fetal	stomach	fundus of stomach	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_8	NA
+PR10_XXL_XCS-1	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-2	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-3	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-4	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-5	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-6	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-7	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-8	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-9	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-10	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-11	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCS-12	human	F2	M	19	Fetal	small intestine	upper segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_4	NA
+PR10_XXL_XCX-1	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-2	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-3	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-4	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-5	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-6	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-7	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-8	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-9	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-10	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-11	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_XCX-12	human	F2	M	19	Fetal	small intestine	lower segment of small intestine	mixture	normal	0.3	20181204	yongj/yangm	20190114	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_5	NA
+PR10_XXL_WDOU-1	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-2	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-3	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-4	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-5	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-6	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-7	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-8	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-9	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WDOU-10	human	F2	M	19	Fetal	stomach	gastric antrum	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_10	NA
+PR10_XXL_WT-1	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-2	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-3	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-4	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-5	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-6	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-7	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-8	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-9	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_WT-10	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
+PR10_XXL_RC-Neg-1	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-2	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-3	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-4	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-5	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-6	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-7	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-8	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-9	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-10	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-11	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC-Neg-12	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_PG-1-T	human	F3	F	20	Fetal	bladder	bladder	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_6	Sacrococcygeal teratoma.
+PR10_XXL_SPZ-1-T	human	F3	F	20	Fetal	kidney	renal cortex	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_1	Sacrococcygeal teratoma.
+PR10_XXL_SSZ-1-T	human	F3	F	20	Fetal	kidney	renal medulla	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_5	Sacrococcygeal teratoma.
+PR10_XXL_SY-1-T	human	F3	F	20	Fetal	kidney	renal pelvis	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_1	Sacrococcygeal teratoma.
