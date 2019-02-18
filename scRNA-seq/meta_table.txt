@@ -164,7 +164,7 @@ PR10_XXL_RC-Neg-9	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yo
 PR10_XXL_RC-Neg-10	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
 PR10_XXL_RC-Neg-11	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
 PR10_XXL_RC-Neg-12	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_PG-1-T	human	F3	F	20	Fetal	bladder	bladder	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_6	Sacrococcygeal teratoma.
-PR10_XXL_SPZ-1-T	human	F3	F	20	Fetal	kidney	renal cortex	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_1	Sacrococcygeal teratoma.
-PR10_XXL_SSZ-1-T	human	F3	F	20	Fetal	kidney	renal medulla	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_5	Sacrococcygeal teratoma.
-PR10_XXL_SY-1-T	human	F3	F	20	Fetal	kidney	renal pelvis	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_1	Sacrococcygeal teratoma.
+PR10_XXL_PG-s1	human	F3	F	20	Fetal	bladder	bladder	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_6	Sacrococcygeal teratoma.
+PR10_XXL_SPZ-s1	human	F3	F	20	Fetal	kidney	renal cortex	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_1	Sacrococcygeal teratoma.
+PR10_XXL_SSZ-s1	human	F3	F	20	Fetal	kidney	renal medulla	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_5	Sacrococcygeal teratoma.
+PR10_XXL_SY-s1	human	F3	F	20	Fetal	kidney	renal pelvis	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_1	Sacrococcygeal teratoma.
