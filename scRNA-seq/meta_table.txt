@@ -152,18 +152,18 @@ PR10_XXL_WT-7	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	201812
 PR10_XXL_WT-8	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
 PR10_XXL_WT-9	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
 PR10_XXL_WT-10	human	F2	M	19	Fetal	stomach	gastric body	mixture	normal	0.3	20181204	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181204_9	NA
-PR10_XXL_RC-Neg-1	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-2	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-3	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-4	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-5	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-6	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-7	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-8	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-9	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-10	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-11	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
-PR10_XXL_RC-Neg-12	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-1	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-2	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-3	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-4	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-5	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-6	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-7	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-8	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-9	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-10	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-11	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
+PR10_XXL_RC1neg-12	human	F3	F	20	Fetal	ovary	ovary	mixture	normal	0.3	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	c-kit-	0.5		20181224_4	Sacrococcygeal teratoma.
 PR10_XXL_PG-s1	human	F3	F	20	Fetal	bladder	bladder	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_6	Sacrococcygeal teratoma.
 PR10_XXL_SPZ-s1	human	F3	F	20	Fetal	kidney	renal cortex	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_1	Sacrococcygeal teratoma.
 PR10_XXL_SSZ-s1	human	F3	F	20	Fetal	kidney	renal medulla	mixture	normal	0.06	20181224	yongj/yangm	20190201	mawp	BD_Aria_II	zhouf	machine	NA	0.5		20181224_5	Sacrococcygeal teratoma.
