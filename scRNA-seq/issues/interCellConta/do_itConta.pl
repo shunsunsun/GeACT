@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 use POSIX;
+use threads;
+use Thread::Semaphore;
 
 if(@ARGV!=2) {
 	print "Remove the inter-cellular UMI contamination.\n";
@@ -17,7 +19,7 @@ my $cutoff = 0.75;
 my $ncpu = 20;
 my $rescue = 0;
 my $verbose = 0;
-my $writeTab = 1;
+my $writeTab = 0;	# XXX
 my $writeStat = 1;
 my $writeExpr = 1;
 my $writeMergedExpr = 1;
@@ -133,50 +135,94 @@ if($writeStat) {
 	my $outpath = "03-expression/merged";
 	mkdir $outpath if ! -e $outpath;
 	open my $FILE, '>', ($outpath . "/itConta.stat");
-	for my $cell (@cells) {
-		printf $FILE ("%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", $cell, $umi_stat{$cell}, $conta_stat{$cell}{"contaRow"}, $conta_stat{$cell}{"contaCol"}, $conta_stat{$cell}{"contaOth"}, $umt_stat{$cell}, $contt_stat{$cell}{"conttRow"}, $contt_stat{$cell}{"conttCol"}, $contt_stat{$cell}{"conttOth"});
+	foreach my $cell (@cells) {
+		printf $FILE ("%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", $cell, $umi_stat{$cell}, $conta_stat{$cell}{"contaRow"}, $conta_stat{$cell}{"contaCol"}, $conta_stat{$cell}{"contaOth"}, $umt_stat{$cell}, $contt_stat{$cell}{"contaRow"}, $contt_stat{$cell}{"contaCol"}, $contt_stat{$cell}{"contaOth"});
 	}
+	close $FILE;
 }
 
 # 5. write expr
 if( $writeExpr || $writeMergedExpr) {
-	my @genes;
+	my (@genes, @symbols);
 	open my $FILE, "../../Genomes/human/gene_ID2Name.txt";
 	while(<$FILE>) {
 		chomp;
 		my ($gene, $symbol) = split("\t", $_);
 		push @genes, $gene;
+		push @symbols, $symbol;
 	}
 	close $FILE;
 
 	sub umi_count() {
 		my ($cell) = @_;
 		my %oxpr;
-		for my $gene (@genes) {
-			for my $umi (keys $expr{$gene}) {
+		foreach my $gene (@genes) {
+			if(! exists $oxpr{$cell}{$gene}) {
+				$oxpr{$cell}{$gene} = 0;
+			}
+			next if ! exists $expr{$gene};
+			foreach my $umi (keys $expr{$gene}) {
 				if( (exists $expr{$gene}{$umi}{$cell}) && ($expr{$gene}{$umi}{$cell} > 0) ) {
 					$oxpr{$cell}{$gene} += 1;
 				}
 			}
 		}
-		return(%oxpr);
+		return($oxpr{$cell});
 	}
 
 	my %oxpr;
-	for my $cell (@cells) {
+	foreach my $cell (@cells) {
 		$oxpr{$cell} = &umi_count($cell);
 	}
 	print "processing finished\n";
 
+	#print "multiple processing finished\n";
+	
 	if($writeExpr) {
-		for my $cell (@cells) {
+		foreach my $cell (@cells) {
 			my $outpath = $outpt . "/" . $cell;
-			open my $FILE, ($outpath . "/_UMIcount_allGenes.txt");
-			for my $gene (@genes) {
+			mkdir $outpath if ! -e $outpath;
+			open my $FILE, '>', ($outpath . "/". $cell . "_UMIcount_allGenes.txt");
+			foreach my $gene (@genes) {
 				printf $FILE ("%d\n", $oxpr{$cell}{$gene});
 			}
 			close $FILE;
 		}
+	}
+
+	if($writeMergedExpr) {
+		my $outpath = "03-expression/merged";
+		mkdir $outpath if ! -e $outpath;
+		open my $FILE_EN, '>', ($outpath . "/UMIcount_ensemblGene.txt");
+		print $FILE_EN join("\t", "", @cells) . "\n";
+		foreach my $gene (@genes) {
+			my @strs;
+			push @strs, $gene;
+			push @strs, $oxpr{$_}{$gene} foreach (@cells);
+			print $FILE_EN join("\t", @strs) . "\n";
+		}
+		close $FILE_EN;
+
+		my @dupnms;
+		open my $FILE, "../../Genomes/human/gene_dupName.txt";
+		while(<$FILE>) {
+			chomp;
+			push @dupnms, $_;
+		}
+		close $FILE;
+
+		open my $FILE_AG, '>', ($outpath . "/UMIcount_allGenes.txt");
+		print $FILE_AG join("\t", "", @cells) . "\n";
+		for(my $i=0; $i<@genes; $i++) {
+			my $gene = $genes[$i];
+			my $symbol = $symbols[$i];
+			next if $symbol ~~ @dupnms;
+			my @strs;
+			push @strs, $symbol;
+			push @strs, $oxpr{$_}{$gene} foreach (@cells);
+			print $FILE_AG join("\t", @strs) . "\n";
+		}
+		close $FILE_AG;
 	}
 }
 
