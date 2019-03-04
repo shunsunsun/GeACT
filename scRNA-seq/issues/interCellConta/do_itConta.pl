@@ -3,8 +3,7 @@ use strict;
 use warnings;
 use 5.010;
 use POSIX;
-use threads;
-use Thread::Semaphore;
+use Parallel::ForkManager;
 
 if(@ARGV!=2) {
 	print "Remove the inter-cellular UMI contamination.\n";
@@ -19,31 +18,35 @@ my $cutoff = 0.75;
 my $ncpu = 20;
 my $rescue = 0;
 my $verbose = 0;
-my $writeTab = 0;	# XXX
+my $writeTab = 1;
 my $writeStat = 1;
 my $writeExpr = 1;
 my $writeMergedExpr = 1;
 
+mkdir $outpt if ! -e $outpt;
+
 # 1. read tab files
+print "> Read tab files\n";
 my @files = glob("03-expression/human/" . $plate . '_cell*/*_htseq.tab');
 @files = sort { $a=~s/.*_cell(\d+)_htseq.tab/$1/r <=> $b=~s/.*_cell(\d+)_htseq.tab/$1/r } @files;
 #print "@files\n";
 my @cells;
 foreach my $file (@files) { push @cells, (split("/", $file))[2] };
+print "  cell number: " . scalar @files . "\n";
 
 my (%expr, %umi_stat, %umt_stat);
 foreach my $file (@files) {
 	my $cell = (split("/", $file))[2];
-#print "> $cell\n";
+	#print "> $cell\n";
 	open my ($FILE), $file;
 	while(<$FILE>) {
 		chomp;
 		next if /^__/;
 		my ($gene, $umi, $num) = split(/\t/, $_);
-	#print "$gene\t$umi\t$num\n";
+		#print "$gene\t$umi\t$num\n";
 		$expr{$gene}{$umi}{$cell} = $num;
 		$umi_stat{$cell} += $num;
-		$umt_stat{$cell} += 1;
+		$umt_stat{$cell} += 1 if $num > 0;
 	}
 	close $FILE;
 }
@@ -53,6 +56,7 @@ foreach my $file (@files) {
 #}
 
 # 2. de-contamination
+print "> De-contamination\n";
 my (%conta_stat, %contt_stat);
 foreach my $gene (keys %expr) {
 	#print "> $gene\n";
@@ -114,10 +118,13 @@ foreach my $gene (keys %expr) {
 #	printf "%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", $cell, $umi_stat{$cell}, $conta_stat{$cell}{"contaRow"}, $conta_stat{$cell}{"contaCol"}, $conta_stat{$cell}{"contaOth"}, $contt_stat{$cell}{"contaRow"}, $contt_stat{$cell}{"contaCol"}, $contt_stat{$cell}{"contaOth"};
 #}
 
-# 3. create expression table
+# 3. create expression tab files
 if($writeTab) {
-	foreach my $cell (@cells) {
-		print "> $cell\n";
+	print "> Write tab files\n";
+	#foreach my $cell (@cells) {
+	sub writeTab () {
+		my ($cell) = @_;
+		#print "> $cell\n";
 		my $outpath = $outpt . "/" . $cell;
 		mkdir $outpath if ! -e $outpath;
 		open my $FILE, '>', ($outpath . "/" . $cell . "_htseq.tab");
@@ -128,10 +135,21 @@ if($writeTab) {
 		}
 		close $FILE;
 	}
+
+	my $pm = Parallel::ForkManager->new($ncpu);
+
+	DATA_LOOP:
+	foreach my $cell (@cells) {
+		$pm->start and next DATA_LOOP;
+		&writeTab($cell);
+		$pm->finish; # Terminates the child process
+	}
+	$pm->wait_all_children;
 }
 
 # 4. write stat
 if($writeStat) {
+	print "> Write stat\n";
 	my $outpath = "03-expression/merged";
 	mkdir $outpath if ! -e $outpath;
 	open my $FILE, '>', ($outpath . "/itConta.stat");
@@ -143,6 +161,7 @@ if($writeStat) {
 
 # 5. write expr
 if( $writeExpr || $writeMergedExpr) {
+	print "> Generate expression list\n";
 	my (@genes, @symbols);
 	open my $FILE, "../../Genomes/human/gene_ID2Name.txt";
 	while(<$FILE>) {
@@ -155,6 +174,7 @@ if( $writeExpr || $writeMergedExpr) {
 
 	sub umi_count() {
 		my ($cell) = @_;
+		#print "> $cell\n";
 		my %oxpr;
 		foreach my $gene (@genes) {
 			if(! exists $oxpr{$cell}{$gene}) {
@@ -171,14 +191,25 @@ if( $writeExpr || $writeMergedExpr) {
 	}
 
 	my %oxpr;
-	foreach my $cell (@cells) {
-		$oxpr{$cell} = &umi_count($cell);
-	}
-	print "processing finished\n";
 
-	#print "multiple processing finished\n";
-	
+	my $pm = Parallel::ForkManager->new($ncpu);
+	$pm->run_on_finish(sub {
+		my ($pid, $exit_code, $ident, $exit_signal, $core_dump, $processed_data) = @_;
+		if ($exit_signal) { warn("$pid killed by signal $exit_signal\n"); }
+		elsif ($exit_code) { warn("$pid exited with error $exit_code\n"); }
+		$oxpr{$ident} = $processed_data;
+	});
+
+	DATA_LOOP:
+	foreach my $cell (@cells) {
+		$pm->start($cell) and next DATA_LOOP;
+		my $output = &umi_count($cell);
+		$pm->finish(0, $output);
+	}
+	$pm->wait_all_children;
+
 	if($writeExpr) {
+		print "> Write expr\n";
 		foreach my $cell (@cells) {
 			my $outpath = $outpt . "/" . $cell;
 			mkdir $outpath if ! -e $outpath;
@@ -191,6 +222,7 @@ if( $writeExpr || $writeMergedExpr) {
 	}
 
 	if($writeMergedExpr) {
+		print "> Write mergedExpr\n";
 		my $outpath = "03-expression/merged";
 		mkdir $outpath if ! -e $outpath;
 		open my $FILE_EN, '>', ($outpath . "/UMIcount_ensemblGene.txt");
