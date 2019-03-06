@@ -21,7 +21,7 @@ my $verbose = 0;
 my $writeTab = 1;
 my $writeStat = 1;
 my $writeExpr = 1;
-my $writeMergedExpr = 1;
+my $writeMergedExpr = 0;
 
 mkdir $outpt if ! -e $outpt;
 
@@ -150,7 +150,7 @@ if($writeTab) {
 # 4. write stat
 if($writeStat) {
 	print "> Write stat\n";
-	my $outpath = "03-expression/merged";
+	my $outpath = $outpt . "/" . $plate;
 	mkdir $outpath if ! -e $outpath;
 	open my $FILE, '>', ($outpath . "/itConta.stat");
 	foreach my $cell (@cells) {
@@ -162,13 +162,11 @@ if($writeStat) {
 # 5. write expr
 if( $writeExpr || $writeMergedExpr) {
 	print "> Generate expression list\n";
-	my (@genes, @symbols);
-	open my $FILE, "../../Genomes/human/gene_ID2Name.txt";
+	my @genes;
+	open my $FILE, "../../Genomes/human/genes.txt";
 	while(<$FILE>) {
 		chomp;
-		my ($gene, $symbol) = split("\t", $_);
-		push @genes, $gene;
-		push @symbols, $symbol;
+		push @genes, $_;
 	}
 	close $FILE;
 
@@ -223,7 +221,7 @@ if( $writeExpr || $writeMergedExpr) {
 
 	if($writeMergedExpr) {
 		print "> Write mergedExpr\n";
-		my $outpath = "03-expression/merged";
+		my $outpath = $outpt . "/" . $plate;
 		mkdir $outpath if ! -e $outpath;
 		open my $FILE_EN, '>', ($outpath . "/UMIcount_ensemblGene.txt");
 		print $FILE_EN join("\t", "", @cells) . "\n";
@@ -234,6 +232,15 @@ if( $writeExpr || $writeMergedExpr) {
 			print $FILE_EN join("\t", @strs) . "\n";
 		}
 		close $FILE_EN;
+
+		my %idname;
+		open my $FILE_ES, "../../Genomes/human/gene_ERCC_ID2Name.txt";
+		while(<$FILE_ES>) {
+			chomp;
+			my ($gene, $symbol) = split(/\t/, $_);
+			$idname{$gene} = $symbol;
+		}
+		close $FILE_ES;
 
 		my @dupnms;
 		open my $FILE, "../../Genomes/human/gene_dupName.txt";
@@ -247,7 +254,7 @@ if( $writeExpr || $writeMergedExpr) {
 		print $FILE_AG join("\t", "", @cells) . "\n";
 		for(my $i=0; $i<@genes; $i++) {
 			my $gene = $genes[$i];
-			my $symbol = $symbols[$i];
+			my $symbol = $idname{$gene};
 			next if $symbol ~~ @dupnms;
 			my @strs;
 			push @strs, $symbol;
