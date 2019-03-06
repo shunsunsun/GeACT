@@ -252,8 +252,7 @@ if( $writeExpr || $writeMergedExpr) {
 
 		open my $FILE_AG, '>', ($outpath . "/UMIcount_allGenes.txt");
 		print $FILE_AG join("\t", "", @cells) . "\n";
-		for(my $i=0; $i<@genes; $i++) {
-			my $gene = $genes[$i];
+		foreach my $gene (@genes) {
 			my $symbol = $idname{$gene};
 			next if $symbol ~~ @dupnms;
 			my @strs;
