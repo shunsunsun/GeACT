@@ -161,7 +161,7 @@ if($writeStat) {
 }
 
 # 5. write expr
-if( $writeExpr || $writeMergedExpr) {
+if( $writeExpr || $writeMergedExpr ) {
 	print "> Generate expression list\n";
 	my @genes;
 	open my $FILE, "../../Genomes/human/genes.txt";
