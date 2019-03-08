@@ -38,6 +38,8 @@ my (%expr, %umi_stat, %umt_stat);
 foreach my $file (@files) {
 	my $cell = (split("/", $file))[2];
 	#print "> $cell\n";
+	$umi_stat{$cell} = 0;
+	$umt_stat{$cell} = 0;
 	open my ($FILE), $file;
 	while(<$FILE>) {
 		chomp;
@@ -58,6 +60,11 @@ foreach my $file (@files) {
 # 2. de-contamination
 print "> De-contamination\n";
 my (%conta_stat, %contt_stat);
+foreach my $cell (@cells) {
+	$conta_stat{$cell} = {"contaRow" => 0, "contaCol" => 0, "contaOth" => 0};
+	$contt_stat{$cell} = {"contaRow" => 0, "contaCol" => 0, "contaOth" => 0};
+}
+
 foreach my $gene (keys %expr) {
 	#print "> $gene\n";
 	foreach my $umi (keys %{$expr{$gene}}) {
@@ -99,13 +106,7 @@ foreach my $gene (keys %expr) {
 				if($verbose) {
 					printf "[debug] %s\t%s\t%s\t%d\t%d\t%d\t->\t%s\t%d\t%d\t%d\t:\t%s\n", $gene, $umi, $cell, $cel_row, $cel_col, $expr{$gene}{$umi}{$cell}, $max_cell, $max_row, $max_col, $max_value, $conta_type;
 				}
-				if(! exists $conta_stat{$cell}) {
-					$conta_stat{$cell} = {"contaRow" => 0, "contaCol" => 0, "contaOth" => 0};
-				}
 				$conta_stat{$cell}{$conta_type} += $expr{$gene}{$umi}{$cell};
-				if(! exists $contt_stat{$cell}) {
-					$contt_stat{$cell} = {"contaRow" => 0, "contaCol" => 0, "contaOth" => 0};
-				}
 				$contt_stat{$cell}{$conta_type} += 1;
 				$expr{$gene}{$umi}{$max_cell} += $expr{$gene}{$umi}{$cell} if $rescue;
 				$expr{$gene}{$umi}{$cell} = 0;
