@@ -27,8 +27,8 @@ mkdir $outpt if ! -e $outpt;
 
 # 1. read tab files
 print "> Read tab files\n";
-my @files = glob("03-expression/human/" . $plate . '_[0-9]*/*_htseq.tab');
-@files = sort { (split("_", (split("/", $a))[2]))[2] <=> (split("_", (split("/", $b))[2]))[2] } @files;
+my @files = glob("03-expression/human/" . $plate . '_cell*/*_htseq.tab');
+@files = sort { (split("/", (split("_cell", $a))[1]))[0] <=> (split("/", (split("_cell", $b))[1]))[0] } @files;
 #print "@files\n";
 my @cells;
 foreach my $file (@files) { push @cells, (split("/", $file))[2] };
@@ -83,7 +83,7 @@ foreach my $gene (keys %expr) {
 			push @max_cell_all, $cell if $expr{$gene}{$umi}{$cell} == $max_value;
 		}
 		next if @max_cell_all > 1;
-		(my $max_cid = $max_cell) =~ s/.*_//;
+		(my $max_cid = $max_cell) =~ s/.*cell//;
 		my $max_row = $max_cid % 8;
 		$max_row = 8 if $max_row == 0;
 		my $max_col = POSIX::ceil($max_cid / 8);
@@ -91,7 +91,7 @@ foreach my $gene (keys %expr) {
 		foreach my $cell (keys %{$expr{$gene}{$umi}}) {
 			my $expr_ratio = $expr{$gene}{$umi}{$cell} / $max_value;
 			if( ($expr_ratio > 0) && ($expr_ratio < $cutoff) ) {
-				(my $cel_cid = $cell) =~ s/.*_//;
+				(my $cel_cid = $cell) =~ s/.*cell//;
 				my $cel_row = $cel_cid % 8;
 				$cel_row = 8 if $cel_row == 0;
 				my $cel_col = POSIX::ceil($cel_cid / 8);
