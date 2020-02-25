@@ -25,8 +25,8 @@ cellSurface <- read.table("../../Data/human_cs.txt", header = F, sep = "\t", str
 dim(cellSurface)
 
 ident2clgrp <- function(ident.input) {
-  ident.input[grepl("^Epi", ident.input)] <- "Epithelium"
-  ident.input[grepl("^Endo", ident.input)] <- "Endothelium"
+  ident.input[grepl("^Epi", ident.input)] <- "Epithelial"
+  ident.input[grepl("^Endo", ident.input)] <- "Endothelial"
   ident.input[grepl("^SM-", ident.input)] <- "Smooth muscle"
   ident.input[grepl("^SM$", ident.input)] <- "Smooth muscle"
   ident.input[grepl("^SKM$", ident.input)] <- "Skeletal muscle"
@@ -44,7 +44,7 @@ ident2clgrp <- function(ident.input) {
   #
   ident.input[grepl("^Erythrocyte-", ident.input)] <- "Erythrocyte"
   ident.input[grepl("^CACNA1A-", ident.input)] <- "CACNA1A"
-  ident.input[ident.input %in% c("PT", "LoH", "LoH-Prog", "DT", "PC-CLU", "PC-BCAT1", "Podocyte-GPC3", "Podocyte-PLA2R1")] <- "Epithelium"
+  ident.input[ident.input %in% c("PT", "LoH", "LoH-Prog", "DT", "PC-CLU", "PC-BCAT1", "Podocyte-GPC3", "Podocyte-PLA2R1")] <- "Epithelial"
   ident.input[grepl("^Sertoli-", ident.input)] <- "Sertoli"
   ident.input[grepl("^Granulosa-", ident.input)] <- "Granulosa"
   # FGC
@@ -55,8 +55,8 @@ ident2clgrp <- function(ident.input) {
 clgrp2color <- function(clgrp.input, color.input = c("tomato", "orange", "#1ADBB8", "#00C9C9", "#00BF74", 
                                                      "#8258FA", "#D358F7", "#D0A9F5", "dodgerblue2", "firebrick3")) {
   clgrp.input <- gsub(".*\\.", "", clgrp.input)
-  clgrp.input[clgrp.input == "Epithelium"] <- color.input[1]
-  clgrp.input[clgrp.input == "Endothelium"] <- color.input[2]
+  clgrp.input[clgrp.input == "Epithelial"] <- color.input[1]
+  clgrp.input[clgrp.input == "Endothelial"] <- color.input[2]
   clgrp.input[clgrp.input == "Smooth muscle"] <- color.input[3]
   clgrp.input[clgrp.input == "Skeletal muscle"] <- color.input[4]
   clgrp.input[clgrp.input == "Fibroblast"] <- color.input[5]
