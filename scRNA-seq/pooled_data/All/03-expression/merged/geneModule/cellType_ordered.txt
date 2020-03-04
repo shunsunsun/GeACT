@@ -1,0 +1,10 @@
+Small intestine.T
+Ovary.Granulosa-R-Al
+Lung.Fibro-0
+Stomach.Fibro-FBLN1
+Pancreas.Fibro-PAMR1+SOX6+
+Small intestine.SM-Visceral
+Small intestine.Fibro-COL14A1
+Small intestine.Fibro-COL6A5
+Stomach.Fibro-IRF1
+Stomach.Fibro-ADAM28
