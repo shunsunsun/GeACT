@@ -7,16 +7,13 @@ Data version: v1.0.1
 | sc-RNA-seq | MALBAC-DT | 31,208 | 17 |
 | sc-ATAC-seq | METATAC | 21,381 | 14 |
 
-## Team 
-
-### Data analysis
-Feng Tian, Xiang Li, Zhijie Cao, Lin Wei
-
-### Website development
-Shen Lu, Dechang Yang
-
-### Experiment
-Fan Zhou, Wenping Ma, Honggui, Wu
+## People
+| Team | Name |
+| :------| :------ |
+| Sample preparation | Jun Yong, Xixi Liu and Ming Yang |
+| FACS and sequencing | Fan Zhou, Wenping Ma, Honggui, Wu and Yunuo Mao |
+| Data analysis | Feng Tian, Xiang Li, Zhijie Cao and Lin Wei |
+| Website development | Shen Lu and Dechang Yang |
 
 ## Citation
 (in preparation)
