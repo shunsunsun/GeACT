@@ -1,1 +1,1 @@
-A comprehensive single-cell transcriptome and open genomic landscape for the human fetus, with the correlated gene modules (CGMs) map across cell types.
+The first draft of Genome Architecture of Cells in Tissues (GeACT) of humans is now available in bioRxiv. GeACT is an extension of the Human Genome Project, offering a comprehensive database for documenting and understanding the functional human genome based on high-precision single-cell omics technologies.
