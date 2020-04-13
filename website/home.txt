@@ -1,1 +1,1 @@
-A comprehensive single-cell transcriptome and open genomic landscape for the human fetus, with the co-expressed gene modules (CGMs) map across cell types.
+A comprehensive single-cell transcriptome and open genomic landscape for the human fetus, with the correlated gene modules (CGMs) map across cell types.
