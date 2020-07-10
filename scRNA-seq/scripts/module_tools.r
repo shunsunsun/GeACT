@@ -346,7 +346,7 @@ do_cmpMd <- function(res_in, ctype1, ctype2, do_plot = F, fontsize_row = 6, vmin
   return(diff_DF)
 }
 
-do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in = NULL, mpid = NULL, 
+do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in = NULL, mpid = NULL, mgid = NULL, 
                               do_plot = T, rm.upper = F, na_col = "#DDDDDD", vmin = -0.6, vmax = 0.6, do_highlights = F, 
                               main = NA, show_rownames = F, show_colnames = F, fontsize_row = 6, fontsize_col = 6, show.legend = T, 
                               do.print = T, do.return = T) {
@@ -358,6 +358,8 @@ do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in 
     genes <- ct1_sub$gene
   } else if(! is.null(mpid)) {
     genes <- mp_in[[mpid]]
+  } else if(! is.null(mgid)) {
+    genes <- mgid
   } else {
     stop("Either mdid or mpList + mpid should be specified, exit.")
   }
