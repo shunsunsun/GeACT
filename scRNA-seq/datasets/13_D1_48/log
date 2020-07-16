@@ -1,0 +1,1 @@
+zcat 01-cleandata/human/PR10_HCA_WDOU_C-B1/WDOU_C-B1_01_read1.fastq.gz | awk 'NR%4==1' | sed 's/^@\([A-Z]\+\)_[0-9]\+_[0-9T]\+_\(.*\)___\([A-Z]\+\)_[0-9]\+ .*/\1\t\2\t\3/' | while read umi name barcode; do echo ">$name"; zgrep -m 1 -A 1 "$name" 00-rawdata/PR10_HCA_WDOU_C-B1/PR10_HCA_WDOU_C-B1_S8_L001_R2_001.fastq.gz | grep "${barcode}${umi}"; done
