@@ -1,0 +1,44 @@
+sid	tissue	samplingPos
+BM	heart	valve
+FDM	heart	pulmonary artery
+FSJG	heart	atrioventricular septum
+FZW	lung	around
+FZY	lung	central
+GJ	diaphragm	diaphragm
+GS	bone marrow	bone marrow
+GZ7623	liver	segment VII/VI/II/III
+GZS4	liver	segment IV
+GZS5	liver	segment V
+GZS7623	liver	segment VII/VI/II/III
+GZS8	liver	segment VIII
+HJC	large intestine	transverse colon
+JCN	testis	testis
+JCP	testis	testis
+JD	bronchus	bronchus
+JJC	large intestine	descending colon
+PG	bladder	bladder
+PZ	spleen	spleen
+QD	umbilical cord	umbilical cord
+RCN	ovary	ovary
+RCP	ovary	ovary
+SD	esophagus	esophagus
+SJC	large intestine	ascending colon
+SJG	heart	ventricular septum
+SPZ	kidney	cortex
+SS	kidney	medulla
+SY	kidney	pelvis
+WD	stomach	fundus
+WDOU	stomach	antrum
+WT	stomach	body
+XCS	small intestine	upper section
+XCX	small intestine	lower section
+XCZ	small intestine	middle section
+XX	thymus	thymus
+YBM	heart	right valve
+YD	bronchus	bronchus
+YX	pancreas	pancreas
+YXF	heart	right atrium
+YXS	heart	right ventricle
+ZDM	heart	aorta
+ZXF	heart	left atrium
+ZXS	heart	left ventricle
