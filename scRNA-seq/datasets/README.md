@@ -25,3 +25,18 @@
 | 6 | Mapped ratio (calculated) |
 | 7 | Uniquely-mapped ratio |
 | 8 | Strand (single or pair-end) |
+
+## estimateExpr.txt
+
+| Column | Description |
+| ---------- | ----------- |
+| 1 | Number of uniquely-mapped reads (total) |
+| 2 | Number of uniquely-mapped reads annotated as "no feature" (assigned to non-gene regions) |
+| 3 | Number of uniquely-mapped reads annotated as "ambiguous" (assigned to multiple genes) |
+| 4 | Number of uniquely-mapped reads (assigned to ERCC) |
+| 5 | Number of uniquely-mapped (assigned to genes) |
+| 6 | Number of non-redundant UMIs (total) |
+| 7 | Number of non-redundant UMIs (ERCC) |
+| 8 | Number of non-redundant UMIs (genes) |
+| 9 | Number of detected ERCC |
+| 10 | Number of detected gene |
