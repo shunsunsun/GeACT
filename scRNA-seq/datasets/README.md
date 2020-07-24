@@ -1,3 +1,12 @@
+# Dataset
+## Definition
+A dataset consists of the data from one sequencing experiment.  
+A dataset corresponds to several samples, each of which contain the multiplex data from one 96-well plate.  
+
+## Name rules
+For the first five datasets, they were named as "order + (system abbreviation + organ number) + sample number" (e.g. 13_D1_48).  
+As the system increased, other datasets were named as "order + (date) + sample number" (e.g. 18_190930_48).
+
 # File format
 
 ## estimateCleanFq.txt
