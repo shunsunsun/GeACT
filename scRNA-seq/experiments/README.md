@@ -5,7 +5,7 @@ The experiment process:
 1. Add Primer A.
 2. Reverse transcription (RT). (After that, the excessive primer A need to be removed.)
 3. Add Primer B + Digestive enzyme. (In low temperature)
-4. Digest excessive primer A and primer B. (The product of RT containing primer A will not be digestive.)
+4. Digest excessive primer A and primer B. (The product of RT containing primer A will not be digested.)
 5. PCR.
 
 The content of primer B can reflect on the content of excessive primer A:  
