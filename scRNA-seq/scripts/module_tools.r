@@ -1157,6 +1157,93 @@ do_enrichPPI <- function(res_in, ctype = NULL, mdid = NULL, ncpu = 1) {
   return(res_in)
 }
 
+do_enrichEdge <- function(res_in, ctype = NULL, mdid = NULL, db, category = NULL, p_cutoff = 0.05, ncpu = 1) {
+  # read gene sets
+  ed <- read.table(file = paste0("/home/tianf/lustre/06-Human_cell_atlas/Data/", db, "/", category, ".txt"), header = F, sep = "\t", stringsAsFactors = F)
+  gs <- igraph::graph_from_data_frame(d = ed, directed = F)
+  # get ID mapping info
+  gene2id <- read.table("/home/tianf/lustre/06-Human_cell_atlas/Genomes/human/gene_ID2Name_fixed.txt", header = F, sep = "\t", stringsAsFactors = F)
+  colnames(gene2id) <- c("ensembl_id", "gene")
+  gene2id$STRING_id <- gene2id$gene
+  gene2id <- gene2id[, c(2, 1, 3)]
+  
+  if(! is.null(ctype)) {
+    cell_type_list <- ctype
+  } else {
+    cell_type_list <- names(res_in)
+  }
+  
+  cl <- makeCluster(ncpu, type = "FORK")
+  for(cell_type in cell_type_list) {
+    cat(">", cell_type, "\n")
+    cell_type_label <- gsub(" ", "_", cell_type)
+    cluster_table_ftd <- res_in[[cell_type]]$cl_table_ftd
+    cluster_table_ftd$cluster <- factor(cluster_table_ftd$cluster, levels = unique(cluster_table_ftd$cluster))
+    cluster_gene <- split(cluster_table_ftd$gene, cluster_table_ftd$cluster)
+    if(! is.null(mdid)) {
+      cluster_gene <- cluster_gene[mdid]
+    }
+    enriched_LS <- parLapply(cl, seq_along(cluster_gene), function(i) {
+      cat(">>", i, "\n")
+      geneInput <- cluster_gene[[i]]
+      # id mapping
+      id_DF <- data.frame(gene = geneInput, stringsAsFactors = F)
+      id_mapped <- merge(id_DF, gene2id, by = "gene", sort = F)
+      id_mapped_mulMp <- id_mapped$gene[duplicated(id_mapped$gene)]
+      num_mt <- nrow(id_DF)
+      num_m0 <- nrow(id_DF) - length(unique(id_mapped$gene))
+      num_m1 <- length(unique(id_mapped$gene)) - length(unique(id_mapped_mulMp))
+      num_mm <- length(id_mapped_mulMp)
+      rat_m1 <- num_m1 / num_mt
+      # rmdup
+      id_mapped <- id_mapped[! duplicated(id_mapped$STRING_id), ]
+      num_pro <- length(id_mapped$STRING_id)
+      # calc enrichment
+      hitsWithEdges <- id_mapped$STRING_id[id_mapped$STRING_id %in% igraph::V(gs)$name]
+      if(length(hitsWithEdges) == 0) {
+        enrichment <- NA
+        num_exp <- NA
+        num_obs <- NA
+        pvalue <- NA
+      } else {
+        enrichment <- STRINGdb::ppi_enrichment(hitList = hitsWithEdges, ppi_network = gs)
+        num_exp <- enrichment$lambda
+        num_obs <- length(igraph::E(igraph::induced.subgraph(gs, hitsWithEdges)))
+        pvalue <- enrichment$enrichment
+      }
+      
+      # if(do_plot) {
+      #   #string_db$plot_network(id_mapped$STRING_id, add_summary = F, add_link = F)
+      #   img <- string_db$get_png(id_mapped$STRING_id)
+      #   par(mar = c(0, 0, 0, 0))
+      #   plot(1:(dim(img)[2]), type = "n", xaxt = "n", yaxt = "n", 
+      #        xlab = "", ylab = "", ylim = c(1, dim(img)[1]), xlim = c(1, (dim(img)[2])), asp = 1, bty='n')
+      #   rasterImage(img, 1, 1, dim(img)[2], dim(img)[1])
+      # }
+      # if(get_link) {
+      #   link_text <- string_db$get_link(id_mapped$STRING_id)
+      #   print(link_text)
+      # }
+      
+      y0 <- data.frame(total = num_mt, no_hit = num_m0, single_hit = num_m1, 
+                       num_pro = num_pro, num_exp = num_exp, num_obs = num_obs, pvalue = pvalue, 
+                       geneID = paste(geneInput, collapse = "/"), STRING_id = paste(id_mapped$STRING_id, collapse = "/"), stringsAsFactors = F)
+      y0 <- data.frame(cluster = rep(names(cluster_gene)[i], nrow(y0)), y0, stringsAsFactors = F)
+      # filering
+      y <- subset(y0, pvalue <= p_cutoff)
+      return(y)
+    })
+    enrich_res <- do.call("rbind", enriched_LS)
+    write.table(x = enrich_res, file = paste0(OUT, "/enrich_", db, "_", cell_type_label, ".txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+    res_in[[cell_type]][[paste0("enrich_", db)]] <- enrich_res
+    # add stat
+    res_in[[cell_type]]$cl_table_ftd[[paste0("enrich_", db)]] <- res_in[[cell_type]]$cl_table_ftd$cluster %in% enrich_res$cluster
+    res_in[[cell_type]]$cl_list_ftd[[paste0("enrich_", db)]] <- res_in[[cell_type]]$cl_list_ftd$cluster %in% enrich_res$cluster
+  }
+  stopCluster(cl); rm(cl)
+  return(res_in)
+}
+
 do_mergeModule <- function(res_in, ov_cutoff = 0.9, rename = T, verbose = F) {
   # read gene type info
   gene_type <- read.table("/rd/user/tianf/06-Human_cell_atlas/Genomes/human/gene_type_class.txt", header = F, sep = "\t", stringsAsFactors = F, row.names = 2)
