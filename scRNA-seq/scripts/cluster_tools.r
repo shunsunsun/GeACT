@@ -303,7 +303,7 @@ do_findSpecMarker <- function(expr, ncpu = 2) {
 
 
 do_GOenrich <- function(expr.markers_ftd, ncpu = 1, do.filtering = T) {
-  library("stringr")
+  suppressMessages(library("stringr"))
   library("parallel")
   
   # read GO anno
