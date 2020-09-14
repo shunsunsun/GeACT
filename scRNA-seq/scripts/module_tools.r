@@ -1004,7 +1004,7 @@ do_plotModuleMap <- function(res_in, ctype, min.avgExpr = -Inf, min.avgCor = -In
   }
   cl_list_ftd$cluster <- factor(cl_list_ftd$cluster, levels = rev(cl_list_ftd$cluster))
   # gene stat
-  cl_list_ftd_gstat_melted <- reshape2::melt(cl_list_ftd[, c("cluster", "protein_coding", "lncRNA", "sncRNA", "pseudogene", "Ig/TcR")], id.vars = "cluster")
+  cl_list_ftd_gstat_melted <- reshape2::melt(cl_list_ftd[, c("cluster", "protein_coding", "lncRNA", "sncRNA", "pseudogene", "Ig/TCR")], id.vars = "cluster")
   levels(cl_list_ftd_gstat_melted$variable) <- c("Pc", "Lnc", "Snc", "Pse", "Ig/TR")
   # anno stat
   cl_list_ftd_melted <- reshape2::melt(cl_list_ftd[, c("cluster", "enrich_TF", "enrich_miRNA", "enrich_GO", "enrich_KEGG", "enrich_PPI")], id.vars = "cluster")
