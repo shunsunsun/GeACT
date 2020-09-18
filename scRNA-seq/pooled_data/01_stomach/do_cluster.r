@@ -416,6 +416,51 @@ gp
 dev.off()
 #
 
+### GO comparison
+enriched_full_LS <- do_GOenrich(expr.markers_ftd, ncpu = 12, do.filtering = F)
+
+enriched_full_DF <- do.call("rbind", enriched_full_LS)
+enriched_full_DF$Term <- Hmisc::capitalize(enriched_full_DF$Term)
+enriched_full_DF <- merge(enriched_full_DF, id_DF, by.x = "cluster", by.y = "old", sort = F)
+
+# full comparison
+enriched_sub1 <- subset(enriched_full_DF, new == "Fibro-FBLN1")[, -9]
+enriched_sub2 <- subset(enriched_full_DF, new == "Fibro-VSTM2A")[, -9]
+enriched_subs <- merge(enriched_sub1, enriched_sub2, by = "GO.ID", sort = F)
+goid_1 <- subset(enriched_subs, enriched_subs$q_value.x < 1e-4 & enriched_subs$q_value.y > 0.8, "GO.ID", drop = T)
+goid_2 <- subset(enriched_subs, enriched_subs$q_value.x > 0.8 & enriched_subs$q_value.y < 1e-5, "GO.ID", drop = T)
+enriched_subs <- subset(enriched_full_DF, new %in% c("Fibro-FBLN1", "Fibro-VSTM2A") & GO.ID %in% c(goid_1, goid_2))
+enriched_subs$Term <- factor(enriched_subs$Term, levels = rev(unique(c(enriched_sub1$Term, enriched_sub2$Term))))
+
+expr.markers_ftd_plus <- merge(expr.markers_ftd, id_DF, by.x = "cluster", by.y = "old", sort = F)
+gene2go <- read.table(file = "~/lustre/06-Human_cell_atlas/Data/GO/goa_human_gene2GO.tab", header = F, sep = "\t", stringsAsFactors = F)
+expr.markers_ftd_plus <- subset(expr.markers_ftd_plus, gene %in% gene2go$V1)
+expr.markers_ftd_geneNum <- as.data.frame(table(expr.markers_ftd_plus$new), stringsAsFactors = F)
+colnames(expr.markers_ftd_geneNum) <- c("new", "geneNum")
+enriched_subs <- merge(enriched_subs, expr.markers_ftd_geneNum, by = "new", sort = F)
+
+gp <- ggplot(enriched_subs, aes(x = new, y = Term)) + 
+  geom_point(aes(color = -log10(q_value), size = Significant / geneNum)) + 
+  scale_color_gradient(low = "grey", high = "red") + 
+  labs(color = parse(text = "-log[10]~(FDR)"), size = "Percentage") + xlab(NULL) + ylab(NULL) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+ggsave(filename = paste0(OUT, "/GOenrich_comparison.pdf"), plot = gp, width = 6, height = 5, useDingbats = F)
+
+# specific genes
+genes_list <- unlist(strsplit(enriched_subs$Genes[c(1,8)], ","))
+genes_list <- setdiff(genes_list, c("COL1A1", "COL1A2", "COL3A1", 
+                                    "ANK3", "CDH13", "CTNND2", "CXCR4", "ENPP2", "LAMB1", "LAMC1", "PALLD", "PDGFRA", "POSTN", "SDC2", "SEMA3A", "SEMA4D", "SOX6"))
+gp <- DotPlot_new(object = expr_assigned, genes.plot = genes_list, 
+                 plot.legend = TRUE, x.lab.rot = T, rev.x = T, rev.y = T, do.plot = F, do.return = T) + 
+  theme(legend.position="bottom", legend.justification = "center") + 
+  theme(legend.box.margin = margin(r = 2.5)) + 
+  theme(axis.text.x = element_text(hjust = 1, vjust = 1, angle = 45)) + 
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.5, linetype = 1))
+gp <- gp + geom_hline(yintercept = c(10.5, 12.5), linetype = "dashed", color = "grey70")
+gp <- gp + guides(fill = guide_colorbar(title = "Z-score", order = 1), size = guide_legend(title = "Percentage", label.vjust = 1.95, label.position = "bottom", override.aes = list(colour = "black")))
+ggsave(filename = paste0(OUT, "/GOenrich_comparison_dotplot.pdf"), plot = gp, width = 6, height = 6, useDingbats = F)
+###
+
 pdf(paste0(OUT, "/Seurat_tSNE_assigned.pdf"), width = 6, height = 6, useDingbats = F) # 6*6
 
 tmp <- expr_assigned
