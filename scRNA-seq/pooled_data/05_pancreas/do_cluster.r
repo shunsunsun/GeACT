@@ -435,8 +435,8 @@ p <- TSNEPlot(object = tmp, do.label = TRUE, pt.size = 1, label.size = 3, no.leg
   xlab("tSNE-1") + ylab("tSNE-2")
 ###
 p$layers[[3]]$data[4, 2] <- -33
-p
 ###
+p
 
 # color by seq ID
 cellSeqID <- read.table("01-cleandata/merged/cleanFqStat.txt", header = F, sep = "\t", stringsAsFactors = F)[, c(5, 13)]

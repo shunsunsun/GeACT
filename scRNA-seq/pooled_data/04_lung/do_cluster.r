@@ -402,11 +402,12 @@ pdf(paste0(OUT, "/Seurat_tSNE_assigned.pdf"), width = 6, height = 6, useDingbats
 tmp <- expr_assigned
 #tmp@ident <- factor(tmp@ident, levels = sort(levels(tmp@ident)))
 ident_labels <- paste(1:length(levels(tmp@ident)), levels(tmp@ident), sep = ": ")
-TSNEPlot(object = tmp, do.label = TRUE, pt.size = 1, label.size = 3, no.legend = F, do.return = T) +
+p <- TSNEPlot(object = tmp, do.label = TRUE, pt.size = 1, label.size = 3, no.legend = F, do.return = T) +
   scale_color_manual(labels = ident_labels, values = scales::hue_pal()(length(ident_labels))) + 
   theme(aspect.ratio = 1, axis.line = element_line(color = "black"), panel.border = element_blank()) + 
   #guides(color = guide_legend(ncol = 1)) + coord_cartesian(clip = "off") + 
   xlab("tSNE-1") + ylab("tSNE-2")
+p
 
 # color by seq ID
 cellSeqID <- read.table("01-cleandata/merged/cleanFqStat.txt", header = F, sep = "\t", stringsAsFactors = F)[, c(5, 13)]
