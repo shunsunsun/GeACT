@@ -117,8 +117,8 @@ do_findComBinding <- function(ctype, target_gene, tf_tf_aCt = 0.2, tf_tf_eCt = 0
   #   theme(axis.text.x=element_text(angle=90), axis.ticks=element_blank(), axis.line=element_blank())
   
   if(do.plot) {
-    x_label <- unique(c(cor_sub_melted$left.x, rev(cor_sub_melted$right.x)[1]))
-    y_label <- unique(c(cor_sub_melted$left.y, rev(cor_sub_melted$right.y)[1]))
+    x_label <- unique(c(cor_sub_melted$left.x, max(cor_sub_melted$right.x)))
+    y_label <- unique(c(cor_sub_melted$left.y, max(cor_sub_melted$right.y)))
     tri_DF <- data.frame(x = c(min(x_label), min(x_label), max(y_label)), y = c(min(x_label), max(y_label), max(y_label)))
     gp <- ggplot() + 
       geom_polygon(data = tri_DF, aes(x = x, y = y), fill = "grey95") + 
