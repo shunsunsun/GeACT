@@ -82,7 +82,7 @@ do_cor <- function(res_in, subsp = NULL, seed = 1, expr_cutoff = 0.1, mask = F, 
   return(res_in)
 }
 
-do_findComBinding <- function(ctype, target_gene, tf_tf_aCt = 0.2, tf_tf_eCt = 0.2, tf_tg_eCt = 0.2, vmin = -0.4, vmax = 0.4, do.plot = F, do.write = F) {
+do_findComBinding <- function(ctype, target_gene, subsp = 500, seed = 1, tf_tf_aCt = 0.2, tf_tf_eCt = 0.2, tf_tg_eCt = 0.2, vmin = -0.4, vmax = 0.4, do.plot = F, do.write = F) {
   dir.create(path = paste0(OUT, "/res"), showWarnings = F, recursive = T)
   
   TF_and_peak <- read.table(file = paste0(OUT, "/TF_and_peak/", target_gene, ".txt"), header = F, sep = "\t", stringsAsFactors = F)
@@ -101,6 +101,12 @@ do_findComBinding <- function(ctype, target_gene, tf_tf_aCt = 0.2, tf_tf_eCt = 0
   }
   
   acce_sub <- tes[[ct]]$data[peak_id_sub, ]
+  # sub sampling
+  if(! is.null(subsp)) {
+    set.seed(seed)
+    acce_sub <- acce_sub[, sample(1:ncol(acce_sub), subsp)]
+  }
+  # calculate correlation
   cor_sub <- cor(t(acce_sub), method = "spearman")
   cor_sub[lower.tri(cor_sub, diag = T)] <- NA
   cor_sub_melted <- na.omit(melt(cor_sub))
