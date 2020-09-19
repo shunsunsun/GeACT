@@ -82,7 +82,7 @@ do_cor <- function(res_in, subsp = NULL, seed = 1, expr_cutoff = 0.1, mask = F, 
   return(res_in)
 }
 
-do_findComBinding <- function(ctype, target_gene, tf_tf_aCt = 0.2, tf_tf_eCt = 0.2, tf_tg_eCt = 0.2, do.plot = F, do.write = F) {
+do_findComBinding <- function(ctype, target_gene, tf_tf_aCt = 0.2, tf_tf_eCt = 0.2, tf_tg_eCt = 0.2, vmin = -0.4, vmax = 0.4, do.plot = F, do.write = F) {
   dir.create(path = paste0(OUT, "/res"), showWarnings = F, recursive = T)
   
   TF_and_peak <- read.table(file = paste0(OUT, "/TF_and_peak/", target_gene, ".txt"), header = F, sep = "\t", stringsAsFactors = F)
@@ -109,6 +109,9 @@ do_findComBinding <- function(ctype, target_gene, tf_tf_aCt = 0.2, tf_tf_eCt = 0
   cor_sub_melted <- merge(cor_sub_melted, peak_pos, by.x = "Var1", by.y = 0)
   cor_sub_melted <- merge(cor_sub_melted, peak_pos, by.x = "Var2", by.y = 0)
   cor_sub_melted <- cor_sub_melted[, c(2,1,3:9)]
+  cor_sub_melted$value_ir <- cor_sub_melted$value
+  cor_sub_melted$value_ir[cor_sub_melted$value_ir < vmin] <- vmin
+  cor_sub_melted$value_ir[cor_sub_melted$value_ir > vmax] <- vmax
   #print(cor_sub_melted)
   
   # ggplot(cor_sub_melted, aes(Var1, Var2)) +
@@ -122,7 +125,7 @@ do_findComBinding <- function(ctype, target_gene, tf_tf_aCt = 0.2, tf_tf_eCt = 0
     tri_DF <- data.frame(x = c(min(x_label), min(x_label), max(y_label)), y = c(min(x_label), max(y_label), max(y_label)))
     gp <- ggplot() + 
       geom_polygon(data = tri_DF, aes(x = x, y = y), fill = "grey95") + 
-      geom_rect(data = cor_sub_melted, mapping=aes(xmin = left.x, xmax = right.x, ymin = left.y, ymax = right.y, fill = value)) + 
+      geom_rect(data = cor_sub_melted, mapping=aes(xmin = left.x, xmax = right.x, ymin = left.y, ymax = right.y, fill = value_ir)) + 
       scale_fill_gradient2(low = 'blue', mid = "white", high = 'red', limits = c(-0.4, 0.4)) + 
       #scale_x_continuous(breaks = x_label, labels = x_label) + 
       #scale_y_continuous(breaks = y_label, labels = y_label) + 
