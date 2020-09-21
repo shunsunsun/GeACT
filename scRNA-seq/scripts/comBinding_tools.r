@@ -200,6 +200,7 @@ do_findComBinding <- function(ctype, target_gene, subsp = 500, seed = 1, tf_tf_a
     ggrepel::geom_text_repel(aes(x = (left + right)/2, y = cor_rna - 0.015, label = tf), box.padding = 0.2, point.padding = 0) + 
     xlab(NULL) + ylab("TF-target correlation") + 
     scale_x_continuous(expand = c(0, 0), limits = c(min(cor_sub_melted$left.x), max(cor_sub_melted$right.y))) + 
+    scale_y_continuous(labels = function(x) {sprintf("%.2f", x)}) + 
     theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
   if(do.plot) {
     ggsave(filename = paste0(OUT, "/res/", cell_type_label, "__", target_gene, "_TFBS.pdf"), gp, width = 6, height = 2.125)
