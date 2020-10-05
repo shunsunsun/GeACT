@@ -1341,3 +1341,26 @@ do_mergeModule <- function(res_in, ov_cutoff = 0.9, rename = T, verbose = F) {
   mes_in[["merged"]][["avgCor"]] <- cluster_corStat
   return(mes_in)
 }
+
+do_assignModule <- function(res_in, cl_table_ftd_in) {
+  # assign module
+  cluster_table <- cl_table_ftd_in
+  cluster_gene <- split(cluster_table$gene, cluster_table$cluster)[unique(cluster_table$cluster)]
+  # add expr stat
+  cluster_exprStat <- t(sapply(cluster_gene, function(x) { ot <- sapply(res_in, function(k) { y0 <- k$data[x, ]; y <- mean(unlist(y0), na.rm = T); return(y) }); return(ot) }))
+  #cluster_table <- merge(cluster_table, cluster_exprStat, by.x = "cluster", by.y = 0, sort = F)
+  # add cor stat
+  cluster_corStat <- t(sapply(cluster_gene, function(x) { ot <- sapply(res_in, function(k) { k$cor_cld <- k$cor; xs <- intersect(x, rownames(k$cor_cld)); y0 <- k$cor_cld[xs, xs]; y <- mean(y0[upper.tri(y0)]); return(y) }); return(ot) }))
+  #cluster_table <- merge(cluster_table, cluster_corStat, by.x = "cluster", by.y = 0, sort = F)
+  # filtering
+  cluster_table_ftd <- cluster_table
+  
+  mes_in <- list()
+  mes_in[["merged"]][["cl_table_ftd"]] <- cluster_table_ftd
+  cluster_list_ftd <- unique(cluster_table_ftd[, -2])
+  rownames(cluster_list_ftd) <- NULL
+  mes_in[["merged"]][["cl_list_ftd"]] <- cluster_list_ftd
+  mes_in[["merged"]][["avgExpr"]] <- cluster_exprStat
+  mes_in[["merged"]][["avgCor"]] <- cluster_corStat
+  return(mes_in)
+}
