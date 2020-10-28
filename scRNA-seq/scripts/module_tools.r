@@ -357,7 +357,8 @@ do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in 
     ct1_sub <- do.call("rbind", split(ct1_sub, ct1_sub$cluster)[mdid])  # sort by mdid
     genes <- ct1_sub$gene
   } else if(! is.null(mpid)) {
-    genes <- mp_in[[mpid]]
+    md_sub_LS <- mp_in[mpid]
+    genes <- unlist(md_sub_LS)
   } else if(! is.null(mgid)) {
     genes <- mgid
   } else {
