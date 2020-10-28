@@ -696,9 +696,11 @@ do_enrichKEGG <- function(res_in, ctype = NULL, mdid = NULL, ncpu = 1) {
       y0 <- enricher_new(gene = geneInput, TERM2GENE = NA, TERM2NAME = NA, user_data = gs, 
                          pAdjustMethod = "BH", minGSSize = 1, maxGSSize = Inf, pvalueCutoff = 0.05)
       y0 <- as.data.frame(y0)
-      y0 <- data.frame(cluster = rep(names(cluster_gene)[i], nrow(y0)), y0, stringsAsFactors = F)
+      y <- data.frame(cluster = rep(names(cluster_gene)[i], nrow(y0)), y0, stringsAsFactors = F)
       # filtering
-      y <- subset(y0, Count >= 3 & p.adjust <= 0.05)
+      if(nrow(y) > 0) {
+        y <- subset(y, Count >= 3 & p.adjust <= 0.05)
+      }
       return(y)
     })
     enrich_res <- do.call("rbind", enriched_LS)
