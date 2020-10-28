@@ -358,7 +358,9 @@ do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in 
     genes <- ct1_sub$gene
   } else if(! is.null(mpid)) {
     md_sub_LS <- mp_in[mpid]
-    genes <- unlist(md_sub_LS)
+    md_sub_size <- lengths(md_sub_LS)
+    ct1_sub <- data.frame(cluster = rep(mpid, md_sub_size), gene = unlist(md_sub_LS), size = rep(md_sub_size, md_sub_size), stringsAsFactors = F)
+    genes <- ct1_sub$gene
   } else if(! is.null(mgid)) {
     genes <- mgid
   } else {
