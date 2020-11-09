@@ -267,9 +267,21 @@ do_plotCoordCor <- function(res_in, ctype1, ctype2, do_plot = F, sub_num = NULL,
 }
 
 expandCorMat <- function(cand, ref, value = NA, fill_diag = T) {
+  ##
   # expand cand according ref
+  ##
   # remove inconsistent names in cand
   cand <- cand[rownames(cand) %in% rownames(ref), colnames(cand) %in% colnames(ref)]
+  # process marked duplicated genes
+  gene_dup_DF <- data.frame(id = grep("__u__", rownames(ref), value = T), stringsAsFactors = F)
+  gene_dup_DF$real <- gsub("__u__.*", "", gene_dup_DF$id)
+  gene_dup_DF <- subset(gene_dup_DF, real %in% rownames(cand))
+  cand_sub <- cand[gene_dup_DF$real, , drop = F]
+  rownames(cand_sub) <- gene_dup_DF$id
+  cand <- rbind(cand, cand_sub)
+  cand_sub <- cand[, gene_dup_DF$real, drop = F]
+  colnames(cand_sub) <- gene_dup_DF$id
+  cand <- cbind(cand, cand_sub)
   # create the full matrix
   ko <- ref
   ko[,] <- value
@@ -369,6 +381,9 @@ do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in 
   if(is.null(genes)) {
     stop("The mdid or mpid is missing, stop.")
   }
+  # allow duplicated gene names
+  genes <- make.unique(genes, sep = "__u__")
+  #
   cor_comb <- matrix(NA, nrow = length(genes), ncol = length(genes), dimnames = list(genes, genes))
   cor_sub1 <- expandCorMat(cand = cor1, ref = cor_comb) # expand
   cor_comb <- cor_sub1
