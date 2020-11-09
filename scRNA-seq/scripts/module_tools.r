@@ -1384,3 +1384,28 @@ do_assignModule <- function(res_in, cl_table_ftd_in) {
   mes_in[["merged"]][["avgCor"]] <- cluster_corStat
   return(mes_in)
 }
+
+do_cmpModule <- function(res_in, ctype1, ctype2, mp_in = NULL, mpid = NULL, mgid = NULL, paired = T, output.df = T) {
+  cor1 <- res_in[[ctype1]][["cor_cld"]]
+  cor2 <- res_in[[ctype2]][["cor_cld"]]
+  if(! is.null(mpid)) {
+    md_sub_LS <- mp_in[mpid]
+  } else if(! is.null(mgid)) {
+    md_sub_LS <- list(case = mgid)
+  } else {
+    stop("Either mdid or mpList + mpid should be specified, exit.")
+  }
+  p_res <- sapply(md_sub_LS, function(genes) {
+    cor_comb <- matrix(NA, nrow = length(genes), ncol = length(genes), dimnames = list(genes, genes))
+    cor_sub1 <- expandCorMat(cand = cor1, ref = cor_comb) # expand
+    cor_sub2 <- expandCorMat(cand = cor2, ref = cor_comb) # expand
+    cor_val1 <- cor_sub1[upper.tri(cor_sub1)]
+    cor_val2 <- cor_sub2[upper.tri(cor_sub2)]
+    p_value <- wilcox.test(cor_val1, cor_val2, paired = paired)$p.value
+    return(p_value)
+  })
+  if(output.df) {
+    p_res <- data.frame(p_value = p_res, stringsAsFactors = F)
+  }
+  return(p_res)
+}
