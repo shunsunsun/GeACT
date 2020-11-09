@@ -359,7 +359,7 @@ do_cmpMd <- function(res_in, ctype1, ctype2, do_plot = F, fontsize_row = 6, vmin
 }
 
 do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in = NULL, mpid = NULL, mgid = NULL, 
-                              do_plot = T, rm.upper = F, na_col = "#DDDDDD", vmin = -0.6, vmax = 0.6, do_highlights = F, 
+                              do_plot = T, rm.upper = F, na_col = "#DDDDDD", vmin = -0.6, vmax = 0.6, do_highlights = F, do_label = F, label.size = 4, 
                               main = NA, show_rownames = F, show_colnames = F, fontsize_row = 6, fontsize_col = 6, show.legend = T, 
                               do.print = T, do.return = T) {
   cor1 <- res_in[[ctype1]][["cor_cld"]]
@@ -401,6 +401,14 @@ do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in 
     } else {
       ind_highlights <- NULL
     }
+    if(do_label) {
+      ct1_sub_uniq <- unique(ct1_sub[, c("cluster", "size")])
+      ind1 <- c(1, cumsum(ct1_sub_uniq$size)[-nrow(ct1_sub_uniq)] + 1)
+      ind2 <- cumsum(ct1_sub_uniq$size)
+      ind_label <- data.frame(label = names(md_sub_LS), x = (ind1 + ind2) / 2, y = (ind1 + ind2) / 2, stringsAsFactors = F)
+    } else {
+      ind_label <- NULL
+    }
     # limit value space
     cor_comb[cor_comb < vmin] <- vmin
     cor_comb[cor_comb > vmax] <- vmax
@@ -418,6 +426,9 @@ do_plotCorHeatmap <- function(res_in, ctype1, ctype2 = NULL, mdid = NULL, mp_in 
       theme(legend.margin = margin(l = -5), aspect.ratio = 1)
     if(! is.null(ind_highlights)) {
       p <- p + geom_rect(data = ind_highlights, aes(xmin = st - 0.5, xmax = ed + 0.5, ymin = length(genes) + 1 - (st - 0.5), ymax = length(genes) + 1 - (ed + 0.5)), fill = NA, color = "black", inherit.aes = F)
+    }
+    if(! is.null(ind_label)) {
+      p <- p + geom_text(data = ind_label, aes(x = x, y = length(genes) + 1 - y, label = label), hjust = 0.5, vjust = 0.5, size = label.size, inherit.aes = F)
     }
     if(is.null(ctype2)) {
       p <- p + ylab(NULL)
