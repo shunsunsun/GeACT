@@ -1275,7 +1275,7 @@ do_enrichEdge <- function(res_in, ctype = NULL, mdid = NULL, db, category = NULL
   return(res_in)
 }
 
-do_mergeModule <- function(res_in, ov_cutoff = 0.9, rename = T, verbose = F) {
+do_mergeModule <- function(res_in, ov_cutoff = 0.9, rename = T, name.prefix = "MD", verbose = F) {
   # read gene type info
   gene_type <- read.table("/rd/user/tianf/06-Human_cell_atlas/Genomes/human/gene_type_class.txt", header = F, sep = "\t", stringsAsFactors = F, row.names = 2)
   colnames(gene_type) <- c("ensembl_id", "type", "class")
@@ -1332,7 +1332,7 @@ do_mergeModule <- function(res_in, ov_cutoff = 0.9, rename = T, verbose = F) {
     }
   }
   if(rename) {
-    names(cl_rmdup) <- paste0("MD", seq_along(cl_rmdup))
+    names(cl_rmdup) <- paste0(name.prefix, seq_along(cl_rmdup))
   }
   
   cluster_table <- melt(cl_rmdup)
