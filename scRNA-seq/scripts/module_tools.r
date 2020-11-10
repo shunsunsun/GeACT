@@ -1142,6 +1142,9 @@ do_enrichPPI <- function(res_in, ctype = NULL, mdid = NULL, ncpu = 1) {
       # id mapping
       id_DF <- data.frame(gene = geneInput, stringsAsFactors = F)
       id_mapped <- merge(id_DF, gene2id, by = "gene", sort = F)
+      if(nrow(id_mapped) == 0) {
+        return(NULL)
+      }
       id_mapped_mulMp <- id_mapped$gene[duplicated(id_mapped$gene)]
       num_mt <- nrow(id_DF)
       num_m0 <- nrow(id_DF) - length(unique(id_mapped$gene))
