@@ -237,7 +237,7 @@ do_findMarker <- function(expr, only.pos = T, ncpu = 2) {
 
 do_findSpecMarker <- function(expr, cl.excluded = NULL, ncpu = 2) {
   library("parallel")
-  library("stringr")
+  suppressMessages(library("stringr"))
   cts <- str_sort(names(table(expr@ident)[table(expr@ident) >= 3]), numeric = T)
   cts <- setdiff(cts, cl.excluded)
   
