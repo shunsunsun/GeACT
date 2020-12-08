@@ -1,0 +1,26 @@
+cell	Unique cell ID
+seqID	Sequencing batches
+species	Species
+tissue	Organs or tissues
+samplingPos	Sampling positions
+plate	96-well plates
+QC	Whether the cell passed quality control
+ident	Cell types
+group	Cell groups
+ABratio	The ratio of primer A in primer A and B
+cleanReads	The number of reads after quality control
+mpRatio	The ratio of the reads mapped to the corresponding genome
+nGene	The number of detected genes
+nUMI	The number of detected UMIs (after removing duplicates)
+mitoRatio	The ratio of mitochondrial genes (UMI count)
+ERCCratio	The ratio of ERCC spike-in (UMI count)
+doublet	Whether cells were doublets
+tSNE_1	The 1st dimension of embeddings from t-SNE
+tSNE_2	The 2nd dimension of embeddings from t-SNE
+UMAP_1	The 1st dimension of embeddings from UMAP
+UMAP_2	The 2nd dimension of embeddings from UMAP
+stage	Development stages ("w" means "week")
+tSNE_1_ali	The 1st dimension of embeddings from t-SNE after alignment across stages
+tSNE_2_ali	The 2nd dimension of embeddings from t-SNE after alignment across stages
+UMAP_1_ali	The 1st dimension of embeddings from UMAP after alignment across stages
+UMAP_2_ali	The 2nd dimension of embeddings from UMAP after alignment across stages
