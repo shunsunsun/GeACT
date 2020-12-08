@@ -3,15 +3,15 @@
 The first draft of Genome Architecture of Cells in Tissues (GeACT) of humans. GeACT is an extension of the Human Genome Project, offering a comprehensive database for documenting and understanding the functional human genome based on high-precision single-cell omics technologies.
 
 ## Data
-version: v1.0.1
+version: v1.0.2
 | Class | Technology | Cell number | Organ number |
 | :------| :------ | ------: | ------: |
-| sc-RNA-seq | MALBAC-DT | 31,208 | 17 |
+| sc-RNA-seq | MALBAC-DT | 38,671 | 17 |
 | sc-ATAC-seq | METATAC | 21,381 | 14 |
 
 ### Transcriptome  
 Gene expression matrix is accessible at http://geact.gao-lab.org/  
-Cell meta table: https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/pooled_data/All/cell_metatable_filtered.txt
+Cell meta table: https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/pooled_data_all/All/cell_metatable_filtered_aligned.txt
 
 ### Open chromatin landscape
 Gene activity score matrix is accessible at http://geact.gao-lab.org/  
