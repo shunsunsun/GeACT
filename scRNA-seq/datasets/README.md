@@ -13,14 +13,19 @@ As the system increased, other datasets were named as "order + (date) + sample n
 
 | Column | Description |
 | ---------- | ----------- |
-| 1 | Cell ID |
-| 2 | Recognized read number (no mismatch in cell barcode) |
-| 3 | Recognized read number (allow X mismtach in cell barcode) |
-| 4 | Primer A number (less than 3 bases are inconsistent with "HBDV" pattern in UMIs) |
-| 5 | Primer B number (less than 3 bases are inconsistent with "VDBH" pattern in UMIs) |
-| 6 | Recognized UMI number (no mismatch) |
-| 7 | Recognized UMI number (allow X mismatch) |
-| 8 | Read number after quality control |
+| 1 | Species |
+| 2 | 96-well plate |
+| 3 | Total reads number |
+| 4 | Running time for spliting cell barcodes and reads quality control |
+| 5 | Cell ID |
+| 6 | Recognized read number (no mismatch in cell barcode) |
+| 7 | Recognized read number (allow X mismtach in cell barcode) |
+| 8 | Primer A number (less than 3 bases are inconsistent with "HBDV" pattern in UMIs) |
+| 9 | Primer B number (less than 3 bases are inconsistent with "VDBH" pattern in UMIs) |
+| 10 | Recognized UMI number (no mismatch) |
+| 11 | Recognized UMI number (allow X mismatch) |
+| 12 | Read number after quality control |
+| 13 | Sequencing batch (optional column) |
 
 ## estimateMap.txt
 
