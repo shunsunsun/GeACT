@@ -31,26 +31,31 @@ As the system increased, other datasets were named as "order + (date) + sample n
 
 | Column | Description |
 | ---------- | ----------- |
-| 1 | Cell ID |
-| 2 | Number of total reads |
-| 3 | Number of mapped reads |
-| 4 | Number of uniquely-mapped reads |
-| 5 | Mapped ratio (extracted from Hisat2 log) |
-| 6 | Mapped ratio (calculated) |
-| 7 | Uniquely-mapped ratio |
-| 8 | Strand (single or pair-end) |
+| 1 | Species |
+| 2 | Cell ID |
+| 3 | Number of total reads |
+| 4 | Number of mapped reads |
+| 5 | Number of uniquely-mapped reads |
+| 6 | Mapped ratio (extracted from Hisat2 log) |
+| 7 | Mapped ratio (calculated) |
+| 8 | Uniquely-mapped ratio |
+| 9 | Strand (single or pair-end) |
+| 10 | Running time for reads mapping |
 
 ## estimateExpr.txt
 
 | Column | Description |
 | ---------- | ----------- |
-| 1 | Number of uniquely-mapped reads (total) |
-| 2 | Number of uniquely-mapped reads annotated as "no feature" (assigned to non-gene regions) |
-| 3 | Number of uniquely-mapped reads annotated as "ambiguous" (assigned to multiple genes) |
-| 4 | Number of uniquely-mapped reads (assigned to ERCC) |
-| 5 | Number of uniquely-mapped (assigned to genes) |
-| 6 | Number of non-redundant UMIs (total) |
-| 7 | Number of non-redundant UMIs (ERCC) |
-| 8 | Number of non-redundant UMIs (genes) |
-| 9 | Number of detected ERCC |
-| 10 | Number of detected gene |
+| 1 | Species |
+| 2 | Cell ID |
+| 3 | Number of uniquely-mapped reads (total) |
+| 4 | Number of uniquely-mapped reads annotated as "no feature" (assigned to non-gene regions) |
+| 5 | Number of uniquely-mapped reads annotated as "ambiguous" (assigned to multiple genes) |
+| 6 | Number of uniquely-mapped reads (assigned to ERCC) |
+| 7 | Number of uniquely-mapped (assigned to genes) |
+| 8 | Number of non-redundant UMIs (total) |
+| 9 | Number of non-redundant UMIs (ERCC) |
+| 10 | Number of non-redundant UMIs (genes) |
+| 11 | Number of detected ERCC |
+| 12 | Number of detected gene |
+| 13 | Running time for gene expression calculation |
