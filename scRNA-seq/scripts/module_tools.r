@@ -82,8 +82,8 @@ do_cor <- function(res_in, subsp = NULL, seed = 1, expr_cutoff = 0.1, mask = F, 
   return(res_in)
 }
 
-do_hc <- function(res_in, use.abs = F, method = "average", rm.cor = T) {
-  cl <- makeCluster(min(length(res_in), 10), type = "FORK")
+do_hc <- function(res_in, use.abs = F, method = "average", rm.cor = T, ncpu = 10) {
+  cl <- makeCluster(min(length(res_in), ncpu), type = "FORK")
   hc_LS <- parLapply(cl, names(res_in), function(x) {
     print(x)
     expr_cor <- res_in[[x]][["cor"]]
