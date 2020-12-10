@@ -271,7 +271,7 @@ expandCorMat <- function(cand, ref, value = NA, fill_diag = T) {
   # expand cand according ref
   ##
   # remove inconsistent names in cand
-  cand <- cand[rownames(cand) %in% rownames(ref), colnames(cand) %in% colnames(ref)]
+  cand <- cand[rownames(cand) %in% rownames(ref), colnames(cand) %in% colnames(ref), drop = F]
   # process marked duplicated genes
   gene_dup_DF <- data.frame(id = grep("__u__", rownames(ref), value = T), stringsAsFactors = F)
   gene_dup_DF$real <- gsub("__u__.*", "", gene_dup_DF$id)
