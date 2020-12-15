@@ -1417,7 +1417,11 @@ do_cmpModule <- function(res_in, ctype1, ctype2, mp_in = NULL, mpid = NULL, mgid
     cor_sub2 <- expandCorMat(cand = cor2, ref = cor_comb) # expand
     cor_val1 <- cor_sub1[upper.tri(cor_sub1)]
     cor_val2 <- cor_sub2[upper.tri(cor_sub2)]
-    p_value <- wilcox.test(cor_val1, cor_val2, paired = paired)$p.value
+    if(sum(! is.na(cor_val1)) == 0 | sum(! is.na(cor_val2)) == 0) {
+      p_value <- NA
+    } else {
+      p_value <- wilcox.test(cor_val1, cor_val2, paired = paired)$p.value
+    }
     return(p_value)
   })
   if(output.df) {
