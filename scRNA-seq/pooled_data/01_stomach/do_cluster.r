@@ -474,9 +474,9 @@ p <- TSNEPlot(object = tmp, do.label = TRUE, pt.size = 1, label.size = 3, no.leg
 p$layers[[3]]$data[3, 2] <- -23
 p$layers[[3]]$data[4, 2] <- 24
 p$layers[[3]]$data[8, 2] <- 27
-p$layers[[3]]$data[14, 2:3] <- c(-42.25, -6)
-p$layers[[3]]$data[15, 2:3] <- c(-41, 0)
-p$layers[[3]]$data[17, 2:3] <- c(21, -33)
+p$layers[[3]]$data[14, 2:3] <- list(-42.25, -6)
+p$layers[[3]]$data[15, 2:3] <- list(-41, 0)
+p$layers[[3]]$data[17, 2:3] <- list(21, -33)
 p$layers[[3]]$data[18, 3] <- -27
 ###
 p
@@ -523,7 +523,7 @@ p$layers <- c(geom_rect(xmin = 3-0.5, xmax = 3+0.5, ymin = 16-0.5, ymax = 17+0.5
 p$layers <- c(geom_rect(xmin = 6-0.5, xmax = 6+0.5, ymin = 8-0.5, ymax = 15+0.5, fill = "skyblue"), p$layers)
 p$layers <- c(geom_rect(xmin = 16-0.5, xmax = 16+0.5, ymin = 4-0.5, ymax = 6+0.5, fill = "skyblue"), p$layers)
 p$layers <- c(geom_rect(xmin = 20-0.5, xmax = 20+0.5, ymin = 2-0.5, ymax = 3+0.5, fill = "skyblue"), p$layers)
-p + guides(fill = guide_colorbar(title = "Z-score", order = 1), size = guide_legend(title = "Fraction (%)", label.vjust = 1.95, label.position = "bottom", override.aes = list(colour = "black")))
+p + guides(fill = guide_colorbar(title = "Z-score", order = 1), size = guide_legend(title = "Percentage", label.vjust = 1.95, label.position = "bottom", override.aes = list(colour = "black")))
 
 # proliferative score (cell cycle)
 tmp <- merge(expr_assigned@meta.data, id_DF, by.x = "cluster", by.y = "old", sort = F)
@@ -781,6 +781,13 @@ for(i in c("EPCAM", "VIM", "PECAM1", "PROM1", "COL1A1", "IRF1", "FOSB", "VSTM2A"
   print(p)
 }
 dev.off()
+
+# adjust cell ident
+cell_adj <- subset(cellMetaDatax, tSNE_1 > -8.3 & tSNE_1 < -7.9 & tSNE_2 > 36.8 & tSNE_2 < 37.4, "cell", drop = T)
+cellMetaDatax_adj <- cellMetaDatax
+cellMetaDatax_adj$ident <- factor(cellMetaDatax_adj$ident, levels = c(levels(cellMetaDatax_adj$ident)[1:10], "Fibro-KIT", levels(cellMetaDatax_adj$ident)[11:19]))
+cellMetaDatax_adj[cellMetaDatax_adj$cell %in% cell_adj, "ident"] <- "Fibro-KIT"
+write.table(x = cellMetaDatax_adj, file = paste0(OUT, "/Seurat_metaData_adj.txt"), row.names = F, col.names = T, quote = F,sep = "\t")
 
 # 4. save and write meta table ----
 #save(expr, file = paste0(OUT, "/Seurat_expr.Robj"))
