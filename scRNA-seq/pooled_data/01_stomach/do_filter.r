@@ -12,6 +12,13 @@ dir.create(OUT, showWarnings = F, recursive = T)
 
 #load(file = paste0(OUT, "/filtering.RData"))
 
+# load gene ID 
+geneID <- read.table("~/lustre/06-Human_cell_atlas/Genomes/human/gene_ID2Name_fixed.txt", header = F, sep = "\t", stringsAsFactors = F)
+dim(geneID)
+colnames(geneID) <- c("ensembl", "symbol")
+geneID$ensembl_alt <- gsub("\\.[0-9]+", "", geneID$ensembl)
+
+# load expression data
 exprMatr <- read.table("03-expression/merged/UMIcount_allGenes.txt",header = T,row.names = 1,sep = "\t", stringsAsFactors = F, check.names = F, comment.char = "")
 dim(exprMatr)
 
@@ -221,6 +228,10 @@ dim(exprMatr_filtered)
 exprMatr_cellFiltered <- exprMatr[, cellStat$filter]
 dim(exprMatr_cellFiltered)
 
+exprMatr_cellFiltered_CPM <- sweep(exprMatr_cellFiltered, MARGIN = 2, STATS = colSums(exprMatr_cellFiltered), FUN = "/") * 1e6
+exprMatr_cellFiltered_CPM_ensembl <- exprMatr_cellFiltered_CPM
+rownames(exprMatr_cellFiltered_CPM_ensembl) <- geneID$ensembl_alt[match(rownames(exprMatr_cellFiltered_CPM_ensembl), geneID$symbol)]
+
 # output
 data.table::fwrite(x = exprMatr, file = paste0(OUT, "/UMIcount_unfiltered.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 10)
 system(paste0("gzip -c ", paste0(OUT, "/UMIcount_unfiltered.txt"), " > ", OUT, "/UMIcount_unfiltered.txt.gz"))
@@ -230,6 +241,9 @@ system(paste0("gzip -c ", paste0(OUT, "/UMIcount_filtered.txt"), " > ", OUT, "/U
 
 data.table::fwrite(x = exprMatr_cellFiltered, file = paste0(OUT, "/UMIcount_cellFiltered.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 10)
 system(paste0("gzip -c ", paste0(OUT, "/UMIcount_cellFiltered.txt"), " > ", OUT, "/UMIcount_cellFiltered.txt.gz"))
+
+data.table::fwrite(x = exprMatr_cellFiltered_CPM, file = paste0(OUT, "/UMIcount_cellFiltered_CPM.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 10)
+data.table::fwrite(x = exprMatr_cellFiltered_CPM_ensembl, file = paste0(OUT, "/UMIcount_cellFiltered_CPM_ensembl.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 10)
 
 write.table(x = cellStat,file = paste0(OUT, "/filtering_cells.txt"), row.names = T, col.names = NA, quote = F, sep = "\t")
 write.table(x = geneStat,file = paste0(OUT, "/filtering_genes.txt"), row.names = T, col.names = NA, quote = F, sep = "\t")
