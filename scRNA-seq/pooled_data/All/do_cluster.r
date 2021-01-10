@@ -166,24 +166,32 @@ TSNEPlot(object = expr, pt.size = 1, do.label = T, no.legend = T,
 # rm(expr_xxx)
 
 # UMAP
-#expr <- RunUMAP(object = expr, reduction.use = "pca", dims.use = dims_use, min_dist = 1)
-#DimPlot(object = expr, reduction.use = "umap", no.legend = F, do.return = TRUE, 
-#        vector.friendly = TRUE, pt.size = 3) + ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
+expr <- RunUMAP(object = expr, reduction.use = "pca", dims.use = dims_use, min_dist = 0.75)
+# DimPlot(object = expr, reduction.use = "umap", no.legend = F, do.return = TRUE, 
+#         vector.friendly = TRUE, pt.size = 3) + ggtitle("UMAP") + theme(plot.title = element_text(hjust = 0.5))
 
 # add info to meta
-cellMetaData <- merge(expr@meta.data, expr@dr$tsne@cell.embeddings, by = 0, sort = F)
+cellMetaData <- merge(expr@meta.data, cbind(expr@dr$tsne@cell.embeddings, expr@dr$umap@cell.embeddings), by = 0, sort = F)
 cellMetaData$batch <- factor(cellMetaData$batch, levels = unique(cellMetaData$batch))
 cellMetaData$cluster <- factor(cellMetaData$cluster, levels = sort(as.numeric(unique(cellMetaData$cluster))))
 cellStat <- read.table(paste0("03-expression/merged/filtering/", samplingPos, "/filtering_cells.txt"), header = T, sep = "\t", row.names = 1, stringsAsFactors = F)
 dim(cellStat)
 cellMetaData <- merge(cellMetaData, cellStat[, -c(4, 5)], by.x = 1, by.y = 0, sort = F)
 colnames(cellMetaData)[1] <- "cell"
-# add tissue/samplingPos/ident
-cell_metatable <- read.table("cell_metatable.txt", header = T, sep = "\t", stringsAsFactors = F)
+# add tissue/samplingPos/ident/group
+cell_metatable <- read.table("cell_metatable_filtered_plus.txt", header = T, sep = "\t", stringsAsFactors = F)
 dim(cell_metatable)
-cellMetaData <- merge(cellMetaData, cell_metatable[, c("cell", "tissue", "samplingPos", "ident")], by = "cell", sort = F)
+cellMetaData <- merge(cellMetaData, cell_metatable[, c("cell", "tissue", "samplingPos", "ident", "group")], by = "cell", sort = F)
 cellMetaData$tissue <- gsub("_", " ", Hmisc::capitalize(cellMetaData$tissue))
 cellMetaData$tissue <- factor(cellMetaData$tissue, levels = sort(unique(cellMetaData$tissue)))
+cellMetaData$group_new <- cellMetaData$group
+group_shown <- c("Epithelial", "Endothelial", "Smooth muscle", "Fibroblast", "B", 
+                 "DC/Macrophage", "NKT", "T", "Glial", "FGC", 
+                 "Granulosa", "Sertoli", "Erythrocyte", "Other")
+cellMetaData$group_new[! cellMetaData$group_new %in% group_shown] <- "Other"
+cellMetaData$group_new <- factor(cellMetaData$group_new, levels = group_shown)
+
+write.table(x = cellMetaData[, colnames(cellMetaData) != "orig.ident"], file = "cell_metatable_merged.txt", row.names = F, col.names = T, quote = F, sep = "\t")
 
 ### check batch effect
 # cairo_pdf(paste0(OUT, "/Seurat_batchDebug.pdf"), width = 6, height = 6, onefile = T)
@@ -238,12 +246,20 @@ TSNEPlot(object = expr, pt.size = 1, do.label = T, no.legend = T,
 
 dev.off()
 
+# set color by tissue
 ct_color <- c(brewer.pal(name = "Dark2", n = 8), brewer.pal(name = "Paired", n = 9))
 names(ct_color) <- levels(cellMetaData$tissue)
 ct_color["Kidney"] <- "#F2E100"
 ct_color["Large intestine"] <- "tomato"
 ct_color["Lung"] <- "#419FDE"
 save(ct_color, file = paste0(OUT, "/ct_color.RData"))
+
+# set color by cell group
+cg_color <- c("tomato", "orange", "#FB9A99", "#00BF74", "#8258FA", 
+              "#D0A9F5", "purple2", "#D358F7", "#419FDE", "#F2E100", 
+              ct_color["Ovary"], ct_color["Testis"], "firebrick3", "grey80")
+names(cg_color) <- group_shown
+save(cg_color, file = paste0(OUT, "/cg_color.RData"))
 
 pdf(paste0(OUT, "/Seurat_tSNE.pdf"), width = 6, height = 6, useDingbats = F)
 
@@ -258,6 +274,91 @@ ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = tissue)) + geom_point(s
 
 dev.off()
 
+pdf(paste0(OUT, "/Seurat_tSNE_legend_1col.pdf"), width = 9, height = 6, useDingbats = F)
+
+# color by tissue
+ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = tissue)) + geom_point(size = 0.2) +
+  theme(legend.position = "right", legend.justification = c("center")) + 
+  theme(aspect.ratio = 1, plot.margin = margin(t = 10, l = -20, r = 20)) + 
+  theme(legend.key.width = unit(0.2, "cm"), legend.key.height = unit(0.8, "cm")) + 
+  labs(color = NULL) + xlab("t-SNE1") + ylab("t-SNE2") + 
+  guides(color = guide_legend(ncol = 1, override.aes = list(size = 3.6))) + 
+  scale_color_manual(values = ct_color)
+
+dev.off()
+
+pdf(paste0(OUT, "/Seurat_tSNE_and_legend.pdf"), width = 6, height = 5, useDingbats = F)
+
+# color by tissue
+gp <- ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = tissue)) + geom_point(size = 0.2) +
+  theme(legend.position = "right", legend.justification = c("center")) + 
+  theme(aspect.ratio = 1, plot.margin = margin(t = 10, l = -20, r = 20)) + 
+  theme(legend.key.width = unit(0.2, "cm"), legend.key.height = unit(0.725, "cm")) + 
+  labs(color = NULL) + xlab("t-SNE1") + ylab("t-SNE2") + 
+  guides(color = guide_legend(ncol = 1, override.aes = list(size = 3.6))) + 
+  scale_color_manual(values = ct_color) + 
+  ggtitle("Transcriptome") + theme(plot.title = element_text(face = "plain"))
+gp + theme(legend.position = "none")
+
+# only legend
+lg <- cowplot::get_legend(gp)
+grid.newpage()
+grid.draw(lg)
+
+# color by cell group
+gp <- ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = group_new)) + geom_point(size = 0.2) +
+  theme(legend.position = "right", legend.justification = c("center")) + 
+  theme(aspect.ratio = 1, plot.margin = margin(t = 10, l = -20, r = 20)) + 
+  theme(legend.key.width = unit(0.2, "cm"), legend.key.height = unit(0.8, "cm")) + 
+  labs(color = NULL) + xlab("t-SNE1") + ylab("t-SNE2") + 
+  guides(color = guide_legend(ncol = 1, override.aes = list(size = 3.6))) + 
+  scale_color_manual(values = cg_color) + 
+  ggtitle("Transcriptome") + theme(plot.title = element_text(face = "plain"))
+gp + theme(legend.position = "none")
+
+# only legend
+lg <- cowplot::get_legend(gp)
+grid.newpage()
+grid.draw(lg)
+
+dev.off()
+
+pdf(paste0(OUT, "/Seurat_UMAP_and_legend.pdf"), width = 6, height = 5, useDingbats = F)
+
+# color by tissue
+gp <- ggplot(cellMetaData, aes(x = UMAP1, y = UMAP2, color = tissue)) + geom_point(size = 0.2) +
+  theme(legend.position = "right", legend.justification = c("center")) + 
+  theme(aspect.ratio = 1, plot.margin = margin(t = 10, l = -20, r = 20)) + 
+  theme(legend.key.width = unit(0.2, "cm"), legend.key.height = unit(0.725, "cm")) + 
+  labs(color = NULL) + xlab("UMAP1") + ylab("UMAP2") + 
+  guides(color = guide_legend(ncol = 1, override.aes = list(size = 3.6))) + 
+  scale_color_manual(values = ct_color) + 
+  ggtitle("Transcriptome") + theme(plot.title = element_text(face = "plain"))
+gp + theme(legend.position = "none")
+
+# only legend
+lg <- cowplot::get_legend(gp)
+grid.newpage()
+grid.draw(lg)
+
+# color by cell group
+gp <- ggplot(cellMetaData, aes(x = UMAP1, y = UMAP2, color = group_new)) + geom_point(size = 0.2) +
+  theme(legend.position = "right", legend.justification = c("center")) + 
+  theme(aspect.ratio = 1, plot.margin = margin(t = 10, l = -20, r = 20)) + 
+  theme(legend.key.width = unit(0.2, "cm"), legend.key.height = unit(0.8, "cm")) + 
+  labs(color = NULL) + xlab("UMAP1") + ylab("UMAP2") + 
+  guides(color = guide_legend(ncol = 1, override.aes = list(size = 3.6))) + 
+  scale_color_manual(values = cg_color) + 
+  ggtitle("Transcriptome") + theme(plot.title = element_text(face = "plain"))
+gp + theme(legend.position = "none")
+
+# only legend
+lg <- cowplot::get_legend(gp)
+grid.newpage()
+grid.draw(lg)
+
+dev.off()
+
 pdf(paste0(OUT, "/Seurat_tSNE_simple.pdf"), width = 6, height = 6, useDingbats = F)
 
 # color by tissue
@@ -269,8 +370,8 @@ ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = tissue)) + geom_point(s
   theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) + 
   #guides(color = guide_legend(ncol = 4, override.aes = list(size = 3.6))) + 
   scale_color_manual(values = ct_color) #+ 
-  #annotate("segment", x=-Inf,xend=Inf,y=-Inf,yend=-Inf,arrow=arrow(length = unit(0.5, "cm"))) + 
-  #annotate("segment", x=-Inf,xend=-Inf,y=-Inf,yend=Inf,arrow=arrow(length = unit(0.5, "cm")))
+#annotate("segment", x=-Inf,xend=Inf,y=-Inf,yend=-Inf,arrow=arrow(length = unit(0.5, "cm"))) + 
+#annotate("segment", x=-Inf,xend=-Inf,y=-Inf,yend=Inf,arrow=arrow(length = unit(0.5, "cm")))
 
 dev.off()
 
@@ -281,11 +382,94 @@ mk_genes <- c("EPCAM", "PECAM1", "PTPRC", "COL1A1", "HBG1")
 mk_labels <- c("EPCAM (CD326)", "PECAM1 (CD31)", "PTPRC (CD45)", "COL1A1", "HBG1")
 for(i in seq_along(mk_genes)) {
   p <- FeaturePlot_new(object = expr, features.plot = mk_genes[i], new.title = mk_labels[i], cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 1, no.axes = T, do.plot = F, do.return = T)[[1]]
-  p <- p + theme(aspect.ratio = 1, plot.title = element_text(size = 40), plot.margin = margin(5,2,-10,2))
+  p <- p + theme(aspect.ratio = 1, plot.title = element_text(size = 30, family = "Arial"), plot.margin = margin(5,2,-10,2))
   print(p)
 }
 
 dev.off()
+
+### signature genes
+ident.ori <- expr@ident
+expr_assigned <- expr
+
+cell_metatable <- cellMetaData
+rownames(cell_metatable) <- cell_metatable$cell
+cell_metatable$ts_ident <- Hmisc::capitalize(paste(cell_metatable$tissue, cell_metatable$ident, sep = "."))
+# sort
+cell_metatable <- cell_metatable[order(cell_metatable$tissue), ]
+cell_metatable_LS <- split(cell_metatable, cell_metatable$group_new)
+names(cell_metatable_LS) <- NULL
+cell_metatable_sorted <- do.call("rbind", cell_metatable_LS)
+#
+cell_type_ti <- cell_metatable[names(ident.ori), "ts_ident"]
+names(cell_type_ti) <- names(ident.ori)
+cell_type_ti <- factor(cell_type_ti, levels = unique(cell_metatable_sorted$ts_ident))
+levels(cell_type_ti) <- 1:length(levels(cell_type_ti))
+expr_assigned@ident <- cell_type_ti
+
+signatureGenes <- read.table("cellType_signatureGenes.txt", header = T, sep = "\t", stringsAsFactors = F)
+dim(signatureGenes)
+signatureGenes$ts_ident <- paste(signatureGenes$tissue, signatureGenes$ident, sep = ".")
+signatureGenes <- merge(x = signatureGenes, y = unique(cell_metatable[, c("ts_ident", "group_new")]), by = "ts_ident", sort = F)
+signatureGenes <- signatureGenes[, c(2:13,1,14)]
+###
+signatureGenes <- subset(signatureGenes, ! group_new %in% "Other")
+###
+signatureGenes_LS <- split(signatureGenes, signatureGenes$ts_ident)
+signatureGenes_LS <- signatureGenes_LS[unique(cell_metatable_sorted$ts_ident)]
+signatureGenes_LS <- lapply(signatureGenes_LS, function(x) { head(x, 2) })
+names(signatureGenes_LS) <- NULL
+signatureGenes_sorted <- do.call("rbind", signatureGenes_LS)
+signatureGenes_unique <- signatureGenes_sorted[! duplicated(signatureGenes_sorted$gene), ]
+gene_hlt <- unlist(lapply(split(signatureGenes_unique$gene, signatureGenes_unique$group_new), function(x) { head(x, 1) }))
+
+data_use <- DoHeatmap_object(object = expr_assigned, genes.use = signatureGenes_unique$gene, slim.col.label = TRUE, remove.key = F, rotate.key = T, do.plot = F,
+                             group.spacing = 0,
+                             cells.use = WhichCells(expr_assigned, ident = setdiff(levels(expr_assigned@ident), NA), max.cells.per.ident = 3, random.seed = 1))
+data_use_MT <- acast(data_use[, 1:3], formula = gene ~ cell, value.var = "expression")
+data_use_MT <- data_use_MT[signatureGenes_unique$gene, ]
+cell_metatable_sel <- merge(x = data.frame(cell = colnames(data_use_MT), stringsAsFactors = F), y = cellMetaData[, c("cell", "tissue", "group_new")], by = "cell", sort = F)
+###
+cell_metatable_sel <- subset(cell_metatable_sel, group_new != "Other")
+data_use_MT <- data_use_MT[, colnames(data_use_MT) %in% cell_metatable_sel$cell]
+###
+
+pdf(paste0(OUT, "/Seurat_tSNE_assigned_heatmap.pdf"), width = 10, height = 6, useDingbats = F)
+
+# DoHeatmap(object = expr_assigned, genes.use = signatureGenes_unique$gene, slim.col.label = TRUE, remove.key = F, rotate.key = T, do.plot = F, 
+#           group.spacing = 0, 
+#           cells.use = WhichCells(expr_assigned, ident = setdiff(levels(expr_assigned@ident), NA), max.cells.per.ident = 3, random.seed = 1)) + 
+#   theme(axis.text.y = element_blank(), strip.text.x = element_blank()) + 
+#   theme(legend.position = "bottom", legend.justification = "center", legend.box.spacing = unit(0.25, units = "cm")) + 
+#   guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5, barwidth = unit(4, units = "cm")))
+
+
+library("ComplexHeatmap")
+col_fun <- circlize::colorRamp2(c(-2.5, 0, 2.5), c("#4575B4", "white", "#D73027"))
+
+ht_opt(legend_title_gp = gpar(fontsize = 12), legend_labels_gp = gpar(fontsize = 12))
+ht1 <- Heatmap(matrix = data_use_MT, col = col_fun, name = "Expression", 
+               #row_title = "Signature gene", row_title_side = "right", row_title_rot = 0, row_title_gp = gpar(fontsize = 12), 
+               column_title = "Cell", column_title_side = "bottom", column_title_gp = gpar(fontsize = 14), 
+               cluster_rows = F, #row_split = des_mat$class, row_gap = unit(0.3, "mm"), border = T, 
+               cluster_columns = F, 
+               show_row_names = F, row_names_gp = gpar(fontsize = 3), 
+               show_column_names = F, column_names_gp = gpar(fontsize = 12), column_names_rot = 45, 
+               top_annotation = columnAnnotation(Tissue = cell_metatable_sel$tissue, Group = cell_metatable_sel$group_new, 
+                                                 col = list(Tissue = ct_color[as.character(cell_metatable_sel$tissue)], 
+                                                            Group = cg_color[as.character(cell_metatable_sel$group_new)]), 
+                                                 simple_anno_size = unit(0.3, "cm"), 
+                                                 gap = unit(0.08, "cm"), 
+                                                 annotation_name_gp = gpar(fontsize = 12)), 
+               right_annotation = rowAnnotation(foo = anno_mark(at = match(gene_hlt, rownames(data_use_MT)), labels = gene_hlt, side = "right", labels_gp = gpar(fontsize = 10), link_width = unit(3, "mm"))),
+               heatmap_legend_param = list(direction = "vertical", at = c(-2.5, 0, 2.5), legend_height = unit(2.5, "cm"))
+)
+draw(ht1, row_title = "Signature gene", row_title_gp = gpar(fontsize = 14), 
+     merge_legend = F, heatmap_legend_side = "right")
+ht_opt(RESET = T)
+
+dev.off()
+###
 
 rm(expr_data, expr_ori)
 #save.image(file = paste0(OUT, "/Seurat_step2.RData"))
