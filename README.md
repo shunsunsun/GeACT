@@ -9,6 +9,8 @@ version: v1.0.2
 | sc-RNA-seq | MALBAC-DT | 38,671 | 17 |
 | sc-ATAC-seq | METATAC | 21,381+? | 14+? |
 
+To download raw data, please request it in [the Genome Sequence Archive](https://bigd.big.ac.cn/gsa-human/) with the ID of HRA000330.
+
 ### Transcriptome  
 Gene expression matrix is accessible at http://geact.gao-lab.org/  
 Cell meta table: https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/pooled_data_all/All/cell_metatable_filtered_aligned.txt
