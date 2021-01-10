@@ -7,7 +7,7 @@ version: v1.0.2
 | Class | Technology | Cell number | Organ number |
 | :------| :------ | ------: | ------: |
 | sc-RNA-seq | MALBAC-DT | 38,671 | 17 |
-| sc-ATAC-seq | METATAC | 21,381 | 14 |
+| sc-ATAC-seq | METATAC | 21,381+? | 14+? |
 
 ### Transcriptome  
 Gene expression matrix is accessible at http://geact.gao-lab.org/  
