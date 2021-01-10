@@ -140,7 +140,7 @@ dend_cs <- as.dendrogram(hnorm_cs)
 # hnorm_mdm <- hclust(dnorm_mdm, method = "ward.D2", members = NULL)
 # plot(as.dendrogram(hnorm_mdm), cex=.5, horiz=T)
 
-pdf(paste0(OUT, "/hc_all.pdf"), width = 3.5, height = 16)
+pdf(paste0(OUT, "/hc_all.pdf"), width = 3, height = 18)
 
 plot_hc(hnorm_all, dend_all, cex.para = 0.8, mar.para = c(2,1,0,14) + 0.1, ylim.para = c(3, 130))
 plot_hc(hnorm_tf, dend_tf, cex.para = 0.8, mar.para = c(2,1,0,14) + 0.1, ylim.para = c(3, 130))
@@ -285,7 +285,7 @@ dend_cs <- as.dendrogram(hnorm_cs)
 # hnorm_mdm <- hclust(dnorm_mdm, method = "ward.D2", members = NULL)
 # plot(as.dendrogram(hnorm_mdm), cex=.5, horiz=T)
 
-pdf(paste0(OUT, "/hc_nonImmune.pdf"), width = 3.5, height = 12)
+pdf(paste0(OUT, "/hc_nonImmune.pdf"), width = 3, height = 14)
 
 plot_hc(hnorm_all, dend_all, cex.para = 0.8, mar.para = c(2,1,1.5,14) + 0.1, ylim.para = c(3, 90))
 plot_hc(hnorm_tf, dend_tf, cex.para = 0.8, mar.para = c(2,1,1.5,14) + 0.1, ylim.para = c(3, 90)); title(main = "TFs", line = 3)
@@ -329,7 +329,7 @@ dend_cs <- as.dendrogram(hnorm_cs)
 # hnorm_mdm <- hclust(dnorm_mdm, method = "ward.D2", members = NULL)
 # plot(as.dendrogram(hnorm_mdm), cex=.5, horiz=T)
 
-pdf(paste0(OUT, "/hc_Immune.pdf"), width = 3.5, height = 6)
+pdf(paste0(OUT, "/hc_Immune.pdf"), width = 3, height = 8)
 
 plot_hc(hnorm_all, dend_all, cex.para = 0.8, mar.para = c(2,1,1.5,14) + 0.1, ylim.para = c(1, 41))
 plot_hc(hnorm_tf, dend_tf, cex.para = 0.8, mar.para = c(2,1,1.5,14) + 0.1, ylim.para = c(1, 41))
