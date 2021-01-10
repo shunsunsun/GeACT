@@ -2,6 +2,7 @@
 setwd("~/lustre/06-Human_cell_atlas/pooled_data/All/")
 
 library("parallel")
+suppressMessages(library("arrow"))
 
 # options
 dts <- data.frame(tissue = list.files(path = "..", pattern = "^[0-9]"), stringsAsFactors = F)
@@ -22,6 +23,9 @@ dir.create(path = paste0("03-expression/merged/filtering"), showWarnings = F, re
 # write.table vs fwrite (1000 rows * 31392 columns: 186.282s ~ 4.647s)
 data.table::fwrite(x = dts_DF, file = paste0("03-expression/merged/filtering/UMIcount_unfiltered.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
 system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_unfiltered.txt", " > ", "03-expression/merged/filtering/UMIcount_unfiltered.txt.gz"))
+# for quick read
+write_feather(x = dts_DF, sink = paste0("03-expression/merged/filtering/UMIcount_unfiltered.feather"))
+write.table(x = rownames(dts_DF), file = paste0("03-expression/merged/filtering/UMIcount_unfiltered.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
 
 # 1.2 UMI (after filtering)
 # filtering cells
@@ -38,17 +42,31 @@ dir.create(path = paste0("03-expression/merged/filtering"), showWarnings = F, re
 data.table::fwrite(x = ftc_DF, file = paste0("03-expression/merged/filtering/filtering_cells.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
 dts_cellftd <- dts_DF[, subset(ftc_DF, filter, "cell", drop = T)]
 
+# norm (using the genes before filtering)
+dts_cellftd_CPM <- sweep(x = dts_cellftd, MARGIN = 2, STATS = colSums(dts_cellftd), FUN = "/") * 1e6
+data.table::fwrite(x = dts_cellftd_CPM, file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
+system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_cellFiltered_CPM.txt", " > ", "03-expression/merged/filtering/UMIcount_cellFiltered_CPM.txt.gz"))
+# for quick read
+write_feather(x = dts_cellftd_CPM, sink = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.feather"))
+write.table(x = rownames(dts_cellftd_CPM), file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
+
 # filtering genes
 nCell_expressed <- rowSums(dts_cellftd > 0)
 dts_ftd <- dts_cellftd[nCell_expressed >= 10, ]
 dim(dts_ftd)
 data.table::fwrite(x = dts_ftd, file = paste0("03-expression/merged/filtering/UMIcount_filtered.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
 system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_filtered.txt", " > ", "03-expression/merged/filtering/UMIcount_filtered.txt.gz"))
+# for quick read
+write_feather(x = dts_ftd, sink = paste0("03-expression/merged/filtering/UMIcount_filtered.feather"))
+write.table(x = rownames(dts_ftd), file = paste0("03-expression/merged/filtering/UMIcount_filtered.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
 
-# norm
+# norm (using the genes after filtering)
 dts_ftd_CPM <- sweep(x = dts_ftd, MARGIN = 2, STATS = colSums(dts_ftd), FUN = "/") * 1e6
 data.table::fwrite(x = dts_ftd_CPM, file = paste0("03-expression/merged/filtering/UMIcount_filtered_CPM.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
 system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_filtered_CPM.txt", " > ", "03-expression/merged/filtering/UMIcount_filtered_CPM.txt.gz"))
+# for quick read
+write_feather(x = dts_ftd_CPM, sink = paste0("03-expression/merged/filtering/UMIcount_filtered_CPM.feather"))
+write.table(x = rownames(dts_ftd_CPM), file = paste0("03-expression/merged/filtering/UMIcount_filtered_CPM.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
 
 # 2. cleanFq stat
 mt1_LS <- lapply(split(dts, 1:nrow(dts)), function(x) {
@@ -98,6 +116,10 @@ mt5_LS <- lapply(split(dts, 1:nrow(dts)), function(x) {
   #print(x)
   y <- read.table(paste0("../", x[1], "/03-expression/merged/cellCluster/Seurat_metaData.txt"), header = T, sep = "\t", stringsAsFactors = F)
   y <- y[, - grep("^res", colnames(y))]
+  u <- read.table(paste0("../", x[1], "/03-expression/merged/cellCluster/Seurat_UMAP_embeddings.txt"), header = T, sep = "\t", stringsAsFactors = F)
+  colnames(u) <- c("cell", "UMAP_1", "UMAP_2")
+  y <- merge(y, u, by = 1, sort = F)
+  y <- y[, c(1:13, 23:24, 14:22)]
   return(y)
 })
 names(mt5_LS) <- NULL
@@ -105,27 +127,33 @@ mt5_DF <- do.call("rbind", mt5_LS)
 dir.create(path = paste0("03-expression/merged/cellCluster"), showWarnings = F, recursive = T)
 write.table(x = mt5_DF, file = paste0("03-expression/merged/cellCluster/Seurat_metaData_pooled.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
 
-# 6. meta
-cellMeta <- merge(ftc_DF, mt1_DF[, c(1,2,5,13)], by.x = "cell", by.y = "V5", sort = F)
+# 6. marker genes
+mt6_LS <- lapply(split(dts, 1:nrow(dts)), function(x) {
+  #print(x)
+  y <- read.table(paste0("../", x[1], "/03-expression/merged/cellCluster/Seurat_markerGenes.txt"), header = T, sep = "\t", stringsAsFactors = F)
+  y$tissue <- gsub("_", " ", gsub("^[0-9][0-9]_", "", x[1]))
+  return(y)
+})
+names(mt6_LS) <- NULL
+mt6_DF <- do.call("rbind", mt6_LS)
+dir.create(path = paste0("03-expression/merged/cellCluster"), showWarnings = F, recursive = T)
+write.table(x = mt6_DF, file = paste0("03-expression/merged/cellCluster/Seurat_markerGenes.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
 
-### meta from Github
-# meta_table <- read.table(file = "meta_table.txt", header = T, sep = "\t", stringsAsFactors = F)
-# dim(meta_table)
-# # only use HCA
-# meta_table <- meta_table[grep("_HCA_", meta_table$plate), ]
-# meta_table <- meta_table[, c("plate", "tissue", "samplingPos")]
-# meta_table <- meta_table[! duplicated(meta_table), ]
-# # rename
-# meta_table$plate <- gsub("-CGM-", "_CGM_", meta_table$plate)
-# meta_table$plate <- gsub("_CGM_1-", "_C-A", meta_table$plate)
-# meta_table$plate <- gsub("_CGM_2-", "_C-B", meta_table$plate)
-# meta_table$plate <- gsub("_CGM_3-", "_C-C", meta_table$plate)
-# meta_table$plate <- gsub("_CGM_4-", "_C-D", meta_table$plate)
-# 
-# setdiff(meta_table$plate, cellMeta$V2)
-# setdiff(cellMeta$V2, meta_table$plate)
-# cellMeta <- merge(cellMeta, meta_table, by.x = "V2", by.y = "plate", sort = F)
-###
+# 7. cell type order and color
+mt7_LS <- lapply(split(dts, 1:nrow(dts)), function(x) {
+  #print(x)
+  y <- read.table(paste0("../", x[1], "/03-expression/merged/cellCluster/color_DF.txt"), header = F, sep = "\t", stringsAsFactors = F, comment.char = "")[, c(2,1,3)]
+  colnames(y) <- c("tissue", "ident", "color")
+  y$tissue <- tolower(y$tissue)
+  return(y)
+})
+names(mt7_LS) <- NULL
+mt6_DF <- do.call("rbind", mt7_LS)
+dir.create(path = paste0("03-expression/merged/cellCluster"), showWarnings = F, recursive = T)
+write.table(x = mt6_DF, file = paste0("03-expression/merged/cellCluster/Seurat_cellType_color.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+
+# 8. cell meta
+cellMeta <- merge(ftc_DF, mt1_DF[, c(1,2,5,13)], by.x = "cell", by.y = "V5", sort = F)
 
 sid_info <- read.table("../../datasets/sid_info.txt", header = T, sep = "\t", stringsAsFactors = F)
 dim(sid_info)
@@ -134,16 +162,57 @@ cellMeta$sid <- gsub("_.*", "", cellMeta$cell)
 cellMeta <- merge(cellMeta, sid_info, by = "sid", sort = F)[, -1]
 cellMeta <- cellMeta[match(ftc_DF$cell, cellMeta$cell), ]
 
-# add ident and tSNE
-cellMeta_withIdent <- merge(cellMeta, mt5_DF[, c("cell", "ident", "tSNE_1", "tSNE_2")], by = "cell", sort = F, all.x = T)
+# add ident, tSNE and UMAP
+cellMeta_withIdent <- merge(cellMeta, mt5_DF[, c("cell", "ident", "tSNE_1", "tSNE_2", "UMAP_1", "UMAP_2")], by = "cell", sort = F, all.x = T)
 cellMeta_withIdent <- cellMeta_withIdent[match(cellMeta$cell, cellMeta_withIdent$cell), ]
 colnames(cellMeta_withIdent)[11:14] <- c("QC", "species", "plate", "seqID")
-cellMeta_final <- cellMeta_withIdent[, c(1,14,12,15,16,13,11,17,2:8,10,18,19)]
-
-all(colnames(dts_DF) == cellMeta_final$cell)
+cellMeta_final <- cellMeta_withIdent[, c(1,14,12,15,16,13,11,17,2:8,10,18,19,20,21)]
 
 # full
 write.table(x = cellMeta_final, file = "cell_metatable.txt", row.names = F, col.names = T, quote = F, sep = "\t")
 # filtered
 cellMeta_final_filtered <- subset(cellMeta_final, QC)
 write.table(x = cellMeta_final_filtered, file = "cell_metatable_filtered.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+
+# cell group
+ident2clgrp <- function(ident.input) {
+  ident.input[grepl("^Epi", ident.input)] <- "Epithelial"
+  ident.input[grepl("^Endo", ident.input)] <- "Endothelial"
+  ident.input[grepl("^SM-", ident.input)] <- "Smooth muscle"
+  ident.input[grepl("^SM$", ident.input)] <- "Smooth muscle"
+  ident.input[grepl("^SKM$", ident.input)] <- "Skeletal muscle"
+  ident.input[grepl("^Fibro", ident.input)] <- "Fibroblast"
+  # immune
+  ident.input[grepl("^B-", ident.input)] <- "B"
+  ident.input[grepl("^Pro-B", ident.input)] <- "B"
+  ident.input[grepl("^Pre-B", ident.input)] <- "B"
+  ident.input[grepl("^DC/Macro", ident.input)] <- "DC/Macrophage"
+  ident.input[grepl("^Mast-", ident.input)] <- "Mast"
+  ident.input[grepl("^Neutrophil-", ident.input)] <- "Neutrophil"
+  ident.input[grepl("^NKT-", ident.input)] <- "NKT"
+  ident.input[grepl("^T-", ident.input)] <- "T"
+  ident.input[grepl("^Pre-T", ident.input)] <- "T"
+  #
+  ident.input[grepl("^Erythrocyte-", ident.input)] <- "Erythrocyte"
+  ident.input[grepl("^CACNA1A-", ident.input)] <- "CACNA1A"
+  ident.input[ident.input %in% c("PT", "LoH", "LoH-Prog", "DT", "PC-CLU", "PC-BCAT1", "Podocyte-GPC3", "Podocyte-PLA2R1")] <- "Epithelial"
+  ident.input[grepl("^Sertoli-", ident.input)] <- "Sertoli"
+  ident.input[grepl("^Granulosa-", ident.input)] <- "Granulosa"
+  # FGC
+  ident.input[grepl("^SSC$", ident.input)] <- "FGC"
+  return(ident.input)
+}
+
+cellMeta_final_filtered_plus <- cellMeta_final_filtered
+cellMeta_final_filtered_plus$group <- ident2clgrp(cellMeta_final_filtered_plus$ident)
+cellMeta_final_filtered_plus <- cellMeta_final_filtered_plus[, c(1:8,21,9:20)]
+write.table(x = cellMeta_final_filtered_plus, file = "cell_metatable_filtered_plus.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+
+# 9. cell type meta
+ts_ordered <- read.table("../../pooled_data/All/tissue_ordered.txt", header = F, sep = "\t", stringsAsFactors = F)
+dim(ts_ordered)
+colnames(ts_ordered) <- "tissue"
+ts_ordered$tissue <- tolower(ts_ordered$tissue)
+ctMeta <- do.call("rbind", split(mt6_DF, mt6_DF$tissue)[ts_ordered$tissue])
+rownames(ctMeta) <- NULL
+write.table(x = ctMeta, file = "cellType_metatable.txt", row.names = F, col.names = T, quote = F, sep = "\t")
