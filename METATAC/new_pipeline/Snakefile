@@ -1,0 +1,97 @@
+workdir: "/data/Lab/otherwork/GeACT/ATAC"
+localrules: all, test, clear
+
+run_cicero = False
+root = "/data/Lab/otherwork/GeACT/ATAC"
+
+stages = ["19-22w", "11-14w"]
+stage_tissues = {"19-22w": ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", "06_spleen", 
+                  "07_testis", "08_bladder", "09_bone_marrow", "11_diaphragm", "12_esophagus", "14_large_intestine", "15_liver", "16_ovary", "17_thymus"],
+                 "11-14w": ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", "06_spleen",
+                  "07_testis", "08_bladder", "09_bone_marrow", "10_bronchus", "12_esophagus", "15_liver", "16_ovary", "17_thymus"]}
+# both_tissues = list(set(stage1_tissues) & set(stage2_tissues))
+with_RNA_11_14w = ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "17_thymus"]
+merge_stage_dict = {i: {tissue: ("11-14w" if(i == "11-14w" and (tissue in with_RNA_11_14w)) else "19-22w") for tissue in stage_tissues[i]} for i in stages}
+# merge_stage_dict = {i: {tissue: "19-22w" for tissue in stage_tissues[i]} for i in stages}
+
+def get_all(wildcards):
+    samples = []
+    for i in stages:
+        samples += expand("data/{stage}/{sample}/results/filtered_cellMeta.txt", stage=i, sample=stage_tissues[i])
+    return samples
+
+rule all:
+    input:
+        get_all
+
+rule cmp_stage_transfer_all:
+    input:
+        expand("data/11-14w/{tissue}/results/cmp_transfer_stage/cmp_ident.html", tissue=with_RNA_11_14w)
+
+rule test:
+    input:
+        "data/11-14w/01_stomach/results/filtered_cellMeta.txt"
+
+rule clear:
+    shell:
+        "rm -rf data/*/*/results;"
+        "rm -rf data/*/*/RNA/19-22w/expr_RNA.rds;"
+
+rule peak_calling:
+    input:
+        "data/{stage}/{tissue}/frag_and_meta/merge_human_frag_decon.bed.gz",
+        "database/blacklists/hg38-blacklist.v2.bed.gz",
+        "database/blacklists/mito_hg38_peaks.narrowPeak"
+    output:
+        "data/{stage}/{tissue}/results/peak_calling/macs2/organ_peaks_filtered.narrowPeak"
+    threads: 2
+    log:
+        "data/{stage}/{tissue}/results/peak_calling/peak_calling.log"
+    conda:
+        "envs/atac.yaml"
+    shell:
+        "scripts/src/call_peaks.sh -f data/{wildcards.stage}/{wildcards.tissue}/frag_and_meta/merge_human_frag_decon.bed.gz -o data/{wildcards.stage}/{wildcards.tissue}/results/peak_calling "
+        "-b database/blacklists/hg38-blacklist.v2.bed.gz -b database/blacklists/mito_hg38_peaks.narrowPeak > {log} 2>&1"
+
+rule to_ArchR:
+    input:
+        "data/{stage}/{tissue}/frag_and_meta/merge_human_frag_decon.bed.gz"
+    output:
+        "data/{stage}/{tissue}/results/ArchR/{stage}_{tissue}.arrow"
+    log:
+        "data/{stage}/{tissue}/results/pp2ArchR.log"
+    threads: 8
+    shell:
+        "Rscript data/{wildcards.stage}/{wildcards.tissue}/pp2ArchR.R --root {root} > {log} 2>&1"
+
+rule main_pipeline:
+    input:
+        "data/{stage}/{tissue}/results/ArchR/{stage}_{tissue}.arrow",
+        "data/{stage}/{tissue}/results/peak_calling/macs2/organ_peaks_filtered.narrowPeak",
+        rds=lambda wildcards: "data/{}/{}/RNA/{}/expr_RNA.rds".format(wildcards.stage, wildcards.tissue, merge_stage_dict[wildcards.stage][wildcards.tissue])
+    output:
+        "data/{stage}/{tissue}/results/filtered_cellMeta.txt"
+    log:
+        "data/{stage}/{tissue}/results/main_pipeline.log"
+    threads: 8
+    params: merge_stage=lambda wildcards: merge_stage_dict[wildcards.stage][wildcards.tissue]
+    shell:
+        "scripts/src/main_ArchR_pipeline.R --cicero -s {wildcards.stage} -t {wildcards.tissue} --root {root} --threads {threads} --merge_rna_stage {params.merge_stage} > {log} 2>&1"
+
+rule create_merge_rnadata:
+    input:
+        "data/{stage}/{tissue}/RNA/{rna_stage}/Seurat_metaData.txt",
+        "data/{stage}/{tissue}/RNA/{rna_stage}/UMIcount_cellFiltered.txt"
+    output:
+        "data/{stage}/{tissue}/RNA/{rna_stage}/expr_RNA.rds"
+    shell:
+        "scripts/src/construct_seurat.R -s {wildcards.stage} -t {wildcards.tissue} --root {root} --buildstage {wildcards.rna_stage}"
+
+rule cmp_transfer_stage:
+    input:
+        "data/11-14w/{tissue}/results/filtered_cellMeta.txt",
+        "data/11-14w/{tissue}/results/filtered_cellMeta_A.txt"
+    output:
+        "data/11-14w/{tissue}/results/cmp_transfer_stage/cmp_ident.html"
+    shell:
+        "scripts/src/cmp_transfer.R --root {root} -t {wildcards.tissue}"
