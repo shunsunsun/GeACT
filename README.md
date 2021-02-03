@@ -7,7 +7,7 @@ version: v1.0.2
 | Class | Technology | Cell number | Organ number |
 | :------| :------ | ------: | ------: |
 | sc-RNA-seq | MALBAC-DT | 38,671 | 17 |
-| sc-ATAC-seq | METATAC | 21,381+? | 14+? |
+| sc-ATAC-seq | METATAC | 45,474 | 16 |
 
 To download raw data, please request it in [the Genome Sequence Archive](https://bigd.big.ac.cn/gsa-human/) with the ID of HRA000330.
 
