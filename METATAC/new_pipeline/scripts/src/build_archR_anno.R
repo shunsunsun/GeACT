@@ -78,9 +78,8 @@ blacklist <- GenomicFeatures:::.tidy_seqinfo(
 )
 blacklist <- sort(blacklist)
 
-my_genome <- BSgenome.Hsapiens.UCSC.hg38
-seqlevels(my_genome) <- chrs
-
+# my_genome <- BSgenome.Hsapiens.UCSC.hg38
+# seqlevels(my_genome) <- chrs
 
 chromsize <- GRanges(names(seqlengths(BSgenome.Hsapiens.UCSC.hg38)), IRanges(1, seqlengths(BSgenome.Hsapiens.UCSC.hg38)))
 chromsize <- GenomeInfoDb::keepSeqlevels(chromsize, chrs, pruning.mode = "coarse")
