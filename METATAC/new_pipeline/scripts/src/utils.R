@@ -144,8 +144,7 @@ peakMatrix2ciceroCDS <- function(peakMatrix){
   
   # format peak info
   peaks <- rowRanges(peakMatrix)
-  peakinfo <- data.frame(row.names = paste(as.character(seqnames(peaks)), start(peaks), end(peaks), sep = "_"), 
-                         name = peaks$name)
+  peakinfo <- data.frame(row.names = paste(as.character(seqnames(peaks)), start(peaks), end(peaks), sep = "_"))
   
   rownames(peakMatrix) <- rownames(peakinfo)
   

@@ -5,13 +5,14 @@ suppressMessages({
 
 
 # Argument parsing -------------------------------------------------------------
-doc <- "Usage: main_ArchR_pipeline.R [-h] [-s STAGE] [-t TISSUE] [--root ROOT] [--merge_rna_stage RNASTAGE] [--cicero] [--fconns] [--threads THREADS]
+doc <- "Usage: main_ArchR_pipeline.R [-h] [-s STAGE] [-t TISSUE] [--root ROOT] [--peaks PEAKS] [--merge_rna_stage RNASTAGE] [--cicero] [--fconns] [--threads THREADS]
 
 -h --help           show help message
--s --stage STAGE    stage of sample [default: 19-22w]
--t --tissue TISSUE  tissue name [default: 02_small_intestine]
+-s --stage STAGE    stage of sample [default: 11-14w]
+-t --tissue TISSUE  tissue name [default: 01_stomach]
 --root ROOT         root directory of ATAC analysis [default: /data/Lab/otherwork/GeACT/ATAC]
---merge_rna_stage RNASTAGE RNA stage to use for integration and label transfer [default: 19-22w]
+--peaks PEAKS       rds peaks file in results/peak_callong directory [default: normalPeaks.rds]
+--merge_rna_stage RNASTAGE  RNA stage to use for integration and label transfer [default: 19-22w]
 --cicero            run cicero pipeline [default: FALSE]
 --fconns            force rerun conns step [default: FALSE]
 --threads THREADS   Cicero threads [default: 16]
@@ -56,6 +57,7 @@ tissue <- opt$tissue
 runCicero <- opt$cicero
 force_conns <- opt$fconns
 root <- opt$root
+peaks_file <- opt$peaks
 rna_stage <- opt$merge_rna_stage
 threads <- as.integer(opt$threads)
 
@@ -78,8 +80,8 @@ pdf_dev <- dev.cur()
 
 # 1 basic ArchR pipeline -------------------------------------------------------
 setwd(ArchR_wd)
-proj <- loadArchRProject(path = "ArchR_output", showLogo = F)
 addArchRThreads(threads)
+proj <- loadArchRProject(path = "ArchR_output", showLogo = F)
 
 # load rna expr seurat object
 cat(sprintf("Loading %s\n", expr_file))
@@ -121,9 +123,9 @@ proj <- addUMAP(
  )
 
 # add peak matrix --------------------------------------------------------------
-peaks_file <- paste(root, .data, stage, tissue, "results/peak_calling/macs2/organ_peaks_filtered.narrowPeak", sep = "/")
+peaks_file <- paste(root, .data, stage, tissue, "results/peak_calling", peaks_file, sep = "/")
 # peaks_file <- paste(root, "meta/All_peaks_sorted_filt.narrowPeak", sep = "/")
-peaks <- rtracklayer::import(peaks_file)
+peaks <- readRDS(peaks_file)
 chrs <- paste0("chr", c(seq_len(22), "X"))
 peaks <- GenomeInfoDb::keepSeqlevels(peaks, chrs, pruning.mode = "coarse")
 proj <- addPeakSet(proj, peakSet = peaks, force = T)
@@ -323,9 +325,9 @@ if(runCicero){
   cellMeta$ciceroIdent <- cicero_inte$celltype.predictions["predicted.id"][rownames(cellMeta), ]
 }
 
-rownames(cellMeta) <- gsub("^.*#", "", rownames(cellMeta))
-
 write.table(cellMeta, file = "filtered_cellMeta_internal.txt", sep = "\t", quote = F, col.names = NA)
+
+rownames(cellMeta) <- gsub("^.*#", "", rownames(cellMeta))
 
 if (stage == "19-22w") {
   rownames(cellMeta) <- gsub("^(.*?_)", "\\1A_", rownames(cellMeta)) 
@@ -349,7 +351,8 @@ print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name 
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "individual", plotAs = "points", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "predictedIdent", plotAs = "points", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "group", plotAs = "points", size = 1.5))
-print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "ciceroIdent", plotAs = "points", size = 1.5))
+if (runCicero)
+  print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "ciceroIdent", plotAs = "points", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "nFrags", plotAs = "points", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "FRIP", plotAs = "points", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "mito_ratio", plotAs = "points", size = 1.5))
