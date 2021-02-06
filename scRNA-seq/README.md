@@ -6,6 +6,7 @@ A pipeline for single-cell RNA-seq data analysis, tuning for MALBAC-DT protocol.
 2. R (3.0.1 or later)  
 
 ## Pipeline
+### Dataset level
 For the sequencing data in each dataset (e.g. datasets/13_D1_48):
 
 1. demultiplexing  
@@ -26,4 +27,20 @@ bash do_hisat2.sh
 UMI count for each gene was calculated.
 ```
 bash do_htseq.sh
+```
+
+### Organ level (at one specific developmental stage)
+For each organ (e.g. pooled_data/01_stomach):
+
+1. data pooling (from different datasets)
+```
+Rscript do_poolData.r
+```
+2. cell/gene filtering
+```
+Rscript do_filter.r
+```
+3. cell clustering
+```
+Rscript do_cluster.r
 ```
