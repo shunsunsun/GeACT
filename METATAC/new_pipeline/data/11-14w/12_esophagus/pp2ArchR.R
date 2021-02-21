@@ -141,7 +141,7 @@ nFrags_l = 4
 nFrags_h = 5.8
 con_rate_h = 0.9
 mito_h = 0.1
-TSS_l = 5
+TSS_l = 4
 Promoter_l = 0.05
 Doublet_h = 80
 
