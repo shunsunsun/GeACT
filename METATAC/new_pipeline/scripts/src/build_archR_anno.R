@@ -1,11 +1,34 @@
-library(GenomicRanges)
-library(AnnotationDbi)
-library(BSgenome.Hsapiens.UCSC.hg38)
-library(tidyverse)
-library(ArchR)
-library(GenomicFeatures)
+#!/usr/bin/env r
+suppressMessages({
+  library(docopt)
+})
 
-setwd("/data/Lab/otherwork/GeACT/ATAC/database")
+# Argument parsing -------------------------------------------------------------
+doc <- "Usage: build_archR_anno.R [-h] [--root ROOT]
+
+-h --help           show help message
+--root ROOT         root directory of ATAC analysis [default: /data/Lab/otherwork/GeACT/ATAC]
+"
+
+opt <- docopt(doc)
+
+if(opt$help){
+  cat(doc)
+  q("no")
+}
+
+
+suppressMessages({
+  library(GenomicRanges)
+  library(AnnotationDbi)
+  library(BSgenome.Hsapiens.UCSC.hg38)
+  library(tidyverse)
+  library(ArchR)
+  library(GenomicFeatures)
+})
+
+
+setwd(paste(opt$root, "database", sep = "/"))
 
 # Phase 1: save to txdb sqlite database ----------------------------------------
 chrs <- paste0("chr", c(seq_len(22), "X", "Y", "M"))
@@ -90,4 +113,3 @@ genomeAnnotation <- createGenomeAnnotation(genome = BSgenome.Hsapiens.UCSC.hg38,
 # save gene and genome Annotation ----------------------------------------------
 saveRDS(object = genomeAnnotation, file = "annotation/genomeAnnotation.rds")
 saveRDS(object = geneAnnotation, file = "annotation/geneAnnotation.rds")
-
