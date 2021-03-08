@@ -390,7 +390,7 @@ DoHeatmap_new <- function (object, data.use = NULL, use.scaled = TRUE, cells.use
           remove.key = FALSE, rotate.key = FALSE, title = NULL, cex.col = 10, 
           cex.row = 10, group.label.loc = "bottom", group.label.rot = FALSE, 
           group.cex = 15, strip.text.y = 8, group.spacing = 0.15, panel.spacing.y = -0.2, assay.type = "RNA", 
-          do.colBar = FALSE, colBar.col = NULL, do.plot = TRUE, strip.text.x.top = 10, strip.text.y.display = F, strip.text.y.right = 4) 
+          do.colBar = FALSE, colBar.col = NULL, do.plot = TRUE, strip.text.x.top = 10, strip.text.y.display = F, strip.text.y.right = 4, legend.margin.for.colBar = margin(t = -12)) 
 {
   if (is.null(x = data.use)) {
     if (use.scaled) {
@@ -525,7 +525,7 @@ DoHeatmap_new <- function (object, data.use = NULL, use.scaled = TRUE, cells.use
     heatmap <- heatmap + 
       theme(strip.text.x = element_text(angle = 90, hjust = 1, margin = margin(t = strip.text.x.top, r = 0, b = 0, l = 0))) + 
       theme(strip.text.y = element_text(margin = margin(r = strip.text.y.right))) + 
-      theme(legend.position = "bottom", legend.justification = "center", legend.margin = margin(t = -12))
+      theme(legend.position = "bottom", legend.justification = "center", legend.margin = legend.margin.for.colBar)
     if(! strip.text.y.display) {
       heatmap <- heatmap + theme(strip.text.y = element_blank())
     }
