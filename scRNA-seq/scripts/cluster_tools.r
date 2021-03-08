@@ -390,7 +390,7 @@ DoHeatmap_new <- function (object, data.use = NULL, use.scaled = TRUE, cells.use
           remove.key = FALSE, rotate.key = FALSE, title = NULL, cex.col = 10, 
           cex.row = 10, group.label.loc = "bottom", group.label.rot = FALSE, 
           group.cex = 15, strip.text.y = 8, group.spacing = 0.15, panel.spacing.y = -0.2, assay.type = "RNA", 
-          do.colBar = FALSE, colBar.col = NULL, do.plot = TRUE, strip.text.x.top = 10, strip.text.y.display = F, strip.text.y.right = 4, legend.margin.for.colBar = margin(t = -12)) 
+          do.colBar = FALSE, colBar.y = 0.93, colBar.col = NULL, do.plot = TRUE, strip.text.x.top = 10, strip.text.y.display = F, strip.text.y.right = 4, legend.margin.for.colBar = margin(t = -12)) 
 {
   if (is.null(x = data.use)) {
     if (use.scaled) {
@@ -561,8 +561,8 @@ DoHeatmap_new <- function (object, data.use = NULL, use.scaled = TRUE, cells.use
       gt$children <- gList(gt$children, added=g$grobs[[layIx]]$children[[objIx]])
       names(gt$children)[length(gt$children)] <- objID
       # change parameters
-      gt$children[[length(gt$children)]]$y0 <- unit(0.93, units = "native")
-      gt$children[[length(gt$children)]]$y1 <- unit(0.93, units = "native")
+      gt$children[[length(gt$children)]]$y0 <- unit(colBar.y, units = "native")
+      gt$children[[length(gt$children)]]$y1 <- unit(colBar.y, units = "native")
       gt$childrenOrder <- c(gt$childrenOrder, objID)
       g$grobs[[grep(paste0("^strip-b-", i, "$"), g$layout$name)]]$grobs[[1]] <- gt
       
