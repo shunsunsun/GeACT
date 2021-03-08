@@ -522,8 +522,12 @@ DoHeatmap_new <- function (object, data.use = NULL, use.scaled = TRUE, cells.use
   }
   if (do.colBar) {
     ### pre
+    if(group.label.rot) {
+      heatmap <- heatmap + theme(strip.text.x = element_text(angle = 90, hjust = 1, margin = margin(t = strip.text.x.top, r = 0, b = 0, l = 0)))
+    } else {
+      heatmap <- heatmap + theme(strip.text.x = element_text(angle = 0, margin = margin(t = strip.text.x.top, r = 0, b = 0, l = 0)))
+    }
     heatmap <- heatmap + 
-      theme(strip.text.x = element_text(angle = 90, hjust = 1, margin = margin(t = strip.text.x.top, r = 0, b = 0, l = 0))) + 
       theme(strip.text.y = element_text(margin = margin(r = strip.text.y.right))) + 
       theme(legend.position = "bottom", legend.justification = "center", legend.margin = legend.margin.for.colBar)
     if(! strip.text.y.display) {
