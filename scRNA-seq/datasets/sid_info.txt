@@ -2,7 +2,7 @@ sid	tissue	samplingPos
 BM	heart	valve
 FDM	heart	pulmonary artery
 FSJG	heart	atrioventricular septum
-FZW	lung	around
+FZW	lung	peripheral
 FZY	lung	central
 GJ	diaphragm	diaphragm
 GS	bone marrow	bone marrow
@@ -19,6 +19,8 @@ JJC	large intestine	descending colon
 PG	bladder	bladder
 PZ	spleen	spleen
 QD	umbilical cord	umbilical cord
+QG	trachea	trachea
+RC	ovary	ovary
 RCN	ovary	ovary
 RCP	ovary	ovary
 SD	esophagus	esophagus
@@ -27,6 +29,7 @@ SJG	heart	ventricular septum
 SPZ	kidney	cortex
 SS	kidney	medulla
 SY	kidney	pelvis
+SZ	kidney	kidney
 WD	stomach	fundus
 WDOU	stomach	antrum
 WT	stomach	body
@@ -40,5 +43,7 @@ YX	pancreas	pancreas
 YXF	heart	right atrium
 YXS	heart	right ventricle
 ZDM	heart	aorta
+ZQG	bronchus	bronchus
+ZX	small intestine	middle/lower section
 ZXF	heart	left atrium
 ZXS	heart	left ventricle
