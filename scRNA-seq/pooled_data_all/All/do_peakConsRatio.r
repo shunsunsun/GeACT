@@ -30,7 +30,7 @@ ymax <- max(stat_DF$consPercentage) * 1.2
 sigBar <- data.frame(type = rep(levels(stat_DF$type), each = 2), consPercentage = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
 ggplot(stat_DF, aes(x = type, y = consPercentage, fill = type)) + geom_col(show.legend = F) + 
   #facet_grid(. ~ region) + 
-  geom_path(data = sigBar, group = 1) + geom_text(x = 1.5, y = ymax * (1 - 0.05), label = "***", col="red", size = 5.5) + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 1.5, y = ymax * (1 - 0.05), label = "***", col="red", size = 5.5) + 
   scale_y_continuous(limits = c(0, 0.13 * 100), expand = c(0, 0)) + 
   scale_fill_manual(values = c("gray75", "cornflowerblue")) + 
   xlab(NULL) + ylab("Percentage of conserved regions") + 
