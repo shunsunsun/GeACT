@@ -705,12 +705,16 @@ ggplot(md_DF, aes(x = avgCor_max, y = TF_num)) + geom_point()
 md_enrichTFbyAvgCor_LS <- split(mes$merged$cl_list_ftd$enrich_TF, cut(apply(mes$merged$avgCor, 1, max), breaks = c(0, 0.1, 0.2, 0.3, 1)))
 md_enrichTFbyAvgCor_MT <- sapply(md_enrichTFbyAvgCor_LS, function(x) { c(sum(! x), sum(x), sum(x) / length(x)) })
 rownames(md_enrichTFbyAvgCor_MT) <- c("without_TF", "with_TF", "ratio")
+fisher.test(md_enrichTFbyAvgCor_MT[1:2, c(1, 4)], alternative = "greater")$p.value
 md_enrichTFbyAvgCor <- data.frame(avgCor_max = names(md_enrichTFbyAvgCor_LS), ratio = md_enrichTFbyAvgCor_MT["ratio", ])
 
 pdf(paste0(OUT, "/md_enrichTFbyAvgCor.pdf"), width = 3.25, height = 4.5)
 
+ymax <- 1 * 1.2
+sigBar <- data.frame(avgCor_max = rep(c("(0,0.1]", "(0.3,1]"), each = 2), ratio = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
 ggplot(md_enrichTFbyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = "identity", fill = "cornflowerblue") + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 2.5, y = ymax * (1 - 0.05), label = "***", col="red", size = 5.5) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, ymax), breaks = seq(0, 1, by = 0.2)) + 
   xlab("Max. correlation") + ylab("Ratio of modules with enriched TFs") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.margin = margin(10,7,4,7))
 
@@ -720,13 +724,29 @@ dev.off()
 md_enrichPPIbyAvgCor_LS <- split(mes$merged$cl_list_ftd$enrich_PPI, cut(apply(mes$merged$avgCor, 1, max), breaks = c(0, 0.1, 0.2, 0.3, 1)))
 md_enrichPPIbyAvgCor_MT <- sapply(md_enrichPPIbyAvgCor_LS, function(x) { c(sum(! x), sum(x), sum(x) / length(x)) })
 rownames(md_enrichPPIbyAvgCor_MT) <- c("without_PPI", "with_PPI", "ratio")
+fisher.test(md_enrichPPIbyAvgCor_MT[1:2, c(1, 4)], alternative = "greater")$p.value
 md_enrichPPIbyAvgCor <- data.frame(avgCor_max = names(md_enrichPPIbyAvgCor_LS), ratio = md_enrichPPIbyAvgCor_MT["ratio", ])
 
 pdf(paste0(OUT, "/md_enrichPPIbyAvgCor.pdf"), width = 3.25, height = 4.5)
 
+ymax <- 1 * 1.2
+sigBar <- data.frame(avgCor_max = rep(c("(0,0.1]", "(0.3,1]"), each = 2), ratio = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
 ggplot(md_enrichPPIbyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = "identity", fill = "cornflowerblue") + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 2.5, y = ymax * (1 - 0.05), label = "***", col="red", size = 5.5) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, ymax), breaks = seq(0, 1, by = 0.2)) + 
   xlab("Max. correlation") + ylab("Ratio of modules with enriched PPI") + #ggtitle("STRING") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.margin = margin(10,7,4,7))
+
+dev.off()
+
+pdf(paste0(OUT, "/md_enrichSTRINGbyAvgCor.pdf"), width = 3.25, height = 4.5)
+
+ymax <- 1 * 1.2
+sigBar <- data.frame(avgCor_max = rep(c("(0,0.1]", "(0.3,1]"), each = 2), ratio = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
+ggplot(md_enrichPPIbyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = "identity", fill = "cornflowerblue") + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 2.5, y = ymax * (1 - 0.05), label = "***", col="red", size = 5.5) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, ymax), breaks = seq(0, 1, by = 0.2)) + 
+  xlab("Max. correlation") + ylab("Ratio of modules with enriched PPI") + ggtitle("STRING") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.margin = margin(10,7,4,7))
 
 dev.off()
@@ -735,12 +755,16 @@ dev.off()
 md_enrichGObyAvgCor_LS <- split(mes$merged$cl_list_ftd$enrich_GO, cut(apply(mes$merged$avgCor, 1, max), breaks = c(0, 0.1, 0.2, 0.3, 1)))
 md_enrichGObyAvgCor_MT <- sapply(md_enrichGObyAvgCor_LS, function(x) { c(sum(! x), sum(x), sum(x) / length(x)) })
 rownames(md_enrichGObyAvgCor_MT) <- c("without_GO", "with_GO", "ratio")
+fisher.test(md_enrichGObyAvgCor_MT[1:2, c(1, 4)], alternative = "greater")$p.value
 md_enrichGObyAvgCor <- data.frame(avgCor_max = names(md_enrichGObyAvgCor_LS), ratio = md_enrichGObyAvgCor_MT["ratio", ])
 
 pdf(paste0(OUT, "/md_enrichGObyAvgCor.pdf"), width = 3.25, height = 4.5)
 
+ymax <- 1 * 1.2
+sigBar <- data.frame(avgCor_max = rep(c("(0,0.1]", "(0.3,1]"), each = 2), ratio = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
 ggplot(md_enrichGObyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = "identity", fill = "cornflowerblue") + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 2.5, y = ymax * (1 - 0.05), label = "***", col="red", size = 5.5) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, ymax), breaks = seq(0, 1, by = 0.2)) + 
   xlab("Max. correlation") + ylab("Ratio of modules with enriched GO") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.margin = margin(10,7,4,7))
 
@@ -750,12 +774,16 @@ dev.off()
 md_enrichKEGGbyAvgCor_LS <- split(mes$merged$cl_list_ftd$enrich_KEGG, cut(apply(mes$merged$avgCor, 1, max), breaks = c(0, 0.1, 0.2, 0.3, 1)))
 md_enrichKEGGbyAvgCor_MT <- sapply(md_enrichKEGGbyAvgCor_LS, function(x) { c(sum(! x), sum(x), sum(x) / length(x)) })
 rownames(md_enrichKEGGbyAvgCor_MT) <- c("without_KEGG", "with_KEGG", "ratio")
+fisher.test(md_enrichKEGGbyAvgCor_MT[1:2, c(1, 4)], alternative = "greater")$p.value
 md_enrichKEGGbyAvgCor <- data.frame(avgCor_max = names(md_enrichKEGGbyAvgCor_LS), ratio = md_enrichKEGGbyAvgCor_MT["ratio", ])
 
 pdf(paste0(OUT, "/md_enrichKEGGbyAvgCor.pdf"), width = 3.25, height = 4.5)
 
+ymax <- 1 * 1.2
+sigBar <- data.frame(avgCor_max = rep(c("(0,0.1]", "(0.3,1]"), each = 2), ratio = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
 ggplot(md_enrichKEGGbyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = "identity", fill = "cornflowerblue") + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 2.5, y = ymax * (1 - 0.05), label = "***", col="red", size = 5.5) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, ymax), breaks = seq(0, 1, by = 0.2)) + 
   xlab("Max. correlation") + ylab("Ratio of modules with enriched KEGG") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.margin = margin(10,7,4,7))
 
@@ -765,12 +793,16 @@ dev.off()
 md_enrichHIPPIEbyAvgCor_LS <- split(mes$merged$cl_list_ftd$enrich_HIPPIE, cut(apply(mes$merged$avgCor, 1, max), breaks = c(0, 0.1, 0.2, 0.3, 1)))
 md_enrichHIPPIEbyAvgCor_MT <- sapply(md_enrichHIPPIEbyAvgCor_LS, function(x) { c(sum(! x), sum(x), sum(x) / length(x)) })
 rownames(md_enrichHIPPIEbyAvgCor_MT) <- c("without_HIPPIE", "with_HIPPIE", "ratio")
+fisher.test(md_enrichHIPPIEbyAvgCor_MT[1:2, c(1, 4)], alternative = "greater")$p.value
 md_enrichHIPPIEbyAvgCor <- data.frame(avgCor_max = names(md_enrichHIPPIEbyAvgCor_LS), ratio = md_enrichHIPPIEbyAvgCor_MT["ratio", ])
 
 pdf(paste0(OUT, "/md_enrichHIPPIEbyAvgCor.pdf"), width = 3.25, height = 4.5)
 
+ymax <- 1 * 1.2
+sigBar <- data.frame(avgCor_max = rep(c("(0,0.1]", "(0.3,1]"), each = 2), ratio = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
 ggplot(md_enrichHIPPIEbyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = "identity", fill = "cornflowerblue") + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 2.5, y = ymax * (1 - 0.05), label = "**", col="red", size = 5.5) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, ymax), breaks = seq(0, 1, by = 0.2)) + 
   xlab("Max. correlation") + ylab("Ratio of modules with enriched PPI") + ggtitle("HIPPIE") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.margin = margin(10,7,4,7))
 
@@ -780,12 +812,16 @@ dev.off()
 md_enrichHuRIbyAvgCor_LS <- split(mes$merged$cl_list_ftd$enrich_HuRI, cut(apply(mes$merged$avgCor, 1, max), breaks = c(0, 0.1, 0.2, 0.3, 1)))
 md_enrichHuRIbyAvgCor_MT <- sapply(md_enrichHuRIbyAvgCor_LS, function(x) { c(sum(! x), sum(x), sum(x) / length(x)) })
 rownames(md_enrichHuRIbyAvgCor_MT) <- c("without_HuRI", "with_HuRI", "ratio")
+fisher.test(md_enrichHuRIbyAvgCor_MT[1:2, c(1, 4)], alternative = "greater")$p.value
 md_enrichHuRIbyAvgCor <- data.frame(avgCor_max = names(md_enrichHuRIbyAvgCor_LS), ratio = md_enrichHuRIbyAvgCor_MT["ratio", ])
 
 pdf(paste0(OUT, "/md_enrichHuRIbyAvgCor.pdf"), width = 3.25, height = 4.5)
 
+ymax <- 1 * 1.2
+sigBar <- data.frame(avgCor_max = rep(c("(0,0.1]", "(0.3,1]"), each = 2), ratio = ymax * c(0.9, 0.925, 0.925, 0.9), stringsAsFactors = F)
 ggplot(md_enrichHuRIbyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = "identity", fill = "cornflowerblue") + 
-  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) + 
+  geom_path(data = sigBar, group = 1) + annotate(geom = "text", x = 2.5, y = ymax * (1 - 0.05), label = "*", col="red", size = 5.5) + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, ymax), breaks = seq(0, 1, by = 0.2)) + 
   xlab("Max. correlation") + ylab("Ratio of modules with enriched PPI") + ggtitle("HuRI") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1), plot.margin = margin(10,7,4,7))
 
