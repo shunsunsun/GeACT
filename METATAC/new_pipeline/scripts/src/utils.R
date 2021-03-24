@@ -1,11 +1,12 @@
-suppressMessages({
-library(ArchR)
-library(tidyverse)
-library(ggplot2)
-library(cowplot)
-library(Seurat)
-library(plyr)
-library(networkD3)
+suppressPackageStartupMessages({
+  library(ArchR)
+  library(tidyverse)
+  library(ggplot2)
+  library(cowplot)
+  library(Seurat)
+  library(plyr)
+  library(networkD3)
+  library(GenomicRanges)
 })
 
 my_clip <- function(x, lb, ub){
@@ -127,11 +128,13 @@ integrate <- function(activity_atac, expr_rna, peak_matrix, activity_slot = "ACT
   coembed$celltype <- ifelse(!is.na(coembed$ident), coembed$ident, coembed$predicted.id)
   # saveRDS(coembed, file = "../Seurat_integration/Seurat_expr_coembed.rds")
   
+  tsne_data <- FetchData(coembed, vars = c("tSNE_1", "tSNE_2", "tech", "celltype"))
+  
   p1 <- DimPlot(coembed, group.by = "tech")
   p2 <- DimPlot(coembed, group.by = "ident", label = T, repel = T)
   print(p1 + p2 + ggtitle("Coembedding of integrated RNA and ATAC"))
   
-  list(imputation = imputation, celltype.predictions = celltype.predictions)
+  list(imputation = imputation, celltype.predictions = celltype.predictions, tsne.data = tsne_data)
 }
 
 peakMatrix2ciceroCDS <- function(peakMatrix){
@@ -291,7 +294,7 @@ simpleMarkersPlot <- function(proj, geneScore){
   dev.off()
 }
 
-
+# not used
 fullMarkersPlot <- function(proj, geneScore){
   dir.create("markers_plot", showWarnings = F)
   
@@ -327,4 +330,228 @@ fullMarkersPlot <- function(proj, geneScore){
   pdf("DCMC.pdf", width = 10, height = 10)
   plotMarker(proj, geneScore, c("HLA-DRB1", "CLEC9A", "LAMP3", "CD1C", "PLD4", "CD14", "S100A8", "FCGR3A"))
   dev.off()
+}
+
+chromVARFeaturePlot <- function(object, feature, data = NULL, reduction = NULL, dims = c(1, 2), cells = NULL, size = 3) {
+  if (is.null(data)){
+    reduction <- reduction %||% Seurat:::DefaultDimReduc(object = object)
+    dims <- paste0(Key(object = object[[reduction]]), dims)
+    cells <- cells %||% colnames(x = object)
+    data <- FetchData(object = object, vars = c(dims, "ident", feature), cells = cells, slot = "data")
+  } else {
+    dims <- colnames(data)
+    reduction <- "UMAP"
+    feature_df <- FetchData(object = object, vars = feature, cells = cells, slot = "data")
+    data <- merge(data, feature_df, by.x = 0, by.y = 0)
+  }
+  
+  ggplot(data = data, mapping = aes_string(x = paste0("`", dims[1], "`"), y = paste0("`", dims[2], "`"), colour = paste0("`", feature, "`"))) + geom_point(size = 1) +
+    scale_color_gradientn(colours = c("blue","#f1f1f1","red"), 
+                          values = scales::rescale(c(min(data[[feature]]), 0, max(data[[feature]]))), 
+                          guide = "colorbar",
+                          limits = c(min(data[[feature]]), max(data[[feature]]))) +
+    ggtitle(feature) +# ggtitle(gsub("-", "_", feature)) +
+    xlab(paste(toupper(reduction), "1", sep = "_")) + ylab(paste(toupper(reduction), "2", sep = "_")) +
+    theme(
+      plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+      
+      panel.background = element_rect(fill = 'white', colour = "white"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      
+      
+      legend.background = element_rect(fill = "white", size = size, colour = "white"),
+      legend.title = element_blank(),
+      #legend.justification = c(0, 1),
+      axis.line = element_blank(), # element_line(colour = "black"),
+      axis.title = element_blank(), 
+      axis.ticks = element_blank(), # element_line(colour = "black", size = 0.2),
+      axis.text = element_blank()
+    )
+}
+
+my_genomicDensity <- function (region, window.size = 1e7, n.window = NULL, overlap = TRUE, 
+                               count.by = "value", chr.len = NULL, return.log = FALSE, max.clip = NULL) {
+  chrs <- unique(seqnames(region))
+  if(length(chrs) > 1){
+    return(do.call("rbind", lapply(chrs, function(chr){
+      if (is.null(chr.len)) {
+        max_rg = NULL
+      } else {
+        if (chr %in% names(chr.len)) {
+          max_rg = chr.len[chr]
+        } else {
+          max_rg = NULL
+        }
+      }
+      df = my_genomicDensity(region[seqnames(region) == chr, ], 
+                             window.size = window.size, overlap = overlap, 
+                             chr.len = max_rg, count.by = count.by, return.log = return.log, max.clip = max.clip)
+      # cbind(chr = rep(chr, nrow(df)), df)
+    })))
+  }
+  region <- GenomicRanges::sort(region)
+  # region <- GenomicRanges::reduce(region)
+  
+  if (!is.null(chr.len)) {
+    max_pos <- max(c(chr.len, max(end(region))))
+  } else {
+    max_pos <- max(end(region))
+  }
+  
+  if (overlap) {
+    if (missing(n.window)) {
+      b = seq(1, max_pos, by = window.size/2)
+      s = b[-length(b)]
+      s = s[-length(s)]
+      e = s + window.size - 1
+    }
+    else {
+      b = seq(1, max_pos, length = 2 * n.window - 1)
+      s = b[-length(b)]
+      s = s[-length(s)]
+      e = s + b[3] - b[1] - 1
+    }
+  }
+  else {
+    if (missing(n.window)) {
+      b = seq(1, max_pos, by = window.size)
+      s = b[-length(b)]
+      e = s + window.size - 1
+    }
+    else {
+      b = seq(1, max_pos, length = n.window)
+      s = b[-length(b)]
+      e = s + b[2] - b[1]
+    }
+  }
+  
+  s = as.integer(s)
+  e = as.integer(e)
+  y = rep(0, length(s))
+  
+  names(y) = paste(s, e, sep = ",")
+  windows = data.frame(start = s, end = e)
+  
+  region <- as.data.frame(region)[, c("start", "end", count.by)]
+  op <- my_overlap_region(windows, region, count_by = count.by)
+  
+  if(return.log) op <- log(op + 1)
+  if (!is.null(max.clip)) op <- my_clip(op, 0, max.clip)
+  res <- data.frame(chr = chrs, start = s, end = e, value = op)
+  return(res)
+  
+}
+
+my_overlap_region <- function (gr1, gr2, count_by = "value") {
+  nr1 = nrow(gr1)
+  nr2 = nrow(gr2)
+  overlap = rep(0, length = nr1)
+  if (nr1 == 0) {
+    return(overlap)
+  }
+  k_gr2 = 1
+  for (i in seq_len(nr1)) {
+    for (j in seq(k_gr2, nr2)) {
+      if (gr2[j, 2] < gr1[i, 1]) {
+        k_gr2 = ifelse(k_gr2 < nr2, k_gr2 + 1, nr2)
+        next
+      }
+      else if (gr2[j, 1] > gr1[i, 2]) {
+        break
+      }
+      else {
+        # cat(sprintf("j: %d\n", j))
+        # print(gr2[j, , drop = F])
+        overlap[i] = overlap[i] + gr2[j, count_by]
+      }
+    }
+  }
+  return(overlap)
+}
+
+df2gr <- function(df){
+  gr <- makeGRangesFromDataFrame(setNames(df, c("chr", "start", "end")))
+  mcols(gr) <- df[, -(1:3), drop = F]
+  
+  return(gr)
+}
+
+gr2df <- function(gr, keep_strand_width = F) {
+  df <- as.data.frame(gr)
+  if (!keep_strand_width) df[, c("width", "strand")] <- NULL
+  colnames(df)[1] <- "chr"
+  
+  return(df)
+}
+
+plotCircosFromRangeSE <- function(peak_matrix, group_by = "group", groups_to_cmp = NULL, window.size = 1e6, max.clip = 30, 
+                                  cytoband = NULL, chrs = 1:22, use_colors = NULL, genes_df = NULL){
+  if (is.null(groups_to_cmp)) groups_to_cmp  <- colData(peak_matrix)[, group_by] %>% table %>% sort(decreasing = T) %>% head(7) %>% names
+  
+  pseu_bulk_gr_list <- lapply(groups_to_cmp, function(group){
+    group_peak_matrix <- peak_matrix[, peak_matrix$group == group]
+    group_pseu_bulk <- rowMeans(assay(group_peak_matrix))
+    group_pseu_bulk_gr <- rowRanges(group_peak_matrix)
+    group_pseu_bulk_gr$value <- group_pseu_bulk
+    return(group_pseu_bulk_gr)
+  })
+  
+  names(pseu_bulk_gr_list) <- groups_to_cmp
+  
+  if (!is.null(cytoband)){
+    if (is.data.frame(cytoband)){
+      cytoband_df <- cytoband
+    } else {
+      cytoband_df <- cytoband$df
+    }
+    pseu_bulk_gr_list <- lapply(pseu_bulk_gr_list, function(pseu_bulk_gr) subsetByOverlaps(pseu_bulk_gr, df2gr(cytoband_df)))
+  }
+  
+  plot_dfs <- lapply(pseu_bulk_gr_list, my_genomicDensity, window.size = window.size, return.log = F, max.clip = max.clip) # 1e6 30 # 5e4 10
+  if (!is.null(cytoband)) plot_dfs <- lapply(plot_dfs, function(plot_df) subsetByOverlaps(df2gr(plot_df), df2gr(cytoband_df)) %>% gr2df)
+  
+  
+  if (is.null(use_colors)) use_colors <- brewer.pal(length(groups_to_cmp), name = "Set2")
+  
+  y_max <- sapply(plot_dfs, function(df) {max(df$value)}) %>% max
+  
+  circos.par(start.degree = 90, gap.degree = 3)
+  
+  if (is.null(cytoband)){
+    circos.initializeWithIdeogram(species = "hg38", plotType = c("axis", "labels"), chromosome.index = paste0("chr", chrs))
+  } else {
+    circos.initializeWithIdeogram(cytoband = cytoband_df, plotType = c("axis", "labels"), tickLabelsStartFromZero = F, chromosome.index = paste0("chr", chrs))
+  }
+  
+  
+  if (!is.null(genes_df)){
+    gene_colors <- brewer.pal(nrow(genes_df), name = "Pastel1")
+    circos.genomicTrack(genes_df, track.height = 0.1, ylim = c(0, 1), bg.border = NA,
+                        panel.fun = function(region, value, ...) {
+                          i = getI(...)
+                          circos.genomicRect(region, value, border = NA, col = gene_colors[i], ...)
+                          circos.genomicText(region, value, labels = value[["name"]], y = 0.5)
+                        }
+    )
+  }
+  
+  for(i in seq_along(pseu_bulk_gr_list)){
+    set_track_gap(mm_h(2))
+    circos.genomicTrack(plot_dfs[[i]], track.height = 0.1, ylim = c(0, y_max), bg.border = NA,
+                        panel.fun = function(region, value, ...) {
+                          circos.genomicLines(region, value, type = "l", border = NA, baseline = 0, area = T,
+                                              col = use_colors[i])
+                        })
+  }
+  
+  set_track_gap(mm_h(5))
+  
+  circos.genomicIdeogram(track.height = 0.03)
+  circos.clear()
+  
+  lgd_points <- Legend(at = names(use_colors), type = "points", 
+                       legend_gp = gpar(col = use_colors), title_position = "topleft", 
+                       title = "Cell Group")
+  draw(lgd_points)
 }
