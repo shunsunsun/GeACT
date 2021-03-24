@@ -49,7 +49,10 @@ cell_meta_file <- "Seurat_metaData.txt"
 expr_filtered_cell <- read.csv(filtered_cell_file, header = T, sep = "\t", row.names = 1, check.names = F)
 
 cell_meta <- read_tsv(cell_meta_file, col_names = T)
-cell_meta <- column_to_rownames(cell_meta, "cell")[colnames(expr_filtered_cell), ]
+cell_meta <- column_to_rownames(cell_meta, "cell")
+
+stopifnot(all(rownames(cell_meta) %in% colnames(expr_filtered_cell)))
+expr_filtered_cell <- expr_filtered_cell[, rownames(cell_meta)]
 
 ts <- CreateSeuratObject(expr_filtered_cell, project = paste(stage, tissue, sep = "_"), names.field = 0, meta.data = cell_meta, min.cells = 10, min.features = 0)
 Idents(ts) <- ts[["ident"]]
