@@ -67,7 +67,8 @@ ArrowFiles <- createArrowFiles(
   addGeneScoreMat = F,
   geneAnnotation = geneAnnotation,
   genomeAnnotation = genomeAnnotation,
-  force = T
+  force = T,
+  subThreading = F
 )
 
 proj <- ArchRProject(
