@@ -1004,7 +1004,7 @@ do_plotEnrich <- function(res_in, ctype, mdid, db = "GO", category = NULL, short
   } else {
     gp <- ggplot(enrich_res, aes(x = Description, y = -log10(p.adjust), fill = db)) + geom_bar(stat = "identity", width = 0.9, show.legend = show.legend) + 
       coord_flip() + scale_fill_manual(values = bar.col) + 
-      xlab(paste(paste(db, collapse = " / "), "terms")) + ylab(expression(paste(-log[10], " (FDR)"))) + geom_hline(yintercept = -log10(0.05), linetype = "dashed") + 
+      xlab(paste(paste(db, collapse = " / "), "terms")) + ylab(expression(paste(-Log[10], " (FDR)"))) + geom_hline(yintercept = -log10(0.05), linetype = "dashed") + 
       #scale_x_discrete(labels = rev(enrich_res$Description)) + 
       scale_y_continuous(expand = c(0, 0)) + 
       theme(axis.ticks.y = element_blank(), plot.margin = margin(7, 9, 7, 7, "pt")) + ggtitle(main)
