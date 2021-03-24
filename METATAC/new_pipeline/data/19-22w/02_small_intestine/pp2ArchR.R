@@ -32,7 +32,6 @@ suppressMessages({
 # env setup --------------------------------------------------------------------
 age <- '19-22w'
 tissue <- '02_small_intestine'
-root <- "/data/Lab/otherwork/GeACT/ATAC"
 .data <- "data"
 .lix_script <- "scripts_lix"
 
@@ -103,7 +102,8 @@ ArrowFiles <- createArrowFiles(
   addGeneScoreMat = T,
   geneAnnotation = geneAnnotation,
   genomeAnnotation = genomeAnnotation,
-  force = T
+  force = T,
+  subThreading = F
 )
 
 # Inferring scATAC-seq Doublets with ArchR
