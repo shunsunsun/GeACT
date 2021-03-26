@@ -4,6 +4,12 @@ setwd("~/lustre/06-Human_cell_atlas/pooled_data/All/")
 library("parallel")
 suppressMessages(library("arrow"))
 
+# load gene ID
+geneID <- read.table("~/lustre/06-Human_cell_atlas/Genomes/human/gene_ID2Name_fixed.txt", header = F, sep = "\t", stringsAsFactors = F)
+dim(geneID)
+colnames(geneID) <- c("ensembl", "symbol")
+geneID$ensembl_alt <- gsub("\\.[0-9]+", "", geneID$ensembl)
+
 # options
 dts <- data.frame(tissue = list.files(path = "..", pattern = "^[0-9]"), stringsAsFactors = F)
 #out <- "X"
@@ -49,6 +55,14 @@ system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_cellFiltered_
 # for quick read
 write_feather(x = dts_cellftd_CPM, sink = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.feather"))
 write.table(x = rownames(dts_cellftd_CPM), file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
+
+# ensembl ID
+exprMatr_cellFiltered_CPM_ensembl <- dts_cellftd_CPM
+rownames(exprMatr_cellFiltered_CPM_ensembl) <- geneID$ensembl_alt[match(rownames(exprMatr_cellFiltered_CPM_ensembl), geneID$symbol)]
+data.table::fwrite(x = exprMatr_cellFiltered_CPM_ensembl, file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM_ensembl.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
+# for quick read
+write_feather(x = exprMatr_cellFiltered_CPM_ensembl, sink = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM_ensembl.feather"))
+write.table(x = rownames(exprMatr_cellFiltered_CPM_ensembl), file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM_ensembl.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
 
 # filtering genes
 nCell_expressed <- rowSums(dts_cellftd > 0)
