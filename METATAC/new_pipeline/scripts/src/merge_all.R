@@ -62,7 +62,7 @@ for (stage in stages){
 # load cell meta
 cell_meta <- NULL
 for (file in cell_meta_files){
-  tmp_meta <- read.table(file, header = T, sep = "\t", quote = "", comment.char = "") %>% column_to_rownames(var = "X")
+  tmp_meta <- read_tsv(file, col_names = T, col_types = cols(group = col_character()), quote = "") %>% column_to_rownames(var = "X1")
   cell_meta <- rbind(cell_meta, tmp_meta)
 }
 
@@ -81,7 +81,8 @@ ArrowFiles <- createArrowFiles(
   addGeneScoreMat = F,
   geneAnnotation = geneAnnotation,
   genomeAnnotation = genomeAnnotation,
-  force = T
+  force = T, 
+  subThreading = F
 )
 
 proj <- ArchRProject(

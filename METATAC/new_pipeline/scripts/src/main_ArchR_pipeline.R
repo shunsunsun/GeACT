@@ -37,14 +37,14 @@ if (opt$fconns %in% c("T", "F", "TRUE", "FALSE")){
   stop("--fconns not supported")
 }
 
-suppressMessages({
+suppressPackageStartupMessages({
+  library(Seurat)
   library(ArchR)
   library(tidyverse)
   library(ggplot2)
   library(cowplot)
   library(pheatmap)
   library(gridExtra)
-  library(Seurat)
   library(cicero)
   library(networkD3)
   library(plyr)
@@ -336,6 +336,9 @@ if (stage == "19-22w") {
 }
 
 write.table(cellMeta, file = "filtered_cellMeta.txt", sep = "\t", quote = F, col.names = NA)
+
+# write integration dimension reduction results
+write.table(geneScore_inte$tsne.data, file = "integration_dimreduc.txt", sep = "\t", quote = F, col.names = NA)
 
 # close pdf device
 dev.off()

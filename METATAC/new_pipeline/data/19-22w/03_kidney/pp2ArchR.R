@@ -97,7 +97,8 @@ ArrowFiles <- createArrowFiles(
   addGeneScoreMat = T,
   geneAnnotation = geneAnnotation,
   genomeAnnotation = genomeAnnotation,
-  force = T
+  force = T,
+  subThreading = F
 )
 
 # Inferring scATAC-seq Doublets with ArchR

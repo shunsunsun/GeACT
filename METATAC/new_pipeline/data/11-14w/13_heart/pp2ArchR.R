@@ -30,8 +30,8 @@ suppressMessages({
 })
 
 # env setup --------------------------------------------------------------------
-age <- '11-14w'
-tissue <- '06_spleen'
+age <- "11-14w"
+tissue <- "13_heart"
 .data <- "data"
 .lix_script <- "scripts_lix"
 
@@ -43,7 +43,7 @@ source(paste(lix_script_dir, "QC_utils.R", sep = "/"))
 
 # 0 Cell metadata setup --------------------------------------------------------
 
-meta_table <- read.delim("../../../meta/meta_table_ATAC_GeACT.txt", row.names = 1,
+meta_table <- read.delim("../../../meta/meta_table_heart.txt", row.names = 1,
                          stringsAsFactors = F, check.names = F)
 cellMetaData <- read.delim("frag_and_meta/mapStat_human.txt", row.names = 1, check.names = F)
 cellMetaData <- cellMetaData[, c(1, 6)]
@@ -77,7 +77,7 @@ cellMetaData$mito_ratio <- cellMetaData$num_mito_frag_decon/(cellMetaData$num_fr
 ArchR_wd <- paste(root, .data, age, tissue, "results/ArchR", sep = '/')
 dir.create(ArchR_wd, recursive = T, showWarnings = F)
 setwd(ArchR_wd)
-addArchRThreads(32)
+addArchRThreads(16)
 # addArchRGenome("hg38")
 
 geneAnnotation <- readRDS(paste(root, "database", "annotation", "geneAnnotation.rds", sep = "/"))
@@ -136,15 +136,15 @@ hist(cellMetaData$NucleosomeRatio,breaks = 20)
 hist(cellMetaData$DoubletEnrichment,breaks = 20)
 
 nReads_l = 1e5
-nReads_h = 5e6
+nReads_h = 1.6e7
 aligned_l = 0.85
 nFrags_l = 4
-nFrags_h = 5.5
+nFrags_h = 5.75
 con_rate_h = 0.9
 mito_h = 0.1
 TSS_l = 5
-Promoter_l = 0.05
-Doublet_h = 100
+Promoter_l = 0.1
+Doublet_h = 20
 
 keep_DF <- data.frame(
   reads = cellMetaData$Reads >= nReads_l & cellMetaData$Reads <= nReads_h,
