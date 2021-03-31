@@ -381,7 +381,9 @@ do_GOenrich <- function(expr.markers_ftd, ncpu = 1, do.filtering = T) {
     cat(geneInput, sep = "\n")
     geneList <- factor(as.integer(geneNames %in% geneInput))
     names(geneList) <- geneNames
-    
+    if(length(levels(geneList)) == 1) {
+      return(NULL)
+    }
     sampleGOdata <- new("topGOdata", description = "GOenrich", ontology = "BP",
                         allGenes = geneList, annot = annFUN.gene2GO, gene2GO = geneID2GO)
     resultFisher <- runTest(sampleGOdata, algorithm = "classic", statistic = "fisher")
