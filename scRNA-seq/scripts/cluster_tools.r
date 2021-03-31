@@ -29,6 +29,63 @@ do_addMeta <- function(expr) {
 }
 
 
+JackStrawPlot_new <- function (object, PCs = 1:5, nCol = 3, score.thresh = 1e-05, 
+                               plot.x.lim = 0.1, plot.y.lim = 0.3, do.print = T) 
+{
+  pAll <- GetDimReduction(object, reduction.type = "pca", slot = "jackstraw")@emperical.p.value
+  pAll <- pAll[, PCs, drop = FALSE]
+  pAll <- as.data.frame(pAll)
+  pAll$Contig <- rownames(x = pAll)
+  pAll.l <- reshape2::melt(data = pAll, id.vars = "Contig")
+  colnames(x = pAll.l) <- c("Contig", "PC", "Value")
+  qq.df <- NULL
+  score.df <- NULL
+  for (i in PCs) {
+    q <- qqplot(x = pAll[, i], y = runif(n = 1000), plot.it = FALSE)
+    pc.score <- suppressWarnings(prop.test(x = c(length(x = which(x = pAll[, 
+                                                                           i] <= score.thresh)), floor(x = nrow(x = pAll) * 
+                                                                                                         score.thresh)), n = c(nrow(pAll), nrow(pAll)))$p.val)
+    if (length(x = which(x = pAll[, i] <= score.thresh)) == 
+        0) {
+      pc.score <- 1
+    }
+    if (is.null(x = score.df)) {
+      score.df <- data.frame(PC = paste0("PC", i), Score = pc.score)
+    }
+    else {
+      score.df <- rbind(score.df, data.frame(PC = paste0("PC", 
+                                                         i), Score = pc.score))
+    }
+    if (is.null(x = qq.df)) {
+      qq.df <- data.frame(x = q$x, y = q$y, PC = paste0("PC", 
+                                                        i))
+    }
+    else {
+      qq.df <- rbind(qq.df, data.frame(x = q$x, y = q$y, 
+                                       PC = paste0("PC", i)))
+    }
+  }
+  pAll.l$PC.Score <- rep(x = paste0(score.df$PC, " ", sprintf("%1.3g", 
+                                                              score.df$Score)), each = length(x = unique(x = pAll.l$Contig)))
+  pAll.l$PC.Score <- factor(x = pAll.l$PC.Score, levels = paste0(score.df$PC, 
+                                                                 " ", sprintf("%1.3g", score.df$Score)))
+  score.df$PC <- PCs
+  score.df <- as.matrix(score.df)
+  object@dr$pca@jackstraw@overall.p.values <- score.df
+  gp <- ggplot(data = pAll.l, mapping = aes(sample = Value)) + 
+    stat_qq(distribution = qunif) + facet_wrap("PC.Score", 
+                                               ncol = nCol) + labs(x = "Theoretical [runif(1000)]", 
+                                                                   y = "Empirical") + xlim(0, plot.y.lim) + ylim(0, plot.x.lim) + 
+    coord_flip() + geom_abline(intercept = 0, slope = 1, 
+                               linetype = "dashed", na.rm = TRUE) + theme_bw()
+  object@dr$pca@misc[["jackstraw.plot"]] <- gp
+  if(do.print) {
+    print(gp)
+  }
+  return(object)
+}
+
+
 do_batchDebug <- function() {
   p <- ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = cluster)) + geom_point() + theme_bw() + 
     theme(legend.background = element_blank(), legend.box.background = element_rect()) #+ 
