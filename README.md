@@ -17,7 +17,7 @@ Cell meta table: https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/pooled_d
 
 ### Open chromatin landscape
 Gene activity score matrix is accessible at http://geact.gao-lab.org/  
-Cell meta table: https://github.com/gao-lab/GeACT/blob/master/METATAC/pooled_data/All/20190611_20200117/narrow_split/cell_metatable_filtered.txt
+Cell meta table: [Download](https://github.com/gao-lab/GeACT/blob/master/METATAC/pooled_data_all/All/cell_metatable_ATAC_global.txt)
 
 ## Citation
 (in preparation)
