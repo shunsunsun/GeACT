@@ -11,11 +11,11 @@ version: v1.0.2
 
 To download raw data, please request it in [the Genome Sequence Archive](https://bigd.big.ac.cn/gsa-human/) with the ID of HRA000330.
 
-### Transcriptome  
+### Transcriptome landscape
 Gene expression matrix is accessible at http://geact.gao-lab.org/  
 Cell meta table: [Download](https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/pooled_data_all/All/cell_metatable_filtered_aligned.txt)
 
-### Open chromatin landscape
+### Chromatin accessibility landscape
 Gene activity score matrix is accessible at http://geact.gao-lab.org/  
 Cell meta table: [Download](https://github.com/gao-lab/GeACT/blob/master/METATAC/pooled_data_all/All/cell_metatable_ATAC_global.txt)
 
