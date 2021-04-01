@@ -1,8 +1,0 @@
-cut -f 1 ../00-rawdata/barcodeToSample.txt | uniq > outer_barcodes.txt
-head -n 8 ../00-rawdata/barcodeToSample.txt | cut -f 2 > inner_barcodes.txt
-cat outer_barcodes.txt | awk '{ot=$1"AGTCGCTTGGGTGTAGTGC"; ot=substr(ot,1,7); print $1,ot,NR}' OFS="\t" > outer_barcodes.txts
-mv outer_barcodes.txts outer_barcodes.txt
-cat inner_barcodes.txt | awk '{print $1,$1,NR}' OFS="\t" > inner_barcodes.txts
-mv inner_barcodes.txts inner_barcodes.txt
-cut -f 2,3 outer_barcodes.txt | tr '\t' '-' | while read pa; do cut -f 2,3 outer_barcodes.txt | tr '\t' '-' | while read pb; do dst=$(paste <(echo $pa | fold -w 1) <(echo $pb | fold -w 1) | head -n 7 | awk '$1!=$2' | wc -l); echo -e "$pa\t$pb\t$dst"; done; done > outer_barcodes_dist.txt
-cut -f 2,3 inner_barcodes.txt | tr '\t' '-' | while read pa; do cut -f 2,3 inner_barcodes.txt | tr '\t' '-' | while read pb; do dst=$(paste <(echo $pa | fold -w 1) <(echo $pb | fold -w 1) | head -n 8 | awk '$1!=$2' | wc -l); echo -e "$pa\t$pb\t$dst"; done; done > inner_barcodes_dist.txt
