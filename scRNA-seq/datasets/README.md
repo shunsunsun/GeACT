@@ -5,11 +5,14 @@ A dataset corresponds to several samples, each of which contain the multiplex da
 
 ## Naming rules
 For the first five datasets, they were named as "order + (system abbreviation + organ number) + sample number" (e.g. 13_D1_48).  
-As the system increased, other datasets were named as "order + (date) + sample number" (e.g. 18_190930_48).
+As the system increased, other datasets were named as "order + (date) + sample number" (e.g. 18_190930_48).  
 
-# File format
+## Note
+`27_210303_07` is a special dataset, where the 5’ primer sequences (19bp) need to be removed in Read 2 before the standard pipeline.  
 
-## estimateCleanFq.txt
+## File format
+
+### estimateCleanFq.txt
 
 | Column | Description |
 | ---------- | ----------- |
@@ -27,7 +30,7 @@ As the system increased, other datasets were named as "order + (date) + sample n
 | 12 | Read number after quality control |
 | 13 | Sequencing batch (optional column) |
 
-## estimateMap.txt
+### estimateMap.txt
 
 | Column | Description |
 | ---------- | ----------- |
@@ -42,7 +45,7 @@ As the system increased, other datasets were named as "order + (date) + sample n
 | 9 | Strand (single or pair-end) |
 | 10 | Running time for reads mapping |
 
-## estimateExpr.txt
+### estimateExpr.txt
 
 | Column | Description |
 | ---------- | ----------- |
