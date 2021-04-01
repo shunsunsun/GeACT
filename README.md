@@ -13,7 +13,7 @@ To download raw data, please request it in [the Genome Sequence Archive](https:/
 
 ### Transcriptome  
 Gene expression matrix is accessible at http://geact.gao-lab.org/  
-Cell meta table: https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/pooled_data_all/All/cell_metatable_filtered_aligned.txt
+Cell meta table: [Download](https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/pooled_data_all/All/cell_metatable_filtered_aligned.txt)
 
 ### Open chromatin landscape
 Gene activity score matrix is accessible at http://geact.gao-lab.org/  
