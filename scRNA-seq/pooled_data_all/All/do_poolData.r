@@ -50,6 +50,22 @@ system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_cellFiltered.
 write_feather(x = dts_cellftd, sink = paste0("03-expression/merged/filtering/UMIcount_cellFiltered.feather"))
 write.table(x = rownames(dts_cellftd), file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
 
+# norm (using the genes before filtering)
+dts_cellftd_CPM <- as.data.frame(apply(dts_cellftd, 2, function(x) (x / sum(x))) * 1e6)
+data.table::fwrite(x = dts_cellftd_CPM, file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
+system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_cellFiltered_CPM.txt", " > ", "03-expression/merged/filtering/UMIcount_cellFiltered_CPM.txt.gz"))
+# for quick read
+write_feather(x = dts_cellftd_CPM, sink = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.feather"))
+write.table(x = rownames(dts_cellftd_CPM), file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_CPM.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
+
+# log2 norm
+dts_cellftd_log2CPM <- log2(dts_cellftd_CPM + 1)
+data.table::fwrite(x = dts_cellftd_log2CPM, file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_log2CPM.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
+system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_cellFiltered_log2CPM.txt", " > ", "03-expression/merged/filtering/UMIcount_cellFiltered_log2CPM.txt.gz"))
+# for quick read
+write_feather(x = dts_cellftd_log2CPM, sink = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_log2CPM.feather"))
+write.table(x = rownames(dts_cellftd_log2CPM), file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered_log2CPM.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
+
 # filtering genes
 nCell_expressed <- rowSums(dts_cellftd > 0)
 dts_ftd <- dts_cellftd[nCell_expressed >= 10, ]
@@ -60,7 +76,7 @@ system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_filtered.txt"
 write_feather(x = dts_ftd, sink = paste0("03-expression/merged/filtering/UMIcount_filtered.feather"))
 write.table(x = rownames(dts_ftd), file = paste0("03-expression/merged/filtering/UMIcount_filtered.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
 
-# norm
+# norm (using the genes after filtering)
 dts_ftd_CPM <- sweep(x = dts_ftd, MARGIN = 2, STATS = colSums(dts_ftd), FUN = "/") * 1e6
 data.table::fwrite(x = dts_ftd_CPM, file = paste0("03-expression/merged/filtering/UMIcount_filtered_CPM.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 15)
 system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_filtered_CPM.txt", " > ", "03-expression/merged/filtering/UMIcount_filtered_CPM.txt.gz"))
