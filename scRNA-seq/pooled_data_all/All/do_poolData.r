@@ -44,6 +44,12 @@ dir.create(path = paste0("03-expression/merged/filtering"), showWarnings = F, re
 data.table::fwrite(x = ftc_DF, file = paste0("03-expression/merged/filtering/filtering_cells.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
 dts_cellftd <- dts_DF[, subset(ftc_DF, filter, "cell", drop = T)]
 
+data.table::fwrite(x = dts_cellftd, file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered.txt"), row.names = T, col.names = T, quote = F, sep = "\t", nThread = 10)
+system(paste0("gzip -c ", "03-expression/merged/filtering/UMIcount_cellFiltered.txt", " > ", "03-expression/merged/filtering/UMIcount_cellFiltered.txt.gz"))
+# for quick read
+write_feather(x = dts_cellftd, sink = paste0("03-expression/merged/filtering/UMIcount_cellFiltered.feather"))
+write.table(x = rownames(dts_cellftd), file = paste0("03-expression/merged/filtering/UMIcount_cellFiltered.gene"), row.names = F, col.names = F, quote = F, sep = "\t")
+
 # filtering genes
 nCell_expressed <- rowSums(dts_cellftd > 0)
 dts_ftd <- dts_cellftd[nCell_expressed >= 10, ]
