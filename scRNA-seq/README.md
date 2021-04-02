@@ -29,18 +29,31 @@ UMI count for each gene was calculated.
 bash do_htseq.sh
 ```
 
-### Organ level (at one specific developmental stage)
+### Single-organ level (at one specific developmental stage)
 For each organ (e.g. pooled_data/01_stomach):
 
-1. data pooling (from different datasets)
+1. Cell pooling (from different datasets)
 ```
 Rscript do_poolData.r
 ```
-2. cell/gene filtering
+2. Filtering (cells / genes)
 ```
 Rscript do_filter.r
 ```
-3. cell clustering
+3. Cell clustering and cell type annotation
+```
+Rscript do_cluster.r
+```
+
+### Multiple-organ level (at one specific developmental stage)
+The data from different organs were merged (e.g. pooled_data/All):
+
+1. Data pooling (from different organs)
+```
+Rscript do_poolData.r
+```
+
+2. Dimension reduction
 ```
 Rscript do_cluster.r
 ```
