@@ -1,5 +1,5 @@
 # scRNA-seq
-A pipeline for single-cell RNA-seq data analysis, tuning for MALBAC-DT protocol.
+A pipeline for single-cell RNA-seq data analysis, maily for the data from MALBAC-DT.
 
 ## Prerequisite
 1. Perl (5.010 or later)  
