@@ -20,7 +20,7 @@ Gene activity score matrix is accessible at http://geact.gao-lab.org/
 Cell meta table: [Download](https://github.com/gao-lab/GeACT/blob/master/METATAC/pooled_data_all/All/cell_metatable_ATAC_global.txt)
 
 ## Pipeline
-Transcriptome: https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/README.md
+Transcriptome: https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/README.md  
 Chromatin accessibility landscape: NA
 
 ## Citation
