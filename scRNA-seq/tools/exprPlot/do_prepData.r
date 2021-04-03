@@ -16,6 +16,17 @@ rownames(exprMatr) <- read.table(file = "~/lustre/06-Human_cell_atlas/pooled_dat
 cellMeta <- read.table("~/lustre/06-Human_cell_atlas/pooled_data_all/All/cell_metatable_filtered_aligned.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
 all(colnames(exprMatr) == rownames(cellMeta))
 
+# load gene ID 
+geneID <- read.table("~/lustre/06-Human_cell_atlas/Genomes/human/gene_ID2Name_fixed.txt", header = F, sep = "\t", stringsAsFactors = F)
+dim(geneID)
+colnames(geneID) <- c("ensembl", "symbol")
+
+# prep gene ID mapping
+geneID_fmt <- geneID[, 2:1]
+geneID_fmt$ensembl_short <- gsub("\\..*", "", geneID_fmt$ensembl)
+write.table(x = geneID_fmt, file = file.path(OUT, "gene_ID_mapping.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+
+# prep cellMatr
 ts_all <- unique(cellMeta$tissue)
 
 cl <- makeCluster(10, type = "FORK")
