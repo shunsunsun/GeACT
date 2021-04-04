@@ -29,7 +29,7 @@ UMI count for each gene was calculated.
 bash do_htseq.sh
 ```
 
-Note: `27_210303_07` is a special dataset, where the 5’ primer sequences (19bp) need to be removed in Read 2 before the standard pipeline.  
+Note: `27_210303_07` is a special dataset, where the modified version of `do_cleanFq.sh` in `27_210303_07` folder should be used to remove the 5’ primer sequences (19bp) in Read 2.
 
 ### Single-organ level (at one specific developmental stage)
 For each organ (e.g. pooled_data/01_stomach):
