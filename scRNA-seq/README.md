@@ -47,6 +47,19 @@ Rscript do_filter.r
 Rscript do_cluster.r
 ```
 
+### Single-organ level (at different developmental stages)
+For each organ (e.g. pooled_data_all/01_stomach):
+
+1. Cell pooling (from different stages)
+```
+Rscript do_poolData.r
+```
+
+2. Dimension reduction
+```
+Rscript do_cluster.r
+```
+
 ### Multiple-organ level (at one specific developmental stage)
 The data from different organs were merged (e.g. pooled_data/All):
 
