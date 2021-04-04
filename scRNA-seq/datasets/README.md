@@ -8,7 +8,7 @@ For the first five datasets, they were named as "order + (system abbreviation + 
 As the system increased, other datasets were named as "order + (date) + sample number" (e.g. 18_190930_48).  
 
 ## Note
-`27_210303_07` is a special dataset, where the 5’ primer sequences (19bp) need to be removed in Read 2 before the standard pipeline.  
+`27_210303_07` is a special dataset, where the modified version of `do_cleanFq.sh` in `27_210303_07` folder should be used to remove the 5’ primer sequences (19bp) in Read 2.  
 
 ## File format
 
