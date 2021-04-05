@@ -24,12 +24,14 @@ Gene annotation: gencode.v26.primary_assembly.annotation.gtf ([Download page](ht
 bash do_hisat2.sh
 ```
 3. Expression calling  
-UMI count for each gene was calculated.
+UMI count for each gene was calculated, followed by gene expression matrix generation.  
+Gene IDs were transformed into gene names (e.g. ENSG00000223972.5 -> DDX11L1) based on a modified [gene ID mapping table](https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/Data/gene_ID2Name_fixed.txt). Since some different genes contain the same gene name (e.g. ENSG00000278757.1 and ENSG00000283136.1 -> U6), the suffix was added into these names (ENSG00000278757.1 -> U6--1, ENSG00000283136.1 -> U6--2).  
 ```
 bash do_htseq.sh
 ```
 
-Note: `27_210303_07` is a special dataset, where the modified version of `do_cleanFq.sh` in `27_210303_07` folder should be used to remove the 5’ primer sequences (19bp) in Read 2.
+Note:  
+The gene knock-down dataset `27_210303_07` is a special one, where the modified version of `do_cleanFq.sh` in `27_210303_07` folder should be used to remove the 5’ primer sequences (19bp) in Read 2.
 
 ### Single-organ level (at one specific developmental stage)
 For each organ (e.g. pooled_data/01_stomach):
