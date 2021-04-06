@@ -502,6 +502,8 @@ rm(expr_data, expr_ori)
 #save.image(file = paste0(OUT, "/Seurat_step2.RData"))
 #load(paste0(OUT, "/Seurat_step2.RData"))
 
-write.table(x = cellMetaData, file = paste0(OUT, "/Seurat_metaData.txt"), row.names = F, col.names = T, quote = F,sep = "\t")
+cellMetaData_fmt <- cellMetaData
+colnames(cellMetaData_fmt) <- gsub("^UMAP", "UMAP_", colnames(cellMetaData_fmt))
+write.table(x = cellMetaData_fmt, file = paste0(OUT, "/Seurat_metaData.txt"), row.names = F, col.names = T, quote = F,sep = "\t")
 
 save.image(file = paste0(OUT, "/clustering.RData"))
