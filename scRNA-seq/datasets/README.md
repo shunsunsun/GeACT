@@ -4,8 +4,8 @@ A dataset consists of the data from one sequencing experiment.
 A dataset corresponds to several samples, each of which contain the multiplex data from one 96-well plate.  
 
 ## Naming rules
-For the first five datasets, they were named as "order + (system abbreviation + organ number) + sample number" (e.g. 13_D1_48).  
-As the system increased, other datasets were named as "order + (date) + sample number" (e.g. 18_190930_48).  
+For the first five datasets, they were named as "order + (system abbreviation + organ number) + plate number" (e.g. 13_D1_48).  
+As the system increased, other datasets were named as "order + (date) + plate number" (e.g. 18_190930_48).  
 
 ## Note
 `27_210303_07` is a special dataset, where the modified version of `do_cleanFq.sh` in `27_210303_07` folder should be used to remove the 5’ primer sequences (19bp) in Read 2.
