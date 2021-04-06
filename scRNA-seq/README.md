@@ -74,3 +74,16 @@ Rscript do_poolData.r
 ```
 Rscript do_cluster.r
 ```
+
+### Multiple-organ level (at different developmental stages)
+The data from different organs were merged (e.g. pooled_data_all/All):
+
+1. Data pooling (from different organs)
+```
+Rscript do_poolData.r
+```
+
+2. Dimension reduction
+```
+Rscript do_cluster.r
+```
