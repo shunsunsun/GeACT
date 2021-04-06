@@ -10,9 +10,9 @@ A pipeline for single-cell RNA-seq data analysis, maily for the data from MALBAC
 For the sequencing data in each dataset (e.g. datasets/13_D1_48):
 
 1. Demultiplexing  
-Reads (R1) from each multiplexed sample were split into 96 samples (cells) according to cell barcodes (first 8bp) in reads (R2).  
+Reads (R1) were assigned into one of 96 samples (cells) according to cell barcodes (first 8bp) in reads (R2).  
 Unique molecular identifiers (UMIs) (20bp) in reads (R2) were extracted and added into the corresponding name in reads (R1).  
-PolyA sequences were trimmed and reads were filtered based on reads length and quality.  
+PolyA sequences were trimmed and reads (R1) were filtered based on reads length and quality.  
 ```
 bash do_cleanFq.sh
 ```
