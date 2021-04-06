@@ -188,6 +188,12 @@ write.table(x = cellMeta_final_filtered_plus, file = "cell_metatable_filtered_pl
 # with aligned pos
 cellMeta_final_filtered_ali <- do.call("rbind", lapply(mt8_LS, "[[", 4))
 write.table(x = cellMeta_final_filtered_ali, file = "cell_metatable_filtered_aligned.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+# with global coordinate
+cellMeta_aog <- read.table(file = "03-expression/merged/cellCluster/Seurat_metaData.txt", header = T, sep = "\t", stringsAsFactors = F)
+cell_coord <- cellMeta_aog[, c("cell", "tSNE_1", "tSNE_2", "UMAP_1", "UMAP_2")]
+colnames(cell_coord) <- c("cell", "tSNE_1_glo", "tSNE_2_glo", "UMAP_1_glo", "UMAP_2_glo")
+cellMeta_global <- cbind(cellMeta_final_filtered_ali, cell_coord[match(cellMeta_final_filtered_ali$cell, cell_coord$cell), -1])
+write.table(x = cellMeta_global, file = "cell_metatable_RNA_global.txt", row.names = F, col.names = T, quote = F, sep = "\t")
 
 # 9. cell type meta
 ts_ordered <- read.table("../../pooled_data/All/tissue_ordered.txt", header = F, sep = "\t", stringsAsFactors = F)
