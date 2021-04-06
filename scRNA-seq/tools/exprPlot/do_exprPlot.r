@@ -10,7 +10,7 @@ tissue <- commandArgs(trailingOnly = T)[1]
 dim_type <- commandArgs(trailingOnly = T)[2]
 gene <- commandArgs(trailingOnly = T)[3]
 
-OUT <- "exprPlot"
+OUT <- "output"
 
 outfile <- paste0(OUT, "/", tissue, "/", dim_type, "/", gene, ".png")
 if(! file.exists(outfile)) {
@@ -34,7 +34,7 @@ if(! file.exists(outfile)) {
   dir.create(path = paste0(OUT, "/", tissue, "/", dim_type), showWarnings = F, recursive = T)
   invisible(suppressGraphics(ggsave(filename = outfile, plot = gp, device = "png", width = 8, height = 6, units = "in")))
 }
-cat("Output file:", outfile, "\n")
+#cat("Output file:", outfile, "\n")
 
 #gl <- ggplotly(gp)
 #htmlwidgets::saveWidget(widget = gl, file = paste0(tissue, "_", gene, "_", dim_type, ".html"))
