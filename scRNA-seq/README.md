@@ -1,4 +1,4 @@
-# scRNA-seq
+# scRNA-seq data analysis pipeline
 A pipeline for single-cell RNA-seq data analysis, maily for the data from MALBAC-DT.
 
 ## Prerequisite
