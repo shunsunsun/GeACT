@@ -1,16 +1,18 @@
 # cell classification
 setwd("~/lustre/06-Human_cell_atlas/pooled_data/All/")
 
-library("Seurat")
-library("dplyr")
-library("Matrix")
-library("pheatmap")
-library("reshape2")
-library("grid")
-library("ggplot2")
-library("cowplot")
-library("RColorBrewer")
-library("topGO")
+suppressMessages({
+  library("Seurat")
+  library("dplyr")
+  library("Matrix")
+  library("pheatmap")
+  library("reshape2")
+  library("grid")
+  library("ggplot2")
+  library("cowplot")
+  library("RColorBrewer")
+  library("topGO")
+})
 source("../../scripts/cluster_tools.r")
 source("../../scripts/pheatmap_tools.r")
 
