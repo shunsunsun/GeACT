@@ -565,6 +565,18 @@ do_plotEnrich(res_in = mes, ctype = "merged", mdid = mdid_case, db = "TF", main 
 
 dev.off()
 
+# DEGs
+DEGs <- read.table(file = "03-expression/merged/cellCluster/expr.markers_ftd_Sm.Fibro-COL6A5_Pa.Fibro-PAMR1+SOX6+.txt", header = T, sep = "\t", stringsAsFactors = F)
+DEGs <- DEGs[order(DEGs$isMD91), ]
+
+pdf(file = paste0(OUT, "/module_case_DEGs.pdf"), width = 5.5, height = 4, useDingbats = F)
+
+ctype1_case <- "Small intestine.Fibro-COL6A5"
+ctype2_case <- "Pancreas.Fibro-PAMR1+SOX6+"
+do_plotCorHeatmap(res_in = res, ctype1 = ctype1_case, ctype2 = ctype2_case, mgid = DEGs$gene, show_rownames = F, fontsize_row = 10, do.print = F, do.return = T) + ylab(ctype1_case)
+
+dev.off()
+
 # pdf(file = paste0(OUT, "/module_case_MD76.pdf"), width = 8, height = 4)
 # 
 # ctype1_case <- "Stomach.Fibro-FBLN1"
