@@ -1020,5 +1020,6 @@ write.table(x = md_stat_plus, file = paste0("03-expression/merged/geneModule/", 
             row.names = F, col.names = T, quote = F, sep = "\t")
 
 # X. save object ----
-save(mes, file = paste0(OUT, "/mes.RData"))
+saveRDS(res, file = file.path(OUT, "res.rds"))
+saveRDS(mes, file = file.path(OUT, "mes.rds"))
 save.image(file = paste0(OUT, "/module.RData"))
