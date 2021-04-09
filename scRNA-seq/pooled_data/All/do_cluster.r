@@ -533,4 +533,4 @@ dev.off()
 #
 
 # X. save ----
-#save.image(file = paste0(OUT, "/clustering.RData"))
+save.image(file = paste0(OUT, "/clustering.RData"))
