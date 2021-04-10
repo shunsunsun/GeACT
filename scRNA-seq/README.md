@@ -7,8 +7,9 @@ A pipeline for single-cell RNA-seq data analysis, maily for the data from MALBAC
 
 ## Pipeline
 ### Dataset level
-For the sequencing data in each dataset (e.g. datasets/13_D1_48):
+Dataset means the data from one sequencing experiment (e.g. datasets/13_D1_48).
 
+Pipeline:
 1. Demultiplexing  
 Reads (R1) were assigned into one of 96 samples (cells) according to cell barcodes (first 8bp) in reads (R2).  
 Unique molecular identifiers (UMIs) (20bp) in reads (R2) were extracted and added into the corresponding name in reads (R1).  
@@ -17,9 +18,14 @@ PolyA sequences were trimmed and reads (R1) were filtered based on reads length 
 bash do_cleanFq.sh
 ```
 2. Read alignment  
-Reads (R1) were mapped to the human genome and ERCC sequences.  
-Genome assembly: GRCh38.primary_assembly.genome.fa ([Download page](https://www.gencodegenes.org/human/release_26.html))  
-Gene annotation: gencode.v26.primary_assembly.annotation.gtf ([Download page](https://www.gencodegenes.org/human/release_26.html))  
+Reads (R1) were mapped to the human genome and ERCC sequences.
+
+| Information | Version | Path |
+| :------ | :------ | :------ |
+| Genome assembly | GRCh38 (primary assembly) | [Download page](https://www.gencodegenes.org/human/release_26.html) |
+| Gene annotation | Gencode v26 (primary assembly) | [Download page](https://www.gencodegenes.org/human/release_26.html) |
+| ERCC | - | [Download](https://tools.thermofisher.com/content/sfs/manuals/ERCC92.zip) |
+
 ```
 bash do_hisat2.sh
 ```
@@ -34,57 +40,28 @@ bash do_htseq.sh
 Note:  
 `27_210303_07` is a special dataset, where the modified version of `do_cleanFq.sh` in `27_210303_07` folder should be used to remove the 5’ primer sequences (19bp) in Read 2.
 
-### Single-organ level (at one specific developmental stage)
-For each organ (e.g. pooled_data/01_stomach):
+### Pooled data level
+Pooled data means the data pooled from multiple datasets. Pooled data was used for the analysis at organ or stage level.
 
-1. Cell pooling (from different datasets)
+| Stage | Organ | Path | Scripts |
+| :------ | :------ | :------ | :------ |
+| 19-22-week-old | Single (e.g. stomach) | pooled_data_19-22w/01_stomach | do_poolData.r, do_filter.r, do_cluster.r |
+| 19-22-week-old | Multiple (e.g. all 17 organs) | pooled_data_19-22w/All | do_poolData.r, do_cluster.r |
+| 11-14-week-old | Single (e.g. stomach) | pooled_data_11-14w/01_stomach | do_poolData.r, do_filter.r, do_cluster.r |
+| 11-14-week-old | Multiple (e.g. all 17 organs) | pooled_data_11-14w/All | do_poolData.r, do_cluster.r |
+| All | Single (e.g. stomach) | pooled_data_all/01_stomach | do_poolData.r, do_cluster.r |
+| All | Multiple (e.g. all 17 organs) | pooled_data_all/All | do_poolData.r, do_cluster.r |
+
+Pipeline:
+1. Cell pooling
 ```
 Rscript do_poolData.r
 ```
-2. Filtering (cells / genes)
+2. Filtering (cells / genes) (only used at single-stage / single-organ level)
 ```
 Rscript do_filter.r
 ```
 3. Cell clustering and cell type annotation
-```
-Rscript do_cluster.r
-```
-
-### Multiple-organ level (at one specific developmental stage)
-The data from different organs were merged (e.g. pooled_data/All):
-
-1. Data pooling (from different organs)
-```
-Rscript do_poolData.r
-```
-
-2. Dimension reduction
-```
-Rscript do_cluster.r
-```
-
-### Single-organ level (at different developmental stages)
-For each organ (e.g. pooled_data_all/01_stomach):
-
-1. Cell pooling (from different stages)
-```
-Rscript do_poolData.r
-```
-
-2. Dimension reduction
-```
-Rscript do_cluster.r
-```
-
-### Multiple-organ level (at different developmental stages)
-The data from different organs were merged (e.g. pooled_data_all/All):
-
-1. Data pooling (from different organs)
-```
-Rscript do_poolData.r
-```
-
-2. Dimension reduction
 ```
 Rscript do_cluster.r
 ```
