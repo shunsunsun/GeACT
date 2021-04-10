@@ -319,6 +319,36 @@ gp_LS <- lapply(ct_sub, function(x) {
 })
 dev.off()
 
+###
+# only for Fibro-0
+pdf(file = file.path(OUT, "DEG_volcano_byIdent_Fibro-0.pdf"), width = 4, height = 4)
+
+x <- "Fibro-0"
+expr.markers <- subset(expr.markers_byIdent_DF, cluster == x & ! chrXY)
+expr.markers$color <- "grey50"
+expr.markers$color[expr.markers$filter & expr.markers$avg_logFC > 0] <- "tomato"
+expr.markers$color[expr.markers$filter & expr.markers$avg_logFC < 0] <- "cornflowerblue"
+expr.markers_sub <- subset(expr.markers, filter)
+expr.markers_sub <- expr.markers_sub[order(expr.markers_sub$p_val_adj), ]
+case_gene <- c("CHST2", "EGR1", "FOS", "JUN", "FAT3")
+expr.markers$highlighted <- expr.markers$gene %in% case_gene
+gp <- ggplot(expr.markers, aes(x = avg_logFC, y = -log10(p_val_adj))) + geom_point(aes(color = I(color), shape = highlighted), alpha = 0.6, show.legend = F) + 
+  geom_vline(xintercept = c(-log(1.5), log(1.5)), linetype = "dashed") + 
+  coord_cartesian(clip = "off") + 
+  scale_x_continuous(limits = c(- max(abs(range(expr.markers$avg_logFC))), max(abs(range(expr.markers$avg_logFC))))) + 
+  #scale_color_manual(values = c("grey50", "tomato")) + 
+  theme(plot.title = element_text(face = "plain")) + 
+  theme(aspect.ratio = 1) + 
+  xlab("Log (Fold change)") + ylab(parse(text = "-Log[10]~(FDR)")) + ggtitle(x)
+if(nrow(expr.markers_sub) > 0) {
+  gp <- gp + ggrepel::geom_text_repel(data = subset(expr.markers_sub, gene %in% case_gene), aes(label = gene), point.padding = 0.4, nudge_x = 0.1, nudge_y = -0.5, min.segment.length = 0.1)
+}
+gp
+rm(x)
+
+dev.off()
+###
+
 # pdf(file = paste0(OUT, "/Seurat_geneder_diff_gene.pdf"), width = 5, height = 5)
 # FeaturePlot(object = expr_assigned, features.plot = c("FOSB"), cols.use = c("grey", "blue"), cells.use = WhichCells(expr_assigned, ident = c(ct_1, ct_2)), reduction.use = "tsne", pt.size = 2, no.legend = T)
 # FeaturePlot(object = expr_assigned, features.plot = c("RPS4Y1"), cols.use = c("grey", "blue"), reduction.use = "tsne", pt.size = 2, no.legend = T)
@@ -383,6 +413,27 @@ gp <- ggplot(enrich_res_DF, aes(x = Term, y = -log10(Adjusted.P.value), fill = n
   theme(panel.spacing.y = unit(0.2, "lines"))
 gp
 dev.off()
+
+### plot Fibro-0
+enrich_res_case <- rbind(subset(enrich_res, cluster == "Fibro-0" & type == "up")[1:5, ], subset(enrich_res, cluster == "Fibro-0" & type == "down")[2:4, ])
+enrich_res_case$Term <- gsub(",.*", "", enrich_res_case$Term)
+enrich_res_case$Term <- factor(enrich_res_case$Term, levels = rev(unique(enrich_res_case$Term)))
+
+pdf(file = paste0(OUT, "/", samplingPos, "/DEG_GOenrich_byIdent_Fibro-0.pdf"), width = 6, height = 4.5)
+
+gp <- ggplot(enrich_res_case, aes(x = Term, y = -log10(Adjusted.P.value))) + 
+  geom_bar(aes(fill = type), stat = "identity", width = 0.9, show.legend = F) + 
+  coord_flip() + 
+  ylab(expression(paste(-Log[10], " (Adjusted P)"))) + geom_hline(yintercept = -log10(0.05), linetype = "dashed") + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(-log10(enrich_res_case$Adjusted.P.value)) * 1.01), breaks = seq(0, 25, by = 5)) + 
+  scale_fill_manual(values = c("cornflowerblue", "tomato")) + 
+  theme(axis.ticks.y = element_blank()) + xlab("GO term")
+gp
+
+dev.off()
+
+gene_devel <- unlist(strsplit(subset(enrich_res_case, Term == "Developmental process", "Genes", drop = T), ","))
+###
 
 # 2) down
 enrich_res_sub <- subset(enrich_res, type == "down")
@@ -497,6 +548,18 @@ for(i in unique(gsub("\\..*", "", network_ftd_DF$geneSet))) {
 
 dev.off()
 ##
+
+###
+# plot only Fibro-0
+pdf(file = file.path(OUT, "DEG_TF_network_byIdent_Fibro-0.pdf"), width = 4.5, height = 4.5)
+
+#do_plotNt_alt(gs_case = "Fibro-0", show.node.names = "TF", tf.pos.r = 0.4, xlim = c(-0.9, 0.9), ylim = c(-1, 0.7))
+do_shellPlot(gs_case = "Fibro-0", show.node.names = "TF", color_TF = F, tf.pos.r = 0.4, xlim = c(-0.7, 0.7), ylim = c(-1, 0.575))
+do_plotNt_alt(gs_case = "Fibro-0", type = "up", show.node.names = "TF", color_TF = F, tf.pos.r = 0.4, xlim = c(-0.9, 0.9), ylim = c(-1.25, 0.75))
+do_plotNt_alt(gs_case = "Fibro-0", type = "down", show.node.names = "TF", color_TF = F, tf.pos.r = 0.4, xlim = c(-0.9, 0.9), ylim = c(-1, 0.6))
+
+dev.off()
+###
 
 ### 3.2 Assigning cell type identity to clusters (group) ----
 cat("> Step 3.2 Running...\n")
