@@ -22,8 +22,8 @@ Reads (R1) were mapped to the human genome and ERCC sequences.
 
 | Information | Version | Path |
 | :------ | :------ | :------ |
-| Genome assembly | GRCh38 (primary assembly) | [Download](ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_26/GRCh38.primary_assembly.genome.fa.gz) |
-| Gene annotation | Gencode v26 (primary assembly) | [Download](ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_26/gencode.v26.primary_assembly.annotation.gtf.gz) |
+| Genome assembly | GRCh38 (primary assembly) | [Download](ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_26/GRCh38.primary_assembly.genome.fa.gz) |
+| Gene annotation | Gencode v26 (primary assembly) | [Download](ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_26/gencode.v26.primary_assembly.annotation.gtf.gz) |
 | ERCC | - | [Download](https://tools.thermofisher.com/content/sfs/manuals/ERCC92.zip) |
 
 ```
