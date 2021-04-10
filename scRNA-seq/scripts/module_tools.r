@@ -596,6 +596,7 @@ enricher_new <- function (gene, pvalueCutoff = 0.05, pAdjustMethod = "BH", unive
                           minGSSize = 10, maxGSSize = 500, qvalueCutoff = 0.2, TERM2GENE, 
                           TERM2NAME = NA, user_data = NULL) 
 {
+  # modified from the enricher function from enrichR package
   if(is.null(user_data)) {
     USER_DATA <- build_Anno(TERM2GENE, TERM2NAME)
   } else {

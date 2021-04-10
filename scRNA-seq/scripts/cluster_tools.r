@@ -32,6 +32,7 @@ do_addMeta <- function(expr) {
 JackStrawPlot_new <- function (object, PCs = 1:5, nCol = 3, score.thresh = 1e-05, 
                                plot.x.lim = 0.1, plot.y.lim = 0.3, do.print = T) 
 {
+  # modified from the JackStrawPlot function from Seurat package
   pAll <- GetDimReduction(object, reduction.type = "pca", slot = "jackstraw")@emperical.p.value
   pAll <- pAll[, PCs, drop = FALSE]
   pAll <- as.data.frame(pAll)
@@ -451,6 +452,7 @@ DoHeatmap_new <- function (object, data.use = NULL, use.scaled = TRUE, cells.use
           group.cex = 15, strip.text.y = 8, group.spacing = 0.15, panel.spacing.y = -0.2, assay.type = "RNA", 
           do.colBar = FALSE, colBar.y = 0.93, colBar.col = NULL, do.plot = TRUE, strip.text.x.top = 10, strip.text.y.display = F, strip.text.y.right = 4, legend.margin.for.colBar = margin(t = -12)) 
 {
+  # modified from the DoHeatmap function from Seurat package
   if (is.null(x = data.use)) {
     if (use.scaled) {
       data.use <- GetAssayData(object, assay.type = assay.type, 
@@ -780,6 +782,7 @@ DotPlot_new <- function (object, genes.plot, cols.use = c("lightgrey", "blue"),
                          plot.legend = FALSE, do.plot = TRUE, do.return = FALSE, x.lab.rot = FALSE, rev.x = F, rev.y = F, do.scale = T, breaks.use = NULL, limits.use = NULL, 
                          circle.color = "white") 
 {
+  # modified from the DotPlot function from Seurat package
   scale.func <- switch(EXPR = scale.by, size = scale_size, 
                        radius = scale_radius, stop("'scale.by' must be either 'size' or 'radius'"))
   if (!missing(x = group.by)) {
@@ -850,6 +853,7 @@ SingleFeaturePlot_new <- function (data.use, feature, new.title = NULL, data.plo
                                    no.title = FALSE, no.legend, dark.theme, vector.friendly = FALSE, 
                                    png.file = NULL, png.arguments = c(10, 10, 100)) 
 {
+  # modified from the SingleFeaturePlot function from Seurat package
   if (vector.friendly) {
     previous_call <- blank_call <- png_call <- match.call()
     blank_call$pt.size <- -1
@@ -970,6 +974,7 @@ FeaturePlot_new <- function (object, features.plot, new.title = NULL, min.cutoff
           vector.friendly = FALSE, png.file = NULL, png.arguments = c(10, 
                                                                       10, 100)) 
 {
+  # modified from the FeaturePlot function from Seurat package
   cells.use <- SetIfNull(x = cells.use, default = colnames(x = object@data))
   if (is.null(x = nCol)) {
     nCol <- 2

@@ -29,6 +29,7 @@ plot.igraph_new <- function (x, axes = FALSE, add = FALSE, xlim = c(-1, 1), ylim
                                                                                                                                  alpha = 0.3), mark.border = rainbow(length(mark.groups), 
                                                                                                                                                                      alpha = 1), mark.expand = 15, ...) 
 {
+  # modified from the plot.igraph function from igraph package
   graph <- x
   if (!is_igraph(graph)) {
     stop("Not a graph object")
