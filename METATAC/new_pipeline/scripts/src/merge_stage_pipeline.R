@@ -123,12 +123,14 @@ proj <- addUMAP(
   force = T
 )
 
+saveArchRProject(proj, load = F)
+
 # add paired tSNE to cell meta
 peakTSNE <- getEmbedding(proj, embedding = "peakTSNE")
 peakUMAP <- getEmbedding(proj, embedding = "peakUMAP")
 
-colnames(peakTSNE) <- c("ali_tSNE_1", "ali_tSNE_2")
-colnames(peakUMAP) <- c("ali_UMAP_1", "ali_UMAP_2")
+colnames(peakTSNE) <- c("pair_tSNE_1", "pair_tSNE_2")
+colnames(peakUMAP) <- c("pair_UMAP_1", "pair_UMAP_2")
 
 cell_meta <- cbind(cell_meta, peakTSNE)
 cell_meta <- cbind(cell_meta, peakUMAP)

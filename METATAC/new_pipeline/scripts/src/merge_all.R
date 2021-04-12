@@ -46,12 +46,13 @@ stages <- c("19-22w", "11-14w")
 stage_tissues <- list("19-22w"=c("01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", "06_spleen", 
                             "07_testis", "08_bladder", "09_bone_marrow", "11_diaphragm", "12_esophagus", "14_large_intestine", "15_liver", "16_ovary", "17_thymus"),
                      "11-14w"=c("01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", "08_bladder", "09_bone_marrow", "10_bronchus", "12_esophagus", "15_liver", "16_ovary", "17_thymus"))
+pair_tissues <- intersect(stage_tissues[[1]], stage_tissues[[2]])
 
 frag_files <- c()
 cell_meta_files <- c()
 sample_name <- c()
 
-for (stage in stages){
+for(stage in stages){
   for (tissue in stage_tissues[[stage]]){
     sample_name <- c(sample_name, paste(stage, tissue, sep = "_"))
     frag_files <- c(frag_files, paste(root, "data", stage, tissue, "frag_and_meta/merge_human_frag_decon.bed.gz", sep = "/"))
@@ -61,10 +62,20 @@ for (stage in stages){
 
 # load cell meta
 cell_meta <- NULL
-for (file in cell_meta_files){
-  tmp_meta <- read_tsv(file, col_names = T, col_types = cols(group = col_character()), quote = "") %>% column_to_rownames(var = "X1")
+for(file_name in cell_meta_files){
+  tmp_meta <- read_tsv(file_name, col_names = T, col_types = cols(group = col_character()), quote = "") %>% column_to_rownames(var = "X1")
   cell_meta <- rbind(cell_meta, tmp_meta)
 }
+
+# load paired meta
+pair_cell_meta <- NULL
+for(tissue in pair_tissues){
+  file_name <- paste(root, "data/paired", tissue, "cellMeta_internal.txt", sep = "/")
+  tmp_meta <- read_tsv(file_name, col_names = T, col_types = cols(group = col_character()), quote = "") %>% column_to_rownames(var = "X1")
+  pair_cell_meta <- rbind(pair_cell_meta, tmp_meta)
+}
+
+cell_meta <- merge(cell_meta, pair_cell_meta[c("pair_tSNE_1", "pair_tSNE_2", "pair_UMAP_1", "pair_UMAP_2")], by = 0, all.x = T) %>% column_to_rownames("Row.names")
 
 # load peaks
 unionPeaks <- readRDS(unionPeaks_file)
