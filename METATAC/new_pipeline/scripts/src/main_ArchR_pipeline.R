@@ -181,7 +181,7 @@ dev.set(pdf_dev)
 # do the integration manually for visualization --------------------------------
 # before integration
 geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix")
-geneScore <- summarizedExperiment2Seurat(se = geneScore, assay = "ACTIVITY")
+geneScore <- summarizedExperiment2Seurat(se = geneScore, assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
 geneScore$tech <- "ATAC"
 
 print(coembedding(geneScore, expr, features = VariableFeatures(expr), disc = "tech", assay1 = "ACTIVITY",
@@ -201,7 +201,7 @@ geneScore_inte <- integrate(activity_atac = geneScore, expr_rna = expr, peak_mat
 # visualization based on UMAP
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "predictedIdent"))
 
-saveArchRProject(proj, load = T)
+proj <- saveArchRProject(proj, load = T)
 
 # Cicero pipeline --------------------------------------------------------------
 if(runCicero){
@@ -365,6 +365,6 @@ dev.off()
 # marker gene visualization ----------------------------------------------------
 # generate geneScore again to get group info
 geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix")
-geneScore <- summarizedExperiment2Seurat(se = geneScore, assay = "ACTIVITY")
+geneScore <- summarizedExperiment2Seurat(se = geneScore, assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
 
 simpleMarkersPlot(proj, geneScore)

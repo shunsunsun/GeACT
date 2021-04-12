@@ -111,7 +111,7 @@ if(dir.exists("ArchR_epi")){
 # 1.2 visualize peaks and peak-gene linkage aside marker genes -----------------
 
 # coaccessibility
-# proj_epi <- addCoAccessibility(proj_epi, reducedDims = "peakLSI", dimsToUse = 1:30)
+proj_epi <- addCoAccessibility(proj_epi, reducedDims = "peakLSI", dimsToUse = 1:30)
 
 # peak to gene linkage
 rna_files <- dir(paste(root, "data/19-22w", sep = "/"), pattern = "expr_RNA.rds", recursive = T, full.names = T)
@@ -166,11 +166,11 @@ markerGenes  <- c(
   "CLDN18", # Stomach
   "MUC13", # Small intestine
   "LGALS4", # Large intestine
-  "MYB", # Liver
   "CLPS", # Pancreas
-  "ANXA1", # Bronchus, Esophagus
-  "CPM", # Lung
-  "PODXL" # Kidney
+  "MYB", # Liver
+  "PODXL", # Kidney
+  "CPM" # Lung
+  # "ANXA1", # Bronchus, Esophagus
   # "CCDC170" # Ovary
 )
 
@@ -197,7 +197,7 @@ dev.off()
 
 
 # 1.3 chromVAR TF motif analysis -----------------------------------------------
-proj_epi <- addMotifAnnotations(ArchRProj = proj_epi, motifSet = use_motif_set, name = paste0(use_motif_set, "Motif"))
+proj_epi <- addMotifAnnotations(ArchRProj = proj_epi, motifSet = use_motif_set, name = paste0(use_motif_set, "Motif"), force = T)
 proj_epi <- addBgdPeaks(proj_epi, method = "ArchR")
 proj_epi <- addDeviationsMatrix(
   ArchRProj = proj_epi, 
@@ -205,7 +205,7 @@ proj_epi <- addDeviationsMatrix(
   force = TRUE
 )
 
-saveArchRProject(proj_epi, outputDirectory = "ArchR_epi")
+proj_epi <- saveArchRProject(proj_epi, outputDirectory = "ArchR_epi", load = T, dropCells = T)
 # proj_epi <- loadArchRProject("ArchR_epi")
 
 
@@ -340,7 +340,7 @@ proj_19_22w <- addDeviationsMatrix(
 )
 
 
-saveArchRProject(proj_19_22w, outputDirectory = "ArchR_19_22w")
+proj_19_22w <- saveArchRProject(proj_19_22w, outputDirectory = "ArchR_19_22w", load = T, dropCells = T)
 # proj_19_22w <- loadArchRProject(path = "ArchR_19_22w", showLogo = F)
 
 plotVarDev <- getVarDeviations(proj_19_22w, name = paste0(use_motif_set, "MotifMatrix"), plot = TRUE)
@@ -407,7 +407,7 @@ for (fig in p){
   grid::grid.draw(fig)
 }
 
-proj_19_22w <- addGeneScoreMatrix(proj_19_22w)
+proj_19_22w <- addGeneScoreMatrix(proj_19_22w, force = T)
 plotEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "GeneScoreMatrix", name = "HBG1", plotAs = "points", size = 1, continuousSet = "whiteBlue", imputeWeights = NULL)
 plotEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "cellColData", name = "group", imputeWeights = NULL)
 
@@ -469,9 +469,9 @@ peaks <- getPeakSet(proj_19_22w)
 peaks_sub <- peaks[idx, ]
 
 # write marker peaks
-# peaksDF <- data.frame(chr=seqnames(peaks_sub), start=start(peaks_sub) - 1, end=end(peaks_sub))
-# peaksDF <- cbind(peaksDF, mcols(peaks_sub))
-# write.table(peaksDF, file = "marker_peaks.bed", col.names = T, quote = F, row.names = F, sep = "\t")
+peaksDF <- data.frame(chr=seqnames(peaks_sub), start=start(peaks_sub) - 1, end=end(peaks_sub))
+peaksDF <- cbind(peaksDF, mcols(peaks_sub))
+write.table(peaksDF, file = "marker_peaks.bed", col.names = T, quote = F, row.names = F, sep = "\t")
 
 peak_matrix_sub <- subsetByOverlaps(peak_matrix, peaks_sub)
 
@@ -505,47 +505,6 @@ dev.off()
 
 
 
-
-
-
-# figure 6 ---------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-# subset_cytoband <- function(cytoband_df, subset_df, chrs = c("chr1"), subset_ranges = list(chr1 = c(1, 10000))){
-#   names(cytoband_df) <- c("chr", "start", "end", "V4", "V5")
-#   names(subset_df) <- c("chr", "start", "end")
-#   
-#   used_chrs <- unique(subset_df$chr)
-#   return (
-#     lapply(used_chrs, function(chr){
-#       subset_cytoband(cytoband_df[cytoband_df$chr == chr, ], subset_df[subset_df$chr == chr, ])
-#     }) %>% rbind()
-#   )
-#   
-#   cytoband_gr <- makeGRangesFromDataFrame(cytoband_df)
-#   cytoband_gr$name <- cytoband_df$V4
-#   cytoband_gr$type <- cytoband_df$V5
-#   
-#   # first subset to one chromosome
-#   subset_gr <- makeGRangesFromDataFrame(subset_df)
-#   
-#   sort(cytoband_gr)
-#   sort(subset_gr)
-#   
-#   i = 1
-#   j = 1
-#   
-#   k = 1
-#   
-#   
-#   
-#   cytoband_subset <- intersect(cytoband_gr, subset_gr)
-# }
+# tmp utils --------------------------------------------------------------------
+# my_addPeak2GeneLinks <- edit(addPeak2GeneLinks)
+# environment(my_addPeak2GeneLinks) <- asNamespace('ArchR')
