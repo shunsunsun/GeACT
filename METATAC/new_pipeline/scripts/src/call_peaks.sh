@@ -5,19 +5,21 @@ root=unset
 force=0
 bySummits=0
 peakSetName=default
+maxPeaks=150000
 
 usage()
 {
 	echo "Usage: call_peaks [ -f | --fragments FRAGMENTFILE ]
 	[ -o | --outdir   OUTDIR ]
 	[ -r | --root ROOT ]
+	[ -m | --maxPeaks MAXPEAKS ]
 	[ -s | --bySummits ]
-	[ -n | --peakSetName ]
+	[ -n | --peakSetName PEAKSETNAME ]
 	[ --force ]"
 	exit 2
 }
 
-PARSED_ARGUMENTS=$(getopt -n call_peaks -o sf:o:r:n: --long bySummits,force,fragments:,outdir:,root:,peakSetName: -- "$@")
+PARSED_ARGUMENTS=$(getopt -n call_peaks -o sf:o:r:n:m: --long bySummits,force,fragments:,outdir:,root:,peakSetName:,maxPeaks: -- "$@")
 VALID_ARGUMENTS=$?
 if [ "$VALID_ARGUMENTS" != "0" ]; then
 	usage
@@ -33,6 +35,7 @@ do
     -o | --outdir)    outdir="$2";          shift 2;;
     -r | --root) root="$2";                 shift 2;;
     -n | --peakSetName) peakSetName="$2";   shift 2;;
+    -m | --maxPeaks) maxPeaks="$2";         shift 2;;
     -s | --bySummits) bySummits=1;          shift;;
 	  --force) force=1;                       shift;; 
     --) shift;                              break;;
@@ -57,7 +60,7 @@ fi
 
 echo "Constructing peakSet(filtering and annotation)"
 if [ $bySummits -eq 1 ]; then
-  ${root}/scripts/src/construct_peakSet.R --inputdir ${outdir}/macs2 --output ${outdir}/summitPeaks --annodir ${root}/database/annotation --fromSummits --source $peakSetName
+  ${root}/scripts/src/construct_peakSet.R --inputdir ${outdir}/macs2 --output ${outdir}/summitPeaks --annodir ${root}/database/annotation --fromSummits --source $peakSetName --maxPeaks $maxPeaks
 else
-  ${root}/scripts/src/construct_peakSet.R --inputdir ${outdir}/macs2 --output ${outdir}/normalPeaks --annodir ${root}/database/annotation --source $peakSetName
+  ${root}/scripts/src/construct_peakSet.R --inputdir ${outdir}/macs2 --output ${outdir}/normalPeaks --annodir ${root}/database/annotation --source $peakSetName --maxPeaks $maxPeaks
 fi
