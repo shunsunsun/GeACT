@@ -451,7 +451,7 @@ p <- TSNEPlot(object = tmp, do.label = TRUE, pt.size = 1, label.size = 3, no.leg
   coord_cartesian(clip = "off") + 
   xlab("tSNE-1") + ylab("tSNE-2")
 ###
-p$layers[[3]]$data[3, 2:3] <- list(-18.5, -31.5)
+p$layers[[3]]$data[3, 2:3] <- list(-18, -31.5)
 p$layers[[3]]$data[5, 3] <- -35.5
 p$layers[[3]]$data[6, 3] <- -25
 p$layers[[3]]$data[10, 2] <- -35.5
