@@ -427,6 +427,18 @@ table(expr.markers_1s_ftd$isInMd)
 expr.markers_1s_ftd <- expr.markers_1s_ftd[order(expr.markers_1s_ftd$avg_logFC, decreasing = T), ]
 expr.markers_1s_ftd$rank <- 1:nrow(expr.markers_1s_ftd)
 
+# write (1a + 1b)
+expr.markers_1t <- rbind(expr.markers_1a, expr.markers_1b)
+expr.markers_1t$gene <- rownames(expr.markers_1t)
+expr.markers_1t$isInMd <- expr.markers_1t$gene %in% subset(md_genes, mdid %in% case_mdid, "gene", drop = T)
+table(expr.markers_1t$isInMd)
+expr.markers_1t_ftd <- subset(expr.markers_1t, power >= 0.3)
+table(expr.markers_1t_ftd$isInMd)
+expr.markers_1t_ftd <- expr.markers_1t_ftd[order(expr.markers_1t_ftd$avg_logFC, decreasing = F), ]
+#expr.markers_1t_ftd$rank <- 1:nrow(expr.markers_1t_ftd)
+write.table(x = expr.markers_1t_ftd, file = file.path(OUT, paste0("Seurat_markerGenes_Control_si", case_TF, ".txt")), row.names = F, col.names = T, quote = F, sep = "\t")
+#
+
 # significance
 expr.markers_1s_tmp <- subset(expr.markers_1s_ftd, gene != case_TF)
 sig_pvalue <- phyper(q = sum(expr.markers_1s_tmp$isInMd), m = table(md_genes$mdid)[case_mdid], n = nrow(md_genes) - table(md_genes$mdid)[case_mdid], k = nrow(expr.markers_1s_tmp), lower.tail = F, log.p = FALSE)
