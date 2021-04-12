@@ -1,4 +1,4 @@
-# Q&A
+# The technical detail of MALBAC-DT
 
 ## Primer A / B
 The experiment process:

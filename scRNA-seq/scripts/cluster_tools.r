@@ -29,6 +29,64 @@ do_addMeta <- function(expr) {
 }
 
 
+JackStrawPlot_new <- function (object, PCs = 1:5, nCol = 3, score.thresh = 1e-05, 
+                               plot.x.lim = 0.1, plot.y.lim = 0.3, do.print = T) 
+{
+  # modified from the JackStrawPlot function from Seurat package
+  pAll <- GetDimReduction(object, reduction.type = "pca", slot = "jackstraw")@emperical.p.value
+  pAll <- pAll[, PCs, drop = FALSE]
+  pAll <- as.data.frame(pAll)
+  pAll$Contig <- rownames(x = pAll)
+  pAll.l <- reshape2::melt(data = pAll, id.vars = "Contig")
+  colnames(x = pAll.l) <- c("Contig", "PC", "Value")
+  qq.df <- NULL
+  score.df <- NULL
+  for (i in PCs) {
+    q <- qqplot(x = pAll[, i], y = runif(n = 1000), plot.it = FALSE)
+    pc.score <- suppressWarnings(prop.test(x = c(length(x = which(x = pAll[, 
+                                                                           i] <= score.thresh)), floor(x = nrow(x = pAll) * 
+                                                                                                         score.thresh)), n = c(nrow(pAll), nrow(pAll)))$p.val)
+    if (length(x = which(x = pAll[, i] <= score.thresh)) == 
+        0) {
+      pc.score <- 1
+    }
+    if (is.null(x = score.df)) {
+      score.df <- data.frame(PC = paste0("PC", i), Score = pc.score)
+    }
+    else {
+      score.df <- rbind(score.df, data.frame(PC = paste0("PC", 
+                                                         i), Score = pc.score))
+    }
+    if (is.null(x = qq.df)) {
+      qq.df <- data.frame(x = q$x, y = q$y, PC = paste0("PC", 
+                                                        i))
+    }
+    else {
+      qq.df <- rbind(qq.df, data.frame(x = q$x, y = q$y, 
+                                       PC = paste0("PC", i)))
+    }
+  }
+  pAll.l$PC.Score <- rep(x = paste0(score.df$PC, " ", sprintf("%1.3g", 
+                                                              score.df$Score)), each = length(x = unique(x = pAll.l$Contig)))
+  pAll.l$PC.Score <- factor(x = pAll.l$PC.Score, levels = paste0(score.df$PC, 
+                                                                 " ", sprintf("%1.3g", score.df$Score)))
+  score.df$PC <- PCs
+  score.df <- as.matrix(score.df)
+  object@dr$pca@jackstraw@overall.p.values <- score.df
+  gp <- ggplot(data = pAll.l, mapping = aes(sample = Value)) + 
+    stat_qq(distribution = qunif) + facet_wrap("PC.Score", 
+                                               ncol = nCol) + labs(x = "Theoretical [runif(1000)]", 
+                                                                   y = "Empirical") + xlim(0, plot.y.lim) + ylim(0, plot.x.lim) + 
+    coord_flip() + geom_abline(intercept = 0, slope = 1, 
+                               linetype = "dashed", na.rm = TRUE) + theme_bw()
+  object@dr$pca@misc[["jackstraw.plot"]] <- gp
+  if(do.print) {
+    print(gp)
+  }
+  return(object)
+}
+
+
 do_batchDebug <- function() {
   p <- ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = cluster)) + geom_point() + theme_bw() + 
     theme(legend.background = element_blank(), legend.box.background = element_rect()) #+ 
@@ -324,7 +382,9 @@ do_GOenrich <- function(expr.markers_ftd, ncpu = 1, do.filtering = T) {
     cat(geneInput, sep = "\n")
     geneList <- factor(as.integer(geneNames %in% geneInput))
     names(geneList) <- geneNames
-    
+    if(length(levels(geneList)) == 1) {
+      return(NULL)
+    }
     sampleGOdata <- new("topGOdata", description = "GOenrich", ontology = "BP",
                         allGenes = geneList, annot = annFUN.gene2GO, gene2GO = geneID2GO)
     resultFisher <- runTest(sampleGOdata, algorithm = "classic", statistic = "fisher")
@@ -392,6 +452,7 @@ DoHeatmap_new <- function (object, data.use = NULL, use.scaled = TRUE, cells.use
           group.cex = 15, strip.text.y = 8, group.spacing = 0.15, panel.spacing.y = -0.2, assay.type = "RNA", 
           do.colBar = FALSE, colBar.y = 0.93, colBar.col = NULL, do.plot = TRUE, strip.text.x.top = 10, strip.text.y.display = F, strip.text.y.right = 4, legend.margin.for.colBar = margin(t = -12)) 
 {
+  # modified from the DoHeatmap function from Seurat package
   if (is.null(x = data.use)) {
     if (use.scaled) {
       data.use <- GetAssayData(object, assay.type = assay.type, 
@@ -721,6 +782,7 @@ DotPlot_new <- function (object, genes.plot, cols.use = c("lightgrey", "blue"),
                          plot.legend = FALSE, do.plot = TRUE, do.return = FALSE, x.lab.rot = FALSE, rev.x = F, rev.y = F, do.scale = T, breaks.use = NULL, limits.use = NULL, 
                          circle.color = "white") 
 {
+  # modified from the DotPlot function from Seurat package
   scale.func <- switch(EXPR = scale.by, size = scale_size, 
                        radius = scale_radius, stop("'scale.by' must be either 'size' or 'radius'"))
   if (!missing(x = group.by)) {
@@ -791,6 +853,7 @@ SingleFeaturePlot_new <- function (data.use, feature, new.title = NULL, data.plo
                                    no.title = FALSE, no.legend, dark.theme, vector.friendly = FALSE, 
                                    png.file = NULL, png.arguments = c(10, 10, 100)) 
 {
+  # modified from the SingleFeaturePlot function from Seurat package
   if (vector.friendly) {
     previous_call <- blank_call <- png_call <- match.call()
     blank_call$pt.size <- -1
@@ -911,6 +974,7 @@ FeaturePlot_new <- function (object, features.plot, new.title = NULL, min.cutoff
           vector.friendly = FALSE, png.file = NULL, png.arguments = c(10, 
                                                                       10, 100)) 
 {
+  # modified from the FeaturePlot function from Seurat package
   cells.use <- SetIfNull(x = cells.use, default = colnames(x = object@data))
   if (is.null(x = nCol)) {
     nCol <- 2

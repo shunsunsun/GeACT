@@ -1,16 +1,19 @@
 # cell classification
 setwd("~/lustre/06-Human_cell_atlas/pooled_data/All/")
 
-library("Seurat")
-library("dplyr")
-library("Matrix")
-library("pheatmap")
-library("reshape2")
-library("grid")
-library("ggplot2")
-library("cowplot")
-library("RColorBrewer")
-library("topGO")
+suppressMessages({
+  library("Seurat")
+  library("dplyr")
+  library("Matrix")
+  library("pheatmap")
+  library("reshape2")
+  library("grid")
+  library("ggplot2")
+  library("cowplot")
+  library("RColorBrewer")
+  library("topGO")
+  library("Vennerable")
+})
 source("../../scripts/cluster_tools.r")
 source("../../scripts/pheatmap_tools.r")
 
@@ -475,4 +478,59 @@ rm(expr_data, expr_ori)
 #save.image(file = paste0(OUT, "/Seurat_step2.RData"))
 #load(paste0(OUT, "/Seurat_step2.RData"))
 
+# 3. check overlapping between DEGs and MD91 genes ----
+cellMeta <- read.table("cell_metatable_filtered_plus.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+cellMeta$ts_ident <- paste(cellMeta$tissue, cellMeta$ident, sep = ".")
+
+expr_assigned <- expr
+expr_assigned@ident <- factor(cellMeta[names(expr_assigned@ident), "ts_ident"])
+names(expr_assigned@ident) <- names(expr@ident)
+
+expr.markers <- FindMarkers(object = expr_assigned, ident.1 = "small intestine.Fibro-COL6A5", ident.2 = "pancreas.Fibro-PAMR1+SOX6+", test.use = "roc", only.pos = T, min.pct = 0.25)
+expr.markers$gene <- rownames(expr.markers)
+expr.markers_ftd <- expr.markers[expr.markers$power>=0.4 & expr.markers$avg_logFC>=log(2), ]
+
+module_genes <- read.table(file = "03-expression/merged/geneModule/geneModule_genes.txt", header = F, sep = "\t", stringsAsFactors = F)
+colnames(module_genes) <- c("mdid", "gene")
+gene_MD91 <- subset(module_genes, mdid == "MD91", "gene", drop = T)
+
+expr.markers_ftd$isMD91 <- expr.markers_ftd$gene %in% gene_MD91
+table(expr.markers_ftd$isMD91)
+ovlp_stat <- data.frame(DEGs_only = length(setdiff(expr.markers_ftd$gene, gene_MD91)), 
+                        MD91_only = length(setdiff(gene_MD91, expr.markers_ftd$gene)), 
+                        ovlp = length(intersect(expr.markers_ftd$gene, gene_MD91)))
+ovlp_stat
+# write
+write.table(x = expr.markers_ftd, file = file.path(OUT, "expr.markers_ftd_Sm.Fibro-COL6A5_Pa.Fibro-PAMR1+SOX6+.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+
+# plot
+pdf(file = file.path(OUT, "DEGs_MD91_ovlp_venn.pdf"), width = 4, height = 4)
+
+par(mar=c(0, 0, 0, 0))
+Vterm1 <- Venn(SetNames = c("DEGs", "MD91 genes"), Weight = c('11' = ovlp_stat$ovlp, '10' = ovlp_stat$DEGs_only, '01' = ovlp_stat$MD91_only))
+w <- compute.Venn(Vterm1)
+w@SetLabels$x <- c(-4, 4)
+w@SetLabels$y <- c(6.75, 6.75)
+gp <- VennThemes(w)
+gp$Set$Set1$col <- "grey60"
+gp$Set$Set2$col <- "grey60"
+gp$Set$Set1$lwd <- 0.5
+gp$Set$Set2$lwd <- 0.5
+gp$SetText$Set1$col <- "lightskyblue"
+gp$SetText$Set2$col <- "limegreen"
+gp$SetText$Set1$fontsize <- 12
+gp$SetText$Set2$fontsize <- 12
+gp$Face$`11`$fill <- "lightslateblue"
+gp$Face$`10`$fill <- "lightskyblue"
+gp$Face$`01`$fill <- "limegreen"
+gp$FaceText$`11`$fontsize <- 12
+gp$FaceText$`10`$fontsize <- 12
+gp$FaceText$`01`$fontsize <- 12
+PlotVennGeometry(w, gp=gp, show=list(Universe=F))
+par(mar = c(5, 4, 4, 2) + 0.1)
+
+dev.off()
+#
+
+# X. save ----
 save.image(file = paste0(OUT, "/clustering.RData"))

@@ -29,5 +29,6 @@ col_used <- c(col_used, c("all_tSNE_1", "all_tSNE_2", "all_UMAP_1", "all_UMAP_2"
 
 cellMeta_ATAC_new <- cellMeta_ATAC[, col_used]
 dim(cellMeta_ATAC_new)
+colnames(cellMeta_ATAC_new)[27:30] <- c("tSNE_1_glo", "tSNE_2_glo", "UMAP_1_glo", "UMAP_2_glo")
 
 data.table::fwrite(x = cellMeta_ATAC_new, file = "cell_metatable_ATAC_global.txt", row.names = F, col.names = T, quote = F, sep = "\t", nThread = 10)

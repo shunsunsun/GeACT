@@ -1,19 +1,19 @@
 # gene module
 setwd("~/lustre/06-Human_cell_atlas/pooled_data/All/")
 
-library("pheatmap")
-library("ggplot2")
-library("cowplot")
-library("reshape2")
-library("dynamicTreeCut")
-library("gridExtra")
-library("ggalluvial")
-library("parallel")
-library("clusterProfiler")
-library("STRINGdb")
-library("ComplexHeatmap")
-#library("dendextend")
-#library("pathview")
+suppressMessages({
+  library("pheatmap")
+  library("ggplot2")
+  library("cowplot")
+  library("reshape2")
+  library("dynamicTreeCut")
+  library("gridExtra")
+  library("ggalluvial")
+  library("parallel")
+  library("clusterProfiler")
+  library("STRINGdb")
+  library("ComplexHeatmap")
+})
 source("../../scripts/module_tools.r")
 source("../../scripts/pheatmap_tools.r")
 
@@ -355,6 +355,8 @@ mdmap_ds <- sapply(split(mes$merged$enrich_GO$Description, mes$merged$enrich_GO$
 mdmap_ds["MD25"] <- "translation"
 mdmap_ds["MD30"] <- "ECM organization"
 mdmap_ds["MD82"] <- "ECM organization"
+mdmap_ds["MD91"] <- "ECM organization"
+mdmap_ds["MD100"] <- "development"
 mdmap_ds[c("MD97","MD123","MD126","MD135","MD136","MD146")] <- "immune"
 ###
 mdmap_ds <- data.frame(mdmap_ds = Hmisc::capitalize(mdmap_ds), stringsAsFactors = F)
@@ -393,33 +395,37 @@ des_mat <- des_mat[od, , drop = F]
 ex_mat <- ex_mat[od, ]
 ##
 
+# sort tissue
+cellTypeMeta <- read.table(file = "cellType_metatable.txt", header = T, sep = "\t", stringsAsFactors = F, comment.char = "")
+ts_ordered <- intersect(Hmisc::capitalize(unique(cellTypeMeta$tissue)), mdmap_ts)
+#
+
 # plot
 pdf(paste0(OUT, "/module_map.pdf"), width = 8, height = 16)
 
-mdid_case_ids <- c("MD51", "MD117")
-ht_opt(legend_title_gp = gpar(fontsize = 12), legend_labels_gp = gpar(fontsize = 12))
+mdid_case_ids <- c("MD51", "MD117", "MD91")
 ht1 <- Heatmap(matrix = mdmap_mat, col = col_fun, name = "Correlation", 
                row_title_side = "right", row_title_rot = 0, row_title_gp = gpar(fontsize = 12), 
                column_title = "Cell type", column_title_side = "bottom", column_title_gp = gpar(fontsize = 14), 
                cluster_rows = F, row_split = des_mat$class, row_gap = unit(0.3, "mm"), border = T, 
                show_row_names = F, row_names_gp = gpar(fontsize = 3), 
                show_column_names = T, column_names_gp = gpar(fontsize = 12), column_names_rot = 45, 
-               top_annotation = columnAnnotation(Tissue = mdmap_ts, col = list(Tissue = ts_color), simple_anno_size = unit(0.3, "cm"), 
-                                                 annotation_name_gp = gpar(fontsize = 12)
-                                                 ), 
-               left_annotation = rowAnnotation(Log10.Size = anno_barplot(log10(size_mat$size), width = unit(2.5, "cm"), border = F, gp = gpar(fill = "#a1ccf7", col = NA)), 
+               top_annotation = columnAnnotation(Organ = mdmap_ts, col = list(Organ = ts_color), simple_anno_size = unit(0.5, "cm"), 
+                                                 annotation_name_gp = gpar(fontsize = 12), show_legend = F), 
+               left_annotation = rowAnnotation(Log10.Size = anno_barplot(log10(size_mat$size), width = unit(2.5, "cm"), border = F, gp = gpar(fill = "#a1ccf7", col = NA), axis_param = list(gp = gpar(fontsize = 12))), 
                                                foo = anno_mark(at = match(mdid_case_ids, rownames(mdmap_mat)), labels = mdid_case_ids, side = "left", labels_gp = gpar(fontsize = 12), link_width = unit(3, "mm")), 
-                                               annotation_name_gp = gpar(fontsize = 12)), 
+                                               annotation_name_gp = gpar(fontsize = 12), annotation_name_offset = unit(0.6, "cm")), 
                right_annotation = rowAnnotation(Enrichment = enrich_mat, col = list(Enrichment = c("TRUE" = "skyblue", "FALSE" = "grey90")), 
-                                                annotation_name_gp = gpar(fontsize = 12)
-                                                ), 
-               heatmap_legend_param = list(direction = "vertical", at = c(-0.4, 0, 0.4), legend_height = unit(1.75, "cm"))
-               )
+                                                annotation_name_gp = gpar(fontsize = 12), show_legend = F), 
+               show_heatmap_legend = F)
 
 #ht2 <- Heatmap(matrix = log10(ex_mat + 1))
-draw(ht1, row_title = "Module", row_title_gp = gpar(fontsize = 14), 
-     merge_legend = T, heatmap_legend_side = "bottom")
-ht_opt(RESET = T)
+lgd0 <- Legend(col_fun = col_fun, title = "Correlation", title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
+lgd1 <- Legend(at = ts_ordered, title = "Organ", legend_gp = gpar(fill = ct_color[ts_ordered]), title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
+lgd2 <- Legend(at = c("True", "False"), title = "Enrichment", legend_gp = gpar(fill = c("skyblue", "grey90")), title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
+lgd <- packLegend(lgd0, lgd1, lgd2, direction = "horizontal", column_gap = unit(0.725, "cm"))
+draw(ht1, row_title = "Gene module", row_title_gp = gpar(fontsize = 14), padding = unit(c(95, 5.5, 5.5, 5.5), units = "points"))
+draw(lgd, x = unit(0.485, "npc"), y = unit(0.01, "npc"), just = c("center", "bottom"))
 
 dev.off()
 
@@ -562,6 +568,18 @@ do_plotEnrich(res_in = mes, ctype = "merged", mdid = mdid_case, db = "GO", main 
 do_plotEnrich(res_in = mes, ctype = "merged", mdid = mdid_case, db = "KEGG", main = NULL, asp.ratio = 3)
 do_plotEnrich(res_in = mes, ctype = "merged", mdid = mdid_case, db = "TF", main = NULL, bar.col = "aquamarine2", asp.ratio = 3)
 #do_plotEnrich(res_in = mes, ctype = "merged", mdid = mdid_case, db = "miRNA", main = NULL)
+
+dev.off()
+
+# DEGs
+DEGs <- read.table(file = "03-expression/merged/cellCluster/expr.markers_ftd_Sm.Fibro-COL6A5_Pa.Fibro-PAMR1+SOX6+.txt", header = T, sep = "\t", stringsAsFactors = F)
+DEGs <- DEGs[order(DEGs$isMD91), ]
+
+pdf(file = paste0(OUT, "/module_case_DEGs.pdf"), width = 5.5, height = 4, useDingbats = F)
+
+ctype1_case <- "Small intestine.Fibro-COL6A5"
+ctype2_case <- "Pancreas.Fibro-PAMR1+SOX6+"
+do_plotCorHeatmap(res_in = res, ctype1 = ctype1_case, ctype2 = ctype2_case, mgid = DEGs$gene, show_rownames = F, fontsize_row = 10, do.print = F, do.return = T) + ylab(ctype1_case)
 
 dev.off()
 
@@ -1020,5 +1038,6 @@ write.table(x = md_stat_plus, file = paste0("03-expression/merged/geneModule/", 
             row.names = F, col.names = T, quote = F, sep = "\t")
 
 # X. save object ----
-save(mes, file = paste0(OUT, "/mes.RData"))
+saveRDS(res, file = file.path(OUT, "res.rds"))
+saveRDS(mes, file = file.path(OUT, "mes.rds"))
 save.image(file = paste0(OUT, "/module.RData"))

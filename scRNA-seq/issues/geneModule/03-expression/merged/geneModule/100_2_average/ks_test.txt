@@ -1,2 +1,0 @@
-pnorm	ppois
-0	0
