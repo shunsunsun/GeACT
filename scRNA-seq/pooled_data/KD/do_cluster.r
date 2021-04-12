@@ -296,7 +296,7 @@ expr.markers_1s <- rbind(expr.markers_1a, NULL)
 expr.markers_1s$gene <- rownames(expr.markers_1s)
 expr.markers_1s$isInMd <- expr.markers_1s$gene %in% subset(md_genes, mdid %in% case_mdid, "gene", drop = T)
 table(expr.markers_1s$isInMd)
-expr.markers_1s_ftd <- subset(expr.markers_1s, power >= 0.3)
+expr.markers_1s_ftd <- subset(expr.markers_1s, power >= 0.4)
 table(expr.markers_1s_ftd$isInMd)
 expr.markers_1s_ftd <- expr.markers_1s_ftd[order(expr.markers_1s_ftd$avg_logFC, decreasing = T), ]
 expr.markers_1s_ftd$rank <- 1:nrow(expr.markers_1s_ftd)
@@ -306,10 +306,10 @@ expr.markers_1t <- rbind(expr.markers_1a, expr.markers_1b)
 expr.markers_1t$gene <- rownames(expr.markers_1t)
 expr.markers_1t$isInMd <- expr.markers_1t$gene %in% subset(md_genes, mdid %in% case_mdid, "gene", drop = T)
 table(expr.markers_1t$isInMd)
-expr.markers_1t_ftd <- subset(expr.markers_1t, power >= 0.3)
+expr.markers_1t_ftd <- subset(expr.markers_1t, power >= 0.4)
 table(expr.markers_1t_ftd$isInMd)
-expr.markers_1t_ftd <- expr.markers_1t_ftd[order(expr.markers_1t_ftd$avg_logFC, decreasing = T), ]
-expr.markers_1t_ftd$rank <- 1:nrow(expr.markers_1t_ftd)
+expr.markers_1t_ftd <- expr.markers_1t_ftd[order(expr.markers_1t_ftd$avg_logFC, decreasing = F), ]
+#expr.markers_1t_ftd$rank <- 1:nrow(expr.markers_1t_ftd)
 write.table(x = expr.markers_1t_ftd, file = file.path(OUT, "Seurat_markerGenes_Control_siFOXL1.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
 #
 
@@ -336,15 +336,54 @@ expr_plot@meta.data$cluster <- expr_plot@ident
 ###
 expr.markers_1s_sub <- subset(expr.markers_1s_ftd, isInMd)
 gene_tmp <- data.frame(gene = unique(c(case_TF, expr.markers_1s_sub$gene[order(expr.markers_1s_sub$myAUC, decreasing = T)])), stringsAsFactors = F)
-gene_tmp$group <- factor(rep(tail(levels(expr_plot@ident), 1), nrow(gene_tmp)), levels = levels(expr_plot@ident))
+gene_tmp$group <- factor(c("TF", rep("gene", nrow(gene_tmp) - 1)), levels = c("TF", "gene"))
 DoHeatmap_new(object = expr_plot, genes.use = gene_tmp$gene, genes.group = gene_tmp$group, 
           col.low = "blue", col.mid = "white", col.high = "red", 
           do.colBar = T, colBar.y = 0.8, colBar.col = c("grey", "red"), 
           cells.use = WhichCells(expr_plot, ident = c(ct_1s, ct_2s), max.cells.per.ident = 20, random.seed = 1), 
-          slim.col.label = T, remove.key = F, group.label.rot = F, rotate.key = T, 
+          slim.col.label = T, remove.key = F, group.label.rot = F, rotate.key = T, panel.spacing.y = 0, 
           group.cex = 12, group.spacing = 0.5, strip.text.x.top = 15, legend.margin.for.colBar = margin(t = -5))
 rm(expr_plot)
 dev.off()
+
+# GO enrichment
+expr.markers_ftd_updw <- expr.markers_1s_sub
+expr.markers_ftd_updw <- subset(expr.markers_ftd_updw, gene != case_TF)
+expr.markers_ftd_updw$cluster <- ifelse(expr.markers_ftd_updw$avg_logFC > 0, "up", "down")
+enriched_LS <- do_GOenrich(expr.markers_ftd_updw, ncpu = 2)
+
+# plot GO enrich
+enrich_res <- do.call("rbind", enriched_LS)
+enrich_res$Term <- Hmisc::capitalize(gsub(" \\(.*\\)", "", enrich_res$Term))
+enrich_res$Adjusted.P.value <- enrich_res$q_value
+#enrich_res <- enrich_res[order(enrich_res$Adjusted.P.value), ]
+enrich_res <- subset(enrich_res, Adjusted.P.value < 0.05)
+enrich_res_DF <- do.call("rbind", lapply(split(enrich_res, enrich_res$cluster), function(x) { head(x, 2) }))
+enrich_res_DF <- merge(enrich_res_DF, data.frame(old = c("up", "down"), new = c("up", "down"), stringsAsFactors = F), by.x = "cluster", by.y = "old", sort = F)
+enrich_res_DF <- enrich_res_DF[, c("new", "Term", "Adjusted.P.value")]
+
+# add dummy
+# nsnum <- length(setdiff(id_DF$new, enrich_res_DF$new))
+# enrich_res_DF <- rbind(enrich_res_DF, data.frame(new=setdiff(id_DF$new, enrich_res_DF$new),
+#                                                  Term=rep("N.S.", nsnum), Adjusted.P.value = rep(1, nsnum), stringsAsFactors = F))
+# sort cell type
+# enrich_res_DF$new <- factor(enrich_res_DF$new, levels = cell_type_sorted)
+# enrich_res_DF$Term <- factor(enrich_res_DF$Term, levels = rev(unique(enrich_res_DF$Term)))
+
+pdf(file = paste0(OUT, "/", samplingPos, "/enrichment_all.pdf"), width = 6, height = 3)
+gp <- ggplot(enrich_res_DF, aes(x = Term, y = -log10(Adjusted.P.value), fill = new)) +
+  geom_bar(stat = "identity", width = 0.9, show.legend = F) +
+  #facet_grid(new ~ ., scales ="free", drop = F) +
+  coord_flip() +
+  ylab(expression(paste(-Log[10], " (Adjusted P)"))) + geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
+  #theme(strip.text.y = element_text(angle = 0, margin = margin(l = 5, r = 5))) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, max(-log10(enrich_res_DF$Adjusted.P.value)) * 1.2)) +
+  theme(axis.ticks.y = element_blank(), strip.background = element_blank(), strip.text.y = element_text(hjust = 0)) + xlab("GO term") +
+  theme(panel.spacing.y = unit(0.2, "lines"))
+gp
+dev.off()
+#
+
 
 # 3.2 KD NR2F1 ----
 case_TF <- "NR2F1"
@@ -422,7 +461,6 @@ rm(expr_plot)
 dev.off()
 
 ### 3. Assigning cell type identity to clusters ----
-
 expr_assigned <- expr
 
 # combine meta with identity
