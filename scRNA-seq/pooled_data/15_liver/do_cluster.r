@@ -332,14 +332,14 @@ View(topEnrich)
 
 current.cluster.ids <- as.numeric(levels(expr@ident))
 new.cluster.ids <- c("Erythrocyte", "Epi", "Erythrocyte-Prol", "NKT-IL2RB", "B-MS4A1+", "Endo-Prol", "DC/Macro", "B-MS4A1-", "B-Prol", "NKT-SYNE1", 
-                     "T", "Mast-Prog", "Fibro", "Endo-Portal", "MPP", "Hepatocyte", "Endo-DNTT", "NKT-Prol")
+                     "T", "Mast-Prog", "Fibro", "LSEC", "MPP", "Hepatocyte", "Endo-DNTT", "NKT-Prol")
 
 id_DF <- data.frame(old = as.character(current.cluster.ids), new = new.cluster.ids, stringsAsFactors = F)
 id_DF
 expr_assigned <- expr
 expr_assigned@ident <- plyr::mapvalues(x = expr@ident, from = current.cluster.ids, to = new.cluster.ids)
 # change sort
-cell_type_sorted <- c("Epi", "Endo-DNTT", "Endo-Portal", "Endo-Prol", "Fibro",
+cell_type_sorted <- c("Epi", "Endo-DNTT", "LSEC", "Endo-Prol", "Fibro",
                       "MPP", "B-MS4A1+", "B-MS4A1-", "B-Prol", "DC/Macro", "Mast-Prog", "NKT-IL2RB", "NKT-SYNE1", "NKT-Prol", "T", 
                       "Hepatocyte", "Erythrocyte", "Erythrocyte-Prol")
 length(cell_type_sorted)
@@ -425,7 +425,7 @@ enrich_res_DF <- rbind(enrich_res_DF, data.frame(new=setdiff(id_DF$new, enrich_r
 enrich_res_DF$new <- factor(enrich_res_DF$new, levels = cell_type_sorted)
 enrich_res_DF$Term <- factor(enrich_res_DF$Term, levels = rev(unique(enrich_res_DF$Term)))
 
-pdf(file = paste0(OUT, "/", samplingPos, "/enrichment_all.pdf"), width = 8, height = 8)
+pdf(file = paste0(OUT, "/", samplingPos, "/enrichment_all.pdf"), width = 8, height = 9)
 gp <- ggplot(enrich_res_DF, aes(x = Term, y = -log10(Adjusted.P.value), fill = new)) + 
   geom_bar(stat = "identity", width = 0.9, show.legend = F) + 
   facet_grid(new ~ ., scales ="free", drop = F) + 
@@ -451,11 +451,11 @@ p <- TSNEPlot(object = tmp, do.label = TRUE, pt.size = 1, label.size = 3, no.leg
   coord_cartesian(clip = "off") + 
   xlab("tSNE-1") + ylab("tSNE-2")
 ###
-p$layers[[3]]$data[3, 2:3] <- c(-22.5, -31.5)
+p$layers[[3]]$data[3, 2:3] <- list(-18.5, -31.5)
 p$layers[[3]]$data[5, 3] <- -35.5
 p$layers[[3]]$data[6, 3] <- -25
 p$layers[[3]]$data[10, 2] <- -35.5
-p$layers[[3]]$data[11, 2:3] <- c(-10, -35.5)
+p$layers[[3]]$data[11, 2:3] <- list(-10, -35.5)
 p$layers[[3]]$data[13, 3] <- -13
 p$layers[[3]]$data[14, 2] <- 27
 p$layers[[3]]$data[16, 3] <- -15.5
