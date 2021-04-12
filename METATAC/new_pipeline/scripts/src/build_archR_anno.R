@@ -31,7 +31,7 @@ suppressMessages({
 setwd(paste(opt$root, "database", sep = "/"))
 
 # Phase 1: save to txdb sqlite database ----------------------------------------
-chrs <- paste0("chr", c(seq_len(22), "X", "Y", "M"))
+chrs <- paste0("chr", c(seq_len(22), "X", "M"))  # "Y"
 gff3_file <- "GENCODE/v26/gencode.v26.primary_assembly.annotation.gff3.gz"
 gencode_gff3 <- rtracklayer::import(con = gff3_file)
 

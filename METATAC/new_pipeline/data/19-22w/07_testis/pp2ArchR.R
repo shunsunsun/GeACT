@@ -194,5 +194,5 @@ plotPDF(p1, p2, name = "QC-Sample-FragSizes-TSSProfile.pdf",
         ArchRProj = proj, addDOC = FALSE, width = 5, height = 5)
 
 # 2.4 Saving and Loading an ArchRProject ---------------------------------------
-saveArchRProject(ArchRProj = proj, outputDirectory = "ArchR_output", load = F)
+saveArchRProject(ArchRProj = proj, outputDirectory = "ArchR_output", load = F, dropCells = T)
 
