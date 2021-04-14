@@ -241,6 +241,8 @@ levels(expr@meta.data$cond)
 table(expr@meta.data$cond)
 expr@meta.data$cond_cluster <- paste(expr@meta.data$cond, expr@meta.data$cluster, sep = ".")
 
+saveRDS(object = expr, file = paste0(OUT, "/Seurat_inter.rds"))
+
 save.image(file = paste0(OUT, "/Seurat_step2.RData"))
 #load(paste0(OUT, "/Seurat_step2.RData"))
 
@@ -289,7 +291,7 @@ ct_1 <- grep("^Control.*COL6A5$", levels(expr@ident), value = T)
 ct_2 <- grep("^siFOXL1.*COL6A5$", levels(expr@ident), value = T)
 expr.markers_1a <- FindMarkers(object = expr, ident.1 = ct_1, ident.2 = ct_2, test.use = "roc", only.pos = T, min.pct = 0.25)
 expr.markers_1a$avg_logFC <- - expr.markers_1a$avg_logFC
-expr.markers_1b <- FindMarkers(object = expr, ident.2 = ct_2, ident.1 = ct_1, test.use = "roc", only.pos = T, min.pct = 0.25)
+expr.markers_1b <- FindMarkers(object = expr, ident.1 = ct_2, ident.2 = ct_1, test.use = "roc", only.pos = T, min.pct = 0.25)
 
 case_mdid <- "MD91"
 expr.markers_1s <- rbind(expr.markers_1a, NULL)
@@ -416,7 +418,7 @@ ct_1 <- grep("^Control.*COL6A5$", levels(expr@ident), value = T)
 ct_2 <- grep(paste0("^si", case_TF, ".*COL6A5$"), levels(expr@ident), value = T)
 expr.markers_1a <- FindMarkers(object = expr, ident.1 = ct_1, ident.2 = ct_2, test.use = "roc", only.pos = T, min.pct = 0.25)
 expr.markers_1a$avg_logFC <- - expr.markers_1a$avg_logFC
-expr.markers_1b <- FindMarkers(object = expr, ident.2 = ct_2, ident.1 = ct_1, test.use = "roc", only.pos = T, min.pct = 0.25)
+expr.markers_1b <- FindMarkers(object = expr, ident.1 = ct_2, ident.2 = ct_1, test.use = "roc", only.pos = T, min.pct = 0.25)
 
 expr.markers_1s <- rbind(expr.markers_1a, NULL)
 expr.markers_1s$gene <- rownames(expr.markers_1s)
