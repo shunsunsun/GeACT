@@ -178,11 +178,11 @@ cell2ident[match(cell2ident_ambiguous$cell, cell2ident$cell), "ident"] <- knn_re
 
 # correct ident based on marker genes
 cell2ident[cell2ident$cell %in% c("WT_E-N4_65", "WDOU_E-N5_79", "WDOU_E-N13_51"), "ident"] <- "Unknown"
+cell2ident[cell2ident$cell %in% c("WDOU_E-N3_74", "WDOU_E-N6_45", "WDOU_E-N9_48", "WDOU_E-N11_40", "WT_E-N5_94"), "ident"] <- "Unknown"
 
 # cell type in 20w
-ctMeta_20w <- read.table(file = "../../pooled_data/All/cellType_metatable.txt", header = F, sep = "\t", stringsAsFactors = F, comment.char = "")
-colnames(ctMeta_20w) <- c("tissue", "ident", "color")
-ts_id <- Hmisc::capitalize(gsub("_", " ", gsub(".*[0-1][0-9]_", "", getwd())))
+ctMeta_20w <- read.table(file = "../../pooled_data/All/cellType_metatable.txt", header = T, sep = "\t", stringsAsFactors = F, comment.char = "")
+ts_id <- gsub("_", " ", gsub(".*[0-1][0-9]_", "", getwd()))
 ctMeta_20w <- subset(ctMeta_20w, tissue == ts_id)
 cellType_20w <- ctMeta_20w$ident
 
@@ -453,13 +453,15 @@ p <- TSNEPlot(object = tmp, do.label = TRUE, pt.size = 1, label.size = 3, no.leg
   scale_color_manual(labels = ident_labels, values = color_DF$color) + 
   theme(aspect.ratio = 1, axis.line = element_line(color = "black"), panel.border = element_blank(), legend.key.height = unit(0.4, 'cm')) + 
   guides(color = guide_legend(ncol = 1, override.aes = list(size = 3))) + coord_cartesian(clip = "off") + 
-  xlab("tSNE-1") + ylab("tSNE-2")
+  xlab("tSNE-1") + ylab("tSNE-2") + 
+  annotate("segment", x = -19, xend = -15.75, y = 23, yend = 25) + 
+  annotate("segment", x = -19, xend = -16.5, y = 27, yend = 26)
 ###
-p$layers[[3]]$data[p$layers[[3]]$data$ident == "Epi", 2:3] <- list(-18, 28)
+p$layers[[3]]$data[p$layers[[3]]$data$ident == "Epi", 2:3] <- list(-21.25, 23)
 p$layers[[3]]$data[p$layers[[3]]$data$ident == "SM-Vascular", 3] <- -11
 p$layers[[3]]$data[p$layers[[3]]$data$ident == "Fibro-KCNJ8", 3] <- -6
 p$layers[[3]]$data[p$layers[[3]]$data$ident == "Fibro-FBLN1", 3] <- -6
-p$layers[[3]]$data[p$layers[[3]]$data$ident == "Glial", 2:3] <- list(-19, 25)
+p$layers[[3]]$data[p$layers[[3]]$data$ident == "Glial", 2:3] <- list(-22, 27)
 p$layers[[3]]$data[p$layers[[3]]$data$ident == "B", 2:3] <- list(-11, 36.25)
 p$layers[[3]]$data[p$layers[[3]]$data$ident == "DC/Macro", 2] <- -18
 p$layers[[3]]$data[p$layers[[3]]$data$ident == "CACNA1A-ELF3+", 2:3] <- list(-3.5, 29)
