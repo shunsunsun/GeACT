@@ -68,7 +68,7 @@ all_pm$group <- ifelse(all_pm$secreted == "True", "Paracrine signaling", "Juxtac
 # tune values for plot
 all_pm$pvalue[all_pm$pvalue == 0] <- 1e-10
 # write
-write.table(x = subset(all_pm, pvalue < 1e-5 & mean >= 0.5)[, c(1, 5:16)], file = file.path(OUT, "cellComm_sig_St.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+write.table(x = subset(all_pm, pvalue < 1e-5 & mean >= 0.5)[, c(1, 5:11, 13:16, 18:19)], file = file.path(OUT, "cellComm_sig_St.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
 #
 
 # 1. use Fibro as the key cell type (cell type specific interaction) ----
