@@ -14,12 +14,8 @@ To download raw data, please request it in [the Genome Sequence Archive](https:/
 ## Website
 [GeACT web page](http://geact.gao-lab.org/)
 
-## Pipeline
-scRNA-seq: [Here](https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/README.md)  
-scATAC-seq: NA
-
 ## Citation
-(in preparation)
+(In preparation)
 
 ## Contact
 geact@mail.cbi.pku.edu.cn
