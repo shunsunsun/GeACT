@@ -11,6 +11,9 @@ Version: v1.0.2
 
 To download raw data, please request it in [the Genome Sequence Archive](https://bigd.big.ac.cn/gsa-human/) with the ID of HRA000330.
 
+## Website
+[GeACT web page](http://geact.gao-lab.org/)
+
 ## Pipeline
 scRNA-seq: [Here](https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/README.md)  
 scATAC-seq: NA
