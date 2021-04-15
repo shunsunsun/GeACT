@@ -13,6 +13,7 @@ library("RColorBrewer")
 library("topGO")
 source("../../scripts/cluster_tools.r")
 source("../../scripts/pheatmap_tools.r")
+source("../../scripts/cellType_tools.r")
 
 samplingPos <- "Epi"
 OUT <- paste0("03-expression/merged/cellCluster/", samplingPos)
@@ -39,33 +40,7 @@ cell_metadata$tissue <- gsub("_", " ", Hmisc::capitalize(cell_metadata$tissue))
 rownames(cell_metadata) <- cell_metadata$Row.names
 cell_metadata <- cell_metadata[, -1]
 
-ident2clgrp <- function(ident.input) {
-  ident.input[grepl("^Epi", ident.input)] <- "Epithelial"
-  ident.input[grepl("^Endo", ident.input)] <- "Endothelial"
-  ident.input[grepl("^SM-", ident.input)] <- "Smooth muscle"
-  ident.input[grepl("^SM$", ident.input)] <- "Smooth muscle"
-  ident.input[grepl("^SKM$", ident.input)] <- "Skeletal muscle"
-  ident.input[grepl("^Fibro", ident.input)] <- "Fibroblast"
-  # immune
-  ident.input[grepl("^B-", ident.input)] <- "B"
-  ident.input[grepl("^Pro-B", ident.input)] <- "B"
-  ident.input[grepl("^Pre-B", ident.input)] <- "B"
-  ident.input[grepl("^DC/Macro", ident.input)] <- "DC/Macrophage"
-  ident.input[grepl("^Mast-", ident.input)] <- "Mast"
-  ident.input[grepl("^Neutrophil-", ident.input)] <- "Neutrophil"
-  ident.input[grepl("^NKT-", ident.input)] <- "NKT"
-  ident.input[grepl("^T-", ident.input)] <- "T"
-  ident.input[grepl("^Pre-T", ident.input)] <- "T"
-  #
-  ident.input[grepl("^Erythrocyte-", ident.input)] <- "Erythrocyte"
-  ident.input[grepl("^CACNA1A-", ident.input)] <- "CACNA1A"
-  ident.input[ident.input %in% c("PT", "LoH", "LoH-Prog", "DT", "PC-CLU", "PC-BCAT1", "Podocyte-GPC3", "Podocyte-PLA2R1")] <- "Epithelial"
-  ident.input[grepl("^Sertoli-", ident.input)] <- "Sertoli"
-  ident.input[grepl("^Granulosa-", ident.input)] <- "Granulosa"
-  # FGC
-  ident.input[grepl("^SSC$", ident.input)] <- "FGC"
-  return(ident.input)
-}
+# add cell group
 cell_metadata$clgrp <- ident2clgrp(cell_metadata$ident)
 cell_metadata$ts_clgrp <- paste(cell_metadata$tissue, cell_metadata$clgrp, sep = ".")
 # subset
