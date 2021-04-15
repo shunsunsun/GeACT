@@ -1,8 +1,8 @@
 # cell classification
 setwd("~/lustre/06-Human_cell_atlas/pooled_data_14w/02_small_intestine/")
 
-library("Seurat")
-library("dplyr")
+suppressMessages(library("Seurat"))
+suppressMessages(library("dplyr"))
 library("Matrix")
 library("pheatmap")
 library("reshape2")
@@ -10,7 +10,7 @@ library("grid")
 library("ggplot2")
 library("cowplot")
 library("RColorBrewer")
-library("topGO")
+suppressMessages(library("topGO"))
 source("../../scripts/cluster_tools.r")
 source("../../scripts/pheatmap_tools.r")
 
@@ -31,9 +31,8 @@ expr_data <- read.table(file = paste0("03-expression/merged/filtering/", samplin
 dim(expr_data)
 
 # Load the data in 20w
-ctMeta_20w <- read.table(file = "../../pooled_data/All/cellType_metatable.txt", header = F, sep = "\t", stringsAsFactors = F, comment.char = "")
-colnames(ctMeta_20w) <- c("tissue", "ident", "color")
-ts_id <- Hmisc::capitalize(gsub("_", " ", gsub(".*[0-1][0-9]_", "", getwd())))
+ctMeta_20w <- read.table(file = "../../pooled_data/All/cellType_metatable.txt", header = T, sep = "\t", stringsAsFactors = F, comment.char = "")
+ts_id <- gsub("_", " ", gsub(".*[0-1][0-9]_", "", getwd()))
 ctMeta_20w <- subset(ctMeta_20w, tissue == ts_id)
 cellType_20w <- ctMeta_20w$ident
 
@@ -204,19 +203,13 @@ cell2ident[cell2ident$cell %in% c("ZX_E-N24_03", "ZX_E-N7_39", "ZX_E-N30_91"), "
 cell2ident[cell2ident$cell %in% c("ZX_E-N15_88"), "ident"] <- "Unknown"  # low COL1A2
 cell2ident[cell2ident$cell %in% c("ZX_E-N18_15", "ZX_E-N22_92", "ZX_E-N29_57", "XCS_E-N13_04"), "ident"] <- "Unknown"  # low CD3D
 cell2ident[cell2ident$cell %in% c("ZX_E-N4_82"), "ident"] <- "B"
+cell2ident[cell2ident$cell %in% c("ZX_E-N13_84", "ZX_E-N15_77", "ZX_E-N28_54", "ZX_E-N26_23", "ZX_E-N23_29", "ZX_E-N22_19"), "ident"] <- "Fibro-COL14A1"
 
 expr@ident <- factor(cell2ident$ident, levels = c(cellType_20w, setdiff(levels(expr@ident), cellType_20w)))
 names(expr@ident) <- cell2ident$cell
 expr@meta.data$cluster <- cell2ident$ident
 gp <- TSNEPlot(object = expr, pt.size = 2, do.label = T, no.legend = T, colors.use = c(ctMeta_20w[ctMeta_20w$ident %in% unique(expr@ident), "color"], "#B3B3B3"), do.return = T)
 ggsave(filename = paste0(OUT, "/Seurat_tSNE_after_correction.pdf"), plot = gp, width = 6, height = 6, useDingbats = F)
-
-# find another cluster
-new_id <- "Erythrocyte"
-expr@ident <- factor(expr@ident, levels = unique(c(levels(expr@ident), new_id)))
-xxx_cells <- rownames(subset(xxx, tSNE_1 > -22.46 & tSNE_1 < -22.44 & tSNE_2 > -20.97 & tSNE_2 < -20.94))
-expr@ident[xxx_cells] <- new_id
-expr@meta.data[xxx_cells, "cluster"] <- new_id
 
 # find another cluster
 new_id <- "Fibro-SCARA5"
