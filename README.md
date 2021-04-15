@@ -12,8 +12,8 @@ Version: v1.0.2
 To download raw data, please request it in [the Genome Sequence Archive](https://bigd.big.ac.cn/gsa-human/) with the ID of HRA000330.
 
 ## Pipeline
-Transcriptome: [Here](https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/README.md)  
-Chromatin accessibility landscape: NA
+scRNA-seq: [Here](https://github.com/gao-lab/GeACT/blob/master/scRNA-seq/README.md)  
+scATAC-seq: NA
 
 ## Citation
 (in preparation)
