@@ -193,7 +193,14 @@ cellMeta_aog <- read.table(file = "03-expression/merged/cellCluster/Seurat_metaD
 cell_coord <- cellMeta_aog[, c("cell", "tSNE_1", "tSNE_2", "UMAP_1", "UMAP_2")]
 colnames(cell_coord) <- c("cell", "tSNE_1_glo", "tSNE_2_glo", "UMAP_1_glo", "UMAP_2_glo")
 cellMeta_global <- cbind(cellMeta_final_filtered_ali, cell_coord[match(cellMeta_final_filtered_ali$cell, cell_coord$cell), -1])
-write.table(x = cellMeta_global, file = "cell_metatable_RNA_global.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+#write.table(x = cellMeta_global, file = "cell_metatable_RNA_global.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+
+### adj
+cellMeta_St <- read.table(file = "../../pooled_data/01_stomach/03-expression/merged/cellCluster_adj/Seurat_metaData.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+cellMeta_global_adj <- cellMeta_global
+cellMeta_global_adj[match(rownames(cellMeta_St), cellMeta_global_adj$cell), "ident"] <- cellMeta_St$ident
+write.table(x = cellMeta_global_adj, file = "cell_metatable_RNA_global.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+###
 
 # 9. cell type meta
 ts_ordered <- read.table("../../pooled_data/All/tissue_ordered.txt", header = F, sep = "\t", stringsAsFactors = F)
