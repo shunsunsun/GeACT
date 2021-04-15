@@ -1,6 +1,6 @@
 # GeACT
 
-The first draft of Genome Architecture of Cells in Tissues (GeACT) of humans. GeACT is an extension of the Human Genome Project, offering a comprehensive database for documenting and understanding the functional human genome based on high-precision single-cell omics technologies.
+The first draft of Genome Architecture of Cells in Tissues (GeACT) of humans. GeACT offers a comprehensive database for documenting and understanding the functional human genome based on high-precision single-cell omics technologies.
 
 ## Data
 Version: v1.0.2
