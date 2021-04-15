@@ -6,9 +6,8 @@ library("cowplot")
 library(grid)
 
 # cell meta
-cellMetaData <- read.table(file = "04-open_chromatin/merged/integration_dimreduc_19-22w.txt", header = T, sep = "\t", stringsAsFactors = F, comment.char = "")
-colnames(cellMetaData)[colnames(cellMetaData) == "celltype"] <- "ident"
-cellMetaData$tech <- factor(cellMetaData$tech, levels = c("RNA", "ATAC"))
+cellMetaData <- read.table(file = "05-integration/merged/integration_dimreduc_19-22w.txt", header = T, sep = "\t", stringsAsFactors = F, comment.char = "")
+cellMetaData$class <- factor(cellMetaData$class, levels = c("RNA", "ATAC"))
 
 # cell type meta
 ctMetaData <- read.table(file = "cellType_metatable.txt", header = T, sep = "\t", stringsAsFactors = F, comment.char = "")
@@ -20,7 +19,7 @@ gp_LS <- lapply(tissue_used, function(ts_id) {
   point_size <- ifelse(nrow(cellMetaData_sub) >= 500, 0.8, 1.8)
   if(nrow(cellMetaData_sub) >= 10000) { point_size <- 0.5 }
   ident_labels <- paste(1:length(ctMetaData_sub$ident), ctMetaData_sub$ident, sep = ": ")
-  gp_RA <- ggplot(cellMetaData_sub, aes(x = tSNE_1, y = tSNE_2, color = tech)) + geom_point(alpha = 0.6, size = point_size, show.legend = T) + 
+  gp_RA <- ggplot(cellMetaData_sub, aes(x = tSNE_1, y = tSNE_2, color = class)) + geom_point(alpha = 0.6, size = point_size, show.legend = T) + 
     #scale_color_manual(labels = ident_labels, values = ctMetaData_sub$color) + 
     theme(aspect.ratio = 1, axis.title = element_blank(), axis.text = element_blank(), axis.line = element_blank(), axis.ticks = element_blank()) + 
     ggtitle(Hmisc::capitalize(ts_id)) + 
