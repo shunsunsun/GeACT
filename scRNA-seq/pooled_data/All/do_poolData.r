@@ -3,6 +3,7 @@ setwd("~/lustre/06-Human_cell_atlas/pooled_data/All/")
 
 library("parallel")
 suppressMessages(library("arrow"))
+source("../../scripts/cellType_tools.r")
 
 # load gene ID
 geneID <- read.table("~/lustre/06-Human_cell_atlas/Genomes/human/gene_ID2Name_fixed.txt", header = F, sep = "\t", stringsAsFactors = F)
@@ -151,7 +152,16 @@ mt6_LS <- lapply(split(dts, 1:nrow(dts)), function(x) {
 names(mt6_LS) <- NULL
 mt6_DF <- do.call("rbind", mt6_LS)
 dir.create(path = paste0("03-expression/merged/cellCluster"), showWarnings = F, recursive = T)
-write.table(x = mt6_DF, file = paste0("03-expression/merged/cellCluster/Seurat_markerGenes.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+#write.table(x = mt6_DF, file = paste0("03-expression/merged/cellCluster/Seurat_markerGenes.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+
+### adj
+markGenes_St <- read.table(file = "../01_stomach/03-expression/merged/cellCluster_adj/Seurat_markerGenes.txt", header = T, sep = "\t", stringsAsFactors = F)
+markGenes_St$tissue <- "stomach"
+mt6_DF_adj <- mt6_DF
+mt6_DF_adj <- rbind(markGenes_St, subset(mt6_DF_adj, tissue != "stomach"))
+rownames(mt6_DF_adj) <- NULL
+write.table(x = mt6_DF_adj, file = paste0("03-expression/merged/cellCluster/Seurat_markerGenes.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+###
 
 # 7. cell type order and color
 mt7_LS <- lapply(split(dts, 1:nrow(dts)), function(x) {
@@ -189,7 +199,6 @@ cellMeta_final_filtered <- subset(cellMeta_final, QC)
 write.table(x = cellMeta_final_filtered, file = "cell_metatable_filtered.txt", row.names = F, col.names = T, quote = F, sep = "\t")
 
 # cell group
-source("../../scripts/cellType_tools.r")
 cellMeta_final_filtered_plus <- cellMeta_final_filtered
 cellMeta_final_filtered_plus$group <- ident2clgrp(cellMeta_final_filtered_plus$ident)
 cellMeta_final_filtered_plus <- cellMeta_final_filtered_plus[, c(1:8,21,9:20)]
