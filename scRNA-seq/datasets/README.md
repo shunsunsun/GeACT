@@ -1,4 +1,5 @@
-# Dataset
+# Datasets
+
 ## Definition
 A dataset consists of the data from one sequencing experiment.  
 A dataset corresponds to several samples, each of which contain the multiplex data from one 96-well plate.  
