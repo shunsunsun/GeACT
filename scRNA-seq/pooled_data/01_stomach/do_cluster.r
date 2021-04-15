@@ -430,7 +430,7 @@ enriched_subs <- merge(enriched_sub1, enriched_sub2, by = "GO.ID", sort = F)
 goid_1 <- subset(enriched_subs, enriched_subs$q_value.x < 1e-4 & enriched_subs$q_value.y > 0.8, "GO.ID", drop = T)
 goid_2 <- subset(enriched_subs, enriched_subs$q_value.x > 0.8 & enriched_subs$q_value.y < 1e-5, "GO.ID", drop = T)
 enriched_subs <- subset(enriched_full_DF, new %in% c("Fibro-FBLN1", "Fibro-VSTM2A") & GO.ID %in% c(goid_1, goid_2))
-enriched_subs$Term <- factor(enriched_subs$Term, levels = rev(unique(c(enriched_sub1$Term, enriched_sub2$Term))))
+enriched_subs$Term <- factor(enriched_subs$Term, levels = rev(subset(enriched_subs, q_value <= 0.05, "Term", drop = T)))
 
 expr.markers_ftd_plus <- merge(expr.markers_ftd, id_DF, by.x = "cluster", by.y = "old", sort = F)
 gene2go <- read.table(file = "~/lustre/06-Human_cell_atlas/Data/GO/goa_human_gene2GO.tab", header = F, sep = "\t", stringsAsFactors = F)
@@ -440,11 +440,12 @@ colnames(expr.markers_ftd_geneNum) <- c("new", "geneNum")
 enriched_subs <- merge(enriched_subs, expr.markers_ftd_geneNum, by = "new", sort = F)
 
 gp <- ggplot(enriched_subs, aes(x = new, y = Term)) + 
-  geom_point(aes(color = -log10(q_value), size = Significant / geneNum)) + 
+  geom_point(aes(color = -log10(q_value), size = Significant / geneNum * 100)) + 
   scale_color_gradient(low = "grey", high = "red") + 
-  labs(color = parse(text = "-log[10]~(FDR)"), size = "Percentage") + xlab(NULL) + ylab(NULL) + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-ggsave(filename = paste0(OUT, "/GOenrich_comparison.pdf"), plot = gp, width = 6, height = 5, useDingbats = F)
+  labs(color = parse(text = "-Log[10]~(FDR)"), size = "Percentage") + xlab(NULL) + ylab("GO term\n\n") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) + 
+  guides(color = guide_colorbar(order = 1))
+ggsave(filename = paste0(OUT, "/GOenrich_comparison.pdf"), plot = gp, width = 7, height = 4.5, useDingbats = F)
 
 # specific genes
 genes_list <- unlist(strsplit(enriched_subs$Genes[c(1,8)], ","))
