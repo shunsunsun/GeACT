@@ -358,7 +358,8 @@ dev.off()
 expr.markers_ftd <- subset(expr.markers_byIdent_DF, filter & ! chrXY)
 table(expr.markers_ftd$cluster)
 # write
-write.table(x = expr.markers_ftd, file = paste0(OUT, "/Seurat_expr.markers_ftd_byIdent.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+write.table(x = expr.markers_ftd[, c(9, 1:8)], file = paste0(OUT, "/Seurat_expr.markers_ftd_byIdent.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
+write.table(x = subset(expr.markers_ftd[, c(9, 1:8)], cluster == "Fibro-0"), file = paste0(OUT, "/Seurat_expr.markers_ftd_byIdent_Fibro-0.txt"), row.names = F, col.names = T, quote = F, sep = "\t")
 #
 expr.markers_ftd_up <- subset(expr.markers_ftd, avg_logFC > 0)
 expr.markers_ftd_dw <- subset(expr.markers_ftd, avg_logFC < 0)
