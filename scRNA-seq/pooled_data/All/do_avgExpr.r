@@ -15,8 +15,8 @@ expr_data_normed_gene <- read.table(paste0("03-expression/merged/filtering/", sa
 rownames(expr_data_normed) <- expr_data_normed_gene$V1
 
 # Load the cell metatable
-cellMetaData <- read.table(file = "cell_metatable_filtered.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
-dim(cellMetaData)
+cellMetaData <- read.table(file = "../../pooled_data_all/All/cell_metatable_RNA_global.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+cellMetaData <- cellMetaData[colnames(expr_data_normed), ]
 all(colnames(expr_data_normed) == rownames(cellMetaData))
 cellMetaData$ts_ident <- paste(cellMetaData$tissue, cellMetaData$ident, sep = ".")
 #cellMetaData$ts_clgrp <- Hmisc::capitalize(paste(cellMetaData$tissue, ident2clgrp(cellMetaData$ident), sep = "."))
@@ -41,8 +41,8 @@ expr_data_normed_gene <- read.table(paste0("03-expression/merged/filtering/", sa
 rownames(expr_data_normed) <- expr_data_normed_gene$V1
 
 # Load the cell metatable
-cellMetaData <- read.table(file = "cell_metatable_filtered.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
-dim(cellMetaData)
+cellMetaData <- read.table(file = "../../pooled_data_all/All/cell_metatable_RNA_global.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+cellMetaData <- cellMetaData[colnames(expr_data_normed), ]
 all(colnames(expr_data_normed) == rownames(cellMetaData))
 cellMetaData$ts_ident <- paste(cellMetaData$tissue, cellMetaData$ident, sep = ".")
 #cellMetaData$ts_clgrp <- Hmisc::capitalize(paste(cellMetaData$tissue, ident2clgrp(cellMetaData$ident), sep = "."))

@@ -23,8 +23,8 @@ expr_data_avg_gene <- read.table(file = "03-expression/merged/filtering/UMIcount
 rownames(expr_data_avg) <- expr_data_avg_gene$V1
 
 # load cell metatable
-cellMetaData <- read.table(file = "cell_metatable_filtered_plus.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
-dim(cellMetaData)
+cellMetaData <- read.table(file = "../../pooled_data_all/All/cell_metatable_RNA_global.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+cellMetaData <- cellMetaData[colnames(expr_data_normed), ]
 all(colnames(expr_data_normed) == rownames(cellMetaData))
 cellMetaData$ts_ident <- paste(cellMetaData$tissue, cellMetaData$ident, sep = ".")
 
@@ -151,8 +151,8 @@ dev.off()
 # write.table(x = gene_nCellType_ge150, file = file.path(OUT, "gene_nCellType_ge150.txt"), row.names = F, col.names = F, quote = F, sep = "\t")
 # gene_nCellType_ge200 <- subset(pattern_stat, nCellType >= 200, "gene", drop = T)
 # write.table(x = gene_nCellType_ge200, file = file.path(OUT, "gene_nCellType_ge200.txt"), row.names = F, col.names = F, quote = F, sep = "\t")
-# gene_nCellType_ge228 <- subset(pattern_stat, nCellType >= 228, "gene", drop = T)
-# write.table(x = gene_nCellType_ge228, file = file.path(OUT, "gene_nCellType_ge228.txt"), row.names = F, col.names = F, quote = F, sep = "\t")
+# gene_nCellType_ge229 <- subset(pattern_stat, nCellType >= 229, "gene", drop = T)
+# write.table(x = gene_nCellType_ge229, file = file.path(OUT, "gene_nCellType_ge229.txt"), row.names = F, col.names = F, quote = F, sep = "\t")
 # gene_nCellType_le1 <- subset(pattern_stat, nCellType <= 1, "gene", drop = T)
 # write.table(x = gene_nCellType_le1, file = file.path(OUT, "gene_nCellType_le1.txt"), row.names = F, col.names = F, quote = F, sep = "\t")
 
@@ -188,7 +188,7 @@ pheatmap::pheatmap((reshape2::acast(pvalue_DF, cut1 ~ cut2, value.var = "pvalue_
 pdf(file = paste0(OUT, "/nCellType_Cons.pdf"), width = 5, height = 4)
 
 x_labels <- gsub("-.*", "            ", gsub("\\[|\\]|\\(|\\)", "", gsub("," , "-", levels(pattern_stat_withCut_rmNA$nCellType_withCut))))
-x_labels[5] <- gsub("      $", "228", x_labels[5])
+x_labels[5] <- gsub("      $", "230", x_labels[5])
 
 ggplot(pattern_stat_withCut_rmNA, aes(x = nCellType_withCut, y = avgPc, fill = class, color = class)) + geom_split_violin(width = 1.4, show.legend = F) + 
   stat_summary(data = subset(pattern_stat_withCut_rmNA, class == "Protein coding"), geom = "point", 
