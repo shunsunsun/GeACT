@@ -1,9 +1,12 @@
 # random forest analysis
 setwd("~/lustre/06-Human_cell_atlas/pooled_data/All/")
 
-library("ggplot2")
-library("cowplot")
-library("randomForest")
+suppressMessages({
+  library("arrow")
+  library("randomForest")
+  library("ggplot2")
+  library("cowplot")
+})
 #source("../../scripts/cluster_tools.r")
 
 samplingPos <- "."
@@ -20,21 +23,21 @@ chromtainRM <- read.table("../../Data/human_cr.txt", header = F, sep = "\t", str
 dim(chromtainRM)
 
 # 1. pre-process ----
-# Load gene ID 
+# load gene ID 
 geneID <- read.table("~/lustre/06-Human_cell_atlas/Genomes/human/gene_ID2Name_fixed.txt", header = F, sep = "\t", stringsAsFactors = F)
 dim(geneID)
 colnames(geneID) <- c("ensembl", "symbol")
 
-# Load the expr matrix
-expr_data <- read.table(file = paste0("03-expression/merged/filtering/", samplingPos, "/UMIcount_filtered.txt"), header = T, row.names = 1, sep = "\t", stringsAsFactors = F, check.names = F, comment.char = "")
-dim(expr_data)
-# norm
-expr_data_normed <- sweep(expr_data, 2, colSums(expr_data), "/")
+# load gene expression matrix (CPM)
+expr_data_normed <- read_feather(file = paste0("03-expression/merged/filtering/", samplingPos, "/UMIcount_filtered_CPM.feather"))
+expr_data_normed <- as.data.frame(expr_data_normed)
+expr_data_normed_gene <- read.table(paste0("03-expression/merged/filtering/", samplingPos, "/UMIcount_filtered_CPM.gene"), header = F, sep = "\t", stringsAsFactors = F)
+rownames(expr_data_normed) <- expr_data_normed_gene$V1
 
-# Load the cell metatable
-cellMetaData <- read.table(file = "cell_metatable_filtered.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
-dim(cellMetaData)
-all(colnames(expr_data) == rownames(cellMetaData))
+# load cell metatable
+cellMetaData <- read.table(file = "../../pooled_data_all/All/cell_metatable_RNA_global.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+cellMetaData <- cellMetaData[colnames(expr_data_normed), ]
+all(colnames(expr_data_normed) == rownames(cellMetaData))
 cellMetaData$ts_ident <- Hmisc::capitalize(paste(cellMetaData$tissue, cellMetaData$ident, sep = "."))
 #cellMetaData$ts_clgrp <- Hmisc::capitalize(paste(cellMetaData$tissue, ident2clgrp(cellMetaData$ident), sep = "."))
 #length(unique(cellMetaData$ts_clgrp))
@@ -58,7 +61,7 @@ expr_data_train$cellType <- factor(expr_data_train$cellType)
 expr_data_test <- expr_data_normed_onlyTF[- split_idx, ]
 
 set.seed(1234)
-#rf_fit <- randomForest(cellType ~ ., data = expr_data_train, importance = T)
+rf_fit <- randomForest(cellType ~ ., data = expr_data_train, importance = T)
 varImpPlot(rf_fit)
 
 rf_importance <- importance(rf_fit, type = 2)
@@ -95,7 +98,7 @@ expr_data_train$cellType <- factor(expr_data_train$cellType)
 expr_data_test <- expr_data_normed_onlyTF[- split_idx, ]
 
 set.seed(1234)
-#rf_fit2 <- randomForest(cellType ~ ., data = expr_data_train, importance = T)
+rf_fit2 <- randomForest(cellType ~ ., data = expr_data_train, importance = T)
 varImpPlot(rf_fit2)
 
 rf_importance <- importance(rf_fit2, type = 2)
@@ -119,4 +122,5 @@ ggplot(rf_importance_sub, aes(x = gene, y = MeanDecreaseGini)) +
 
 dev.off()
 
+# X. save ----
 save.image(file = paste0(OUT, "/randomForest.RData"))
