@@ -4,7 +4,7 @@ The first draft of Genome Architecture of Cells in Tissues (GeACT) of humans. Ge
 
 ## Data
 Version: v1.0.2
-| Class | Technology | Cell number | Organ number | Matrix | Meta table [(?)](https://github.com/gao-lab/GeACT/wiki/Cell-meta-description) |
+| Class | Technology | Cell number | Organ number | Matrix | Meta table [(?)](https://github.com/gao-lab/GeACT/wiki/Cell-meta-table-description) |
 | :------ | :------ | ------: | ------: | :------| :------|
 | scRNA-seq | MALBAC-DT | 38,671 | 17 | [Download](http://geact.gao-lab.org/) | [Download](scRNA-seq/pooled_data_all/All/cell_metatable_RNA_global.txt.gz?raw=true) |
 | scATAC-seq | METATAC | 45,643 | 16 | [Download](http://geact.gao-lab.org/) | [Download](METATAC/pooled_data_all/All/cell_metatable_ATAC_global.txt.gz?raw=true) |
