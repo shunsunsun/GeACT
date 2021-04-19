@@ -76,7 +76,7 @@ rf_importance_sub$gene <- factor(rf_importance_sub$gene, levels = rev(unique(rf_
 pdf(paste0(OUT, "/rf_TF_allCellType.pdf"), width = 5, height = 3.5)
 
 ggplot(rf_importance_sub, aes(x = gene, y = MeanDecreaseGini)) + 
-  geom_point(color = NA) + 
+  geom_blank() + 
   geom_vline(xintercept = 1:nrow(rf_importance_sub), linetype = "dashed", color = "grey") + 
   geom_point(color = "dodgerblue", size = 3) + 
   xlab("TF") + ylab("Mean decrease Gini") + 
