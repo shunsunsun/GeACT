@@ -110,14 +110,14 @@ rf_importance <- rf_importance[order(rf_importance$MeanDecreaseGini, decreasing 
 rf_importance_sub <- head(rf_importance, 10)
 rf_importance_sub$gene <- factor(rf_importance_sub$gene, levels = rev(unique(rf_importance_sub$gene)))
 
-pdf(paste0(OUT, "/rf_TF_Epi.pdf"), width = 5, height = 3)
+pdf(paste0(OUT, "/rf_TF_Epi.pdf"), width = 5, height = 3.5)
 
 ggplot(rf_importance_sub, aes(x = gene, y = MeanDecreaseGini)) + 
-  geom_point(color = NA) + 
+  geom_blank() + 
   geom_vline(xintercept = 1:nrow(rf_importance_sub), linetype = "dashed", color = "grey") + 
   geom_point(color = "dodgerblue", size = 3) + 
   xlab("TF") + ylab("Mean decrease Gini") + 
-  ggtitle("Epithelium") + 
+  ggtitle("Epithelial cells") + 
   coord_flip()
 
 dev.off()
