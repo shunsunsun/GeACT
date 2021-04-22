@@ -25,7 +25,11 @@ bash do_mapping.sh
 ```
 bash run_decontamination.sh
 ```
-4. Merge peaks  
+
+### Pooled data level
+Pooled data means the data pooled from multiple datasets. Pooled data was used for the analysis at organ or stage level.
+
+Merge peaks  
 ```
 bash merge_bedpe.sh
 ```
