@@ -29,4 +29,5 @@ bash run_decontamination.sh
 ### Pooled data level
 Pooled data means the data pooled from multiple datasets. Pooled data was used for the analysis at organ or stage level.
 
+Pipeline:  
 The fragment files were used as input for downstream analysis using [ArchR](https://www.archrproject.com/).
