@@ -2,8 +2,9 @@
 A pipeline for single-cell RNA-seq data analysis, maily for the data from MALBAC-DT.
 
 ## Prerequisite
-1. Perl (5.010 or later)  
-2. R (3.0.1 or later)  
+1. Perl (5.16.3)  
+2. R (3.5.1)  
+3. Slurm (18.08.7)
 
 ## Pipeline
 ### Dataset level
