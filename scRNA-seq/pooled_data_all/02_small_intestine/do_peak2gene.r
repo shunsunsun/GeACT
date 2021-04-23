@@ -70,22 +70,22 @@ cat("Could be used:", nrow(nPeak_dif_nonDE_11), "/", nrow(nPeak_dif_nonDE), "/",
 
 # plot
 pdf(file = paste0(OUT, "/dsl_ATF2.pdf"), width = 6, height = 5)
-gp_LS <- do_plotTrack(case_gene = "ATF2", margin.right = 35)
+gp_LS <- do_plotTrack(case_gene = "ATF2", highlight.dsl.width = 0.005, margin.right = 12)
 plot_grid(gp_LS[[1]], NULL, gp_LS[[2]], NULL, gp_LS[[3]], ncol = 1, align = "hv", rel_heights = c(1.05, -0.2, 1, -0.2, 1))
 dev.off()
 
 pdf(file = paste0(OUT, "/dsl_TLK2.pdf"), width = 6, height = 5)
-gp_LS <- do_plotTrack(case_gene = "TLK2", margin.right = 15)
+gp_LS <- do_plotTrack(case_gene = "TLK2", highlight.dsl.width = 0.008, margin.right = 15)
 plot_grid(gp_LS[[1]], NULL, gp_LS[[2]], NULL, gp_LS[[3]], ncol = 1, align = "hv", rel_heights = c(1.05, -0.2, 1, -0.2, 1))
 dev.off()
 
-pdf(file = paste0(OUT, "/dsl_nonDE_case.pdf"), width = 6, height = 3)
-
-for(case_gene in nPeak_dif_nonDE_11$gene) {
-  do_plotTrack(case_gene)
-}
-
-dev.off()
+# pdf(file = paste0(OUT, "/dsl_nonDE_case.pdf"), width = 6, height = 3)
+# 
+# for(case_gene in nPeak_dif_nonDE_11$gene) {
+#   do_plotTrack(case_gene)
+# }
+# 
+# dev.off()
 
 # X. save ----
 #save.image(file = paste0(OUT, "/peak2gene.RData"))
