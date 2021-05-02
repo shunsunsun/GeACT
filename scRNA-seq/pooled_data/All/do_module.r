@@ -368,6 +368,7 @@ mdmap_ds$class <- factor(mdmap_ds$class, levels = c(setdiff(sort(unique(mdmap_ds
 
 # color
 col_fun <- circlize::colorRamp2(c(-0.3, 0, 0.3), c("blue", "white", "red"))
+col_fun_maxIoU <- circlize::colorRamp2(c(0, 0.5), c("#F7FCF5", "#41AB5D"))
 # value
 mdmap_mat <- md_map
 colnames(mdmap_mat) <- mdmap_ct
@@ -381,6 +382,9 @@ load("03-expression/merged/cellCluster/ct_color.RData")
 ts_DF <- data.frame(color = ct_color, stringsAsFactors = F)
 ts_color <- ts_DF[mdmap_ts, ]
 names(ts_color) <- mdmap_ts
+# maxIoU (MsigDB)
+maxIoU_mat <- read.table(file = "03-expression/merged/mdIoU/geneModule_maxIoU.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+colnames(maxIoU_mat) <- "Max.IoU"
 # des
 des_mat <- mdmap_ds
 # expr
@@ -391,6 +395,7 @@ od <- order(rowMeans(mdmap_mat), decreasing = T)
 mdmap_mat <- mdmap_mat[od, ]
 size_mat <- size_mat[od, ]
 enrich_mat <- enrich_mat[od, ]
+maxIoU_mat <- maxIoU_mat[od, ]
 des_mat <- des_mat[od, , drop = F]
 ex_mat <- ex_mat[od, ]
 ##
@@ -415,17 +420,18 @@ ht1 <- Heatmap(matrix = mdmap_mat, col = col_fun, name = "Correlation",
                left_annotation = rowAnnotation(Log10.Size = anno_barplot(log10(size_mat$size), width = unit(2.5, "cm"), border = F, gp = gpar(fill = "#a1ccf7", col = NA), axis_param = list(gp = gpar(fontsize = 12))), 
                                                foo = anno_mark(at = match(mdid_case_ids, rownames(mdmap_mat)), labels = mdid_case_ids, side = "left", labels_gp = gpar(fontsize = 12), link_width = unit(3, "mm")), 
                                                annotation_name_gp = gpar(fontsize = 12), annotation_name_offset = unit(0.6, "cm")), 
-               right_annotation = rowAnnotation(Enrichment = enrich_mat, col = list(Enrichment = c("TRUE" = "skyblue", "FALSE" = "grey90")), 
+               right_annotation = rowAnnotation(Enrichment = enrich_mat, Max.IoU = maxIoU_mat, col = list(Enrichment = c("TRUE" = "skyblue", "FALSE" = "grey90"), Max.IoU = col_fun_maxIoU), 
                                                 annotation_name_gp = gpar(fontsize = 12), show_legend = F), 
                show_heatmap_legend = F)
 
 #ht2 <- Heatmap(matrix = log10(ex_mat + 1))
-lgd0 <- Legend(col_fun = col_fun, title = "Correlation", title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
+lgd0 <- Legend(col_fun = col_fun, title = "Correlation", title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12), legend_height = unit(2, units = "cm"))
 lgd1 <- Legend(at = ts_ordered, title = "Organ", legend_gp = gpar(fill = ct_color[ts_ordered]), title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
 lgd2 <- Legend(at = c("True", "False"), title = "Enrichment", legend_gp = gpar(fill = c("skyblue", "grey90")), title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
-lgd <- packLegend(lgd0, lgd1, lgd2, direction = "horizontal", column_gap = unit(0.725, "cm"))
+lgd3 <- Legend(col_fun = col_fun_maxIoU, title = "Maximum IoU", title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12), legend_height = unit(2, units = "cm"))
+lgd <- packLegend(lgd0, lgd1, lgd2, lgd3, direction = "horizontal", column_gap = unit(0.725, "cm"))
 draw(ht1, row_title = "Gene module", row_title_gp = gpar(fontsize = 14), padding = unit(c(95, 5.5, 5.5, 5.5), units = "points"))
-draw(lgd, x = unit(0.485, "npc"), y = unit(0.01, "npc"), just = c("center", "bottom"))
+draw(lgd, x = unit(0.5, "npc"), y = unit(0.01, "npc"), just = c("center", "bottom"))
 
 dev.off()
 
