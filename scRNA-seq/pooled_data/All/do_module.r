@@ -376,6 +376,7 @@ colnames(mdmap_mat) <- mdmap_ct
 size_mat <- md_map_size
 # right anno
 enrich_mat <- as.matrix(mes$merged$cl_list_ftd[, c("enrich_TF", "enrich_PPI", "enrich_GO", "enrich_KEGG")])
+rownames(enrich_mat) <- mes$merged$cl_list_ftd$cluster
 colnames(enrich_mat) <- gsub("^enrich_", "", colnames(enrich_mat))
 # top anno
 load("03-expression/merged/cellCluster/ct_color.RData")
@@ -425,10 +426,10 @@ ht1 <- Heatmap(matrix = mdmap_mat, col = col_fun, name = "Correlation",
                show_heatmap_legend = F)
 
 #ht2 <- Heatmap(matrix = log10(ex_mat + 1))
-lgd0 <- Legend(col_fun = col_fun, title = "Correlation", title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12), legend_height = unit(2, units = "cm"))
-lgd1 <- Legend(at = ts_ordered, title = "Organ", legend_gp = gpar(fill = ct_color[ts_ordered]), title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
-lgd2 <- Legend(at = c("True", "False"), title = "Enrichment", legend_gp = gpar(fill = c("skyblue", "grey90")), title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12))
-lgd3 <- Legend(col_fun = col_fun_maxIoU, title = "Maximum IoU", title_gp = gpar(fontsize = 12), title_gap = unit(2, "mm"), labels_gp = gpar(fontsize = 12), legend_height = unit(2, units = "cm"))
+lgd0 <- Legend(col_fun = col_fun, title = "Correlation", title_gp = gpar(fontsize = 12), title_gap = unit(3, "mm"), labels_gp = gpar(fontsize = 12), legend_height = unit(2, units = "cm"))
+lgd1 <- Legend(at = ts_ordered, title = "Organ", legend_gp = gpar(fill = ct_color[ts_ordered]), title_gp = gpar(fontsize = 12), title_gap = unit(3, "mm"), labels_gp = gpar(fontsize = 12))
+lgd2 <- Legend(at = c("True", "False"), title = "Enrichment", legend_gp = gpar(fill = c("skyblue", "grey90")), title_gp = gpar(fontsize = 12), title_gap = unit(3, "mm"), labels_gp = gpar(fontsize = 12))
+lgd3 <- Legend(col_fun = col_fun_maxIoU, title = "Max. IoU", title_gp = gpar(fontsize = 12), title_gap = unit(3, "mm"), labels_gp = gpar(fontsize = 12), legend_height = unit(2, units = "cm"))
 lgd <- packLegend(lgd0, lgd1, lgd2, lgd3, direction = "horizontal", column_gap = unit(0.725, "cm"))
 draw(ht1, row_title = "Gene module", row_title_gp = gpar(fontsize = 14), padding = unit(c(95, 5.5, 5.5, 5.5), units = "points"))
 draw(lgd, x = unit(0.5, "npc"), y = unit(0.01, "npc"), just = c("center", "bottom"))
@@ -852,13 +853,14 @@ ggplot(md_enrichHuRIbyAvgCor, aes(x = avgCor_max, y = ratio)) + geom_bar(stat = 
 dev.off()
 
 # 6. gene module metatable ----
-md_meta <- data.frame(size_mat, enrich_mat, des_mat, row.names = NULL, stringsAsFactors = F, check.names = F)
+maxIoU_mat <- read.table(file = "03-expression/merged/mdIoU/geneModule_maxIoU.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+md_meta <- data.frame(size_mat, enrich_mat[rownames(size_mat), ], max.IoU = maxIoU_mat[rownames(size_mat), ], class = des_mat[rownames(size_mat), ], row.names = NULL, stringsAsFactors = F, check.names = F)
 
-mdmap_mat_new <- mdmap_mat
+mdmap_mat_new <- mdmap_mat[rownames(size_mat), ]
 colnames(mdmap_mat_new) <- colnames(mes$merged$avgCor)
 colnames(mdmap_mat_new) <- paste0("avgCor_", colnames(mdmap_mat_new))
 
-ex_mat_new <- ex_mat
+ex_mat_new <- ex_mat[rownames(size_mat), ]
 colnames(ex_mat_new) <- colnames(mes$merged$avgExpr)
 colnames(ex_mat_new) <- paste0("avgExpr_", colnames(ex_mat_new))
 
