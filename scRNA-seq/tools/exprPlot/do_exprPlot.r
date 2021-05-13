@@ -10,6 +10,22 @@ tissue <- commandArgs(trailingOnly = T)[1]
 dim_type <- commandArgs(trailingOnly = T)[2]
 gene <- commandArgs(trailingOnly = T)[3]
 
+# check gene ID
+gene_ID <- read.table(file = "data/gene_ID_mapping.txt", header = T, sep = "\t", stringsAsFactors = F)
+if(grepl("^ENSG", gene)) {
+  if(grepl("\\.[0-9]+$", gene)) {
+    gene_all <- gene_ID$ensembl
+  } else {
+    gene_all <- gene_ID$ensembl_short
+  }
+} else {
+  gene_all <- gene_ID$symbol
+}
+if(! gene %in% gene_all) {
+  stop("Unrecognized gene ID.")
+}
+gene <- gene_ID$symbol[gene_all == gene]
+
 OUT <- "output"
 
 outfile <- paste0(OUT, "/", tissue, "/", dim_type, "/", gene, ".png")
