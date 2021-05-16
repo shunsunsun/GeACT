@@ -12,10 +12,12 @@ ident2clgrp <- function(ident.input) {
   ident.input[grepl("^Pre-B", ident.input)] <- "B"
   ident.input[grepl("^DC/Macro", ident.input)] <- "DC/Macrophage"
   ident.input[grepl("^Mast-", ident.input)] <- "Mast"
+  ident.input[grepl("^Macro", ident.input)] <- "Macrophage"
   ident.input[grepl("^Neutrophil-", ident.input)] <- "Neutrophil"
   ident.input[grepl("^NKT-", ident.input)] <- "NKT"
   ident.input[grepl("^T-", ident.input)] <- "T"
   ident.input[grepl("^Pre-T", ident.input)] <- "T"
+  ident.input[grepl("^Immune-", ident.input)] <- "Immune"
   #
   ident.input[grepl("^Erythrocyte-", ident.input)] <- "Erythrocyte"
   ident.input[grepl("^CACNA1A-", ident.input)] <- "CACNA1A"
