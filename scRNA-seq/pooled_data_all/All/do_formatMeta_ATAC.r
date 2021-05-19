@@ -8,6 +8,11 @@ dim(cellMeta_ATAC)
 
 # check ident
 setdiff(unique(cellMeta_ATAC$ident), unique(cellMeta_RNA$ident))
+lapply(unique(cellMeta_ATAC$tissue), function(x) {
+  #cat(">", x, "\n")
+  y <- setdiff(unique(subset(cellMeta_ATAC, tissue == x, "ident", drop = T)), unique(subset(cellMeta_RNA, tissue == x, "ident", drop = T)))
+  return(y)
+})
 ###
 #cellMeta_ATAC[cellMeta_ATAC$group == "TRUE", "group"] <- "T"
 ###
@@ -33,4 +38,16 @@ col_used[match(col_map$ori, col_used)] <- col_map$new
 cellMeta_ATAC_fmt <- cellMeta_ATAC[, col_used]
 dim(cellMeta_ATAC_fmt)
 
-data.table::fwrite(x = cellMeta_ATAC_fmt, file = "cell_metatable_ATAC_global.txt", row.names = F, col.names = T, quote = F, sep = "\t", nThread = 10)
+# fix embedding
+cellMeta_ATAC_fmt_gd <- subset(cellMeta_ATAC_fmt, ! is.na(tSNE_1_ali))
+cellMeta_ATAC_fmt_na <- subset(cellMeta_ATAC_fmt, is.na(tSNE_1_ali))
+cellMeta_ATAC_fmt_na$tSNE_1_ali <- cellMeta_ATAC_fmt_na$tSNE_1
+cellMeta_ATAC_fmt_na$tSNE_2_ali <- cellMeta_ATAC_fmt_na$tSNE_2
+cellMeta_ATAC_fmt_na$UMAP_1_ali <- cellMeta_ATAC_fmt_na$UMAP_1
+cellMeta_ATAC_fmt_na$UMAP_2_ali <- cellMeta_ATAC_fmt_na$UMAP_2
+cellMeta_ATAC_fixed <- rbind(cellMeta_ATAC_fmt_gd, cellMeta_ATAC_fmt_na)
+cellMeta_ATAC_fixed <- cellMeta_ATAC_fixed[match(cellMeta_ATAC_fmt$cell, cellMeta_ATAC_fixed$cell), ]
+#
+
+data.table::fwrite(x = cellMeta_ATAC_fixed, file = "cell_metatable_ATAC_global.txt", row.names = F, col.names = T, quote = F, sep = "\t", nThread = 10)
+system(paste0("gzip -c ", "cell_metatable_ATAC_global.txt", " > ", "cell_metatable_ATAC_global.txt.gz"))
