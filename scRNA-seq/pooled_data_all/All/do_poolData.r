@@ -200,6 +200,7 @@ cellMeta_St <- read.table(file = "../../pooled_data/01_stomach/03-expression/mer
 cellMeta_global_adj <- cellMeta_global
 cellMeta_global_adj[match(rownames(cellMeta_St), cellMeta_global_adj$cell), "ident"] <- cellMeta_St$ident
 write.table(x = cellMeta_global_adj, file = "cell_metatable_RNA_global.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+system(paste0("gzip -c ", "cell_metatable_RNA_global.txt", " > ", "cell_metatable_RNA_global.txt.gz"))
 ###
 
 # 9. cell type meta
