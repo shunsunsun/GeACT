@@ -30,6 +30,10 @@ group_shown <- c("Epithelial", "Endothelial", "Smooth muscle", "Fibroblast", "B"
 cellMetaData$group_new[! cellMetaData$group_new %in% group_shown] <- "Other"
 cellMetaData$group_new <- factor(cellMetaData$group_new, levels = group_shown)
 
+#cellMetaData_tmp <- cellMetaData[, ! colnames(cellMetaData) %in% c("tSNE_1", "tSNE_2", "UMAP_1", "UMAP_2", paste0("pair_", c("tSNE_1", "tSNE_2", "UMAP_1", "UMAP_2")))]
+#colnames(cellMetaData_tmp) <- gsub("^all_", "", colnames(cellMetaData_tmp))
+#write.table(x = cellMetaData_tmp, file = "cell_metatable_merged_ATAC.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+
 load(paste0(OUT, "/ct_color.RData"))
 ct_color <- ct_color[unique(cellMetaData$tissue)]
 
