@@ -38,8 +38,9 @@ cellRatio_ATAC[cellRatio_ATAC$group == "TRUE", "group"] <- "T"
 
 cellRatio_RA <- merge(cellRatio_RNA, cellRatio_ATAC, by = c("tissue", "group"), all = T, sort = F)
 #
-cellRatio_RA <- subset(cellRatio_RA, group != "Unknown")
+cellRatio_RA <- subset(cellRatio_RA, group %in% c("Epithelial", "Endothelial", "Fibroblast", "Glial", "Erythrocyte"))
 cellRatio_RA <- subset(cellRatio_RA, tissue != "heart")
+cellRatio_RA[is.na(cellRatio_RA$number.x), c("number.x", "ratio.x")] <- 0
 cellRatio_RA[is.na(cellRatio_RA$number.y), c("number.y", "ratio.y")] <- 0
 #
 
