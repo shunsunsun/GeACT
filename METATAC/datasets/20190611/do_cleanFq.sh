@@ -22,7 +22,7 @@ echo -ne ">:>\t"; date
 echo $batch
 echo "$read1 $read2"
 
-python scripts/cleanFq.py $read1 $read2 ../indexToSample.txt ../META16_Sequence.sh $OUT $batch
+python scripts/cleanFq.py $read1 $read2 ../../experiments/indexToSample.txt ../../experiments/META16_Sequence.txt $OUT $batch
 
 echo -ne ">:>\t"; date
 echo "Done..."
