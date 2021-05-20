@@ -173,3 +173,19 @@ ggplot(cellMetaData, aes(x = all_tSNE_1, y = all_tSNE_2, color = tissue)) + geom
 #annotate("segment", x=-Inf,xend=-Inf,y=-Inf,yend=Inf,arrow=arrow(length = unit(0.5, "cm")))
 
 dev.off()
+
+png(paste0(OUT, "/Seurat_UMAP_simple_ATAC.png"), bg = "transparent", width = 3000, height = 3000, res = 600)
+
+# color by tissue
+ggplot(cellMetaData, aes(x = all_UMAP_1, y = all_UMAP_2, color = tissue)) + geom_point(size = 0.2, show.legend = F) +
+  #theme(legend.position = "bottom", legend.justification = c("center")) + 
+  theme(aspect.ratio = 1) + 
+  #theme(legend.box.margin = margin(t = -15), plot.margin = margin(t = 10, l = -20, r = 20)) + 
+  #theme(legend.key.width = unit(0.2, "cm")) + 
+  theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) + 
+  #guides(color = guide_legend(ncol = 4, override.aes = list(size = 3.6))) + 
+  scale_color_manual(values = ct_color) #+ 
+#annotate("segment", x=-Inf,xend=Inf,y=-Inf,yend=-Inf,arrow=arrow(length = unit(0.5, "cm"))) + 
+#annotate("segment", x=-Inf,xend=-Inf,y=-Inf,yend=Inf,arrow=arrow(length = unit(0.5, "cm")))
+
+dev.off()
