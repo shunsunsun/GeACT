@@ -31,6 +31,7 @@ suppressPackageStartupMessages({
 })
 
 setwd("/data/Lab/otherwork/GeACT/ATAC/data/all")
+dir.create("fig5", showWarnings = F)
 set.seed(seed = 0)
 
 proj <- loadArchRProject(path = "ArchR_output/", showLogo = F)
@@ -39,6 +40,8 @@ if(dir.exists("ArchR_19_22w")){
   proj_19_22w <- loadArchRProject("ArchR_19_22w", showLogo = F)
 } else{
   proj_19_22w <- proj[proj$stage == "19-22w", ]
+  
+  proj_19_22w <- saveArchRProject(proj_19_22w, outputDirectory = "ArchR_19_22w", load = T, dropCells = T)
   
   proj_19_22w <- addIterativeLSI(proj_19_22w, useMatrix = "PeakMatrix", 
                               iterations = 1, name = "peakLSI", varFeatures = 50000, force = T)
@@ -68,7 +71,9 @@ if(dir.exists("ArchR_19_22w")){
 if(dir.exists("ArchR_epi")){
   proj_epi <- loadArchRProject("ArchR_epi", showLogo = F)
 } else {
-  proj_epi <- proj_19_22w[proj_19_22w$group == "Epithelial", ]
+  proj_epi <- proj_19_22w[proj_19_22w$tuned_group == "Epithelial", ]
+  
+  proj_epi <- saveArchRProject(proj_epi, outputDirectory = "ArchR_epi", load = T, dropCells = T)
   
   # 1.1 visualize clusters -----------------------------------------------------
   proj_epi <- addIterativeLSI(proj_epi, useMatrix = "PeakMatrix", 
@@ -93,7 +98,7 @@ if(dir.exists("ArchR_epi")){
   )
   
   p1 <- plotEmbedding(proj_epi, embedding = "peakUMAP", colorBy = "cellColData", name = "tissue", size = 1)
-  pdf("dimred.pdf", width = 10, height = 10)
+  pdf("fig5/dimred.pdf", width = 10, height = 10)
   p1
   dev.off()
   
@@ -110,54 +115,54 @@ if(dir.exists("ArchR_epi")){
 
 # 1.2 visualize peaks and peak-gene linkage aside marker genes -----------------
 
-# coaccessibility
-proj_epi <- addCoAccessibility(proj_epi, reducedDims = "peakLSI", dimsToUse = 1:30)
-
-# peak to gene linkage
-rna_files <- dir(paste(root, "data/19-22w", sep = "/"), pattern = "expr_RNA.rds", recursive = T, full.names = T)
-rna_files <- grep("RNA/19-22w/expr_RNA.rds", rna_files, value = T)
-# rna_files <- grep("06_spleen|07_testis", rna_files, value = T, invert = T)
-tissues <- gsub(paste(root, "data/19-22w/", sep = "/"), "", rna_files) %>% gsub("/.*", "", .) %>% gsub("^.*?_", "", .) %>% gsub("_", " ", .)
-names(rna_files) <- tissues
-
-my_merge <- function(s1, s2){
-  if (is.null(s1))
-    return(s2)
-  if (is.null(s2))
-    return(s1)
-  return(merge(s1, s2))
-}
-
-epi_seurat_obj <- lapply(seq_along(tissues), function(i) {
-  sobj <- readRDS(rna_files[i])
-  sobj$group <- ident2clgrp(sobj$ident)
-  sobj$tissue <- tissues[i]
-  cat(tissues[i], "\n")
-  print(unique(sobj$group))
-  if ("Epithelial" %in% unique(sobj$group)) {
-    return(sobj[, sobj$group == "Epithelial"])
-  } else {
-    return(NULL)
-  }
-}) %>% reduce(my_merge)
-
-epi_seurat_obj <- epi_seurat_obj[, epi_seurat_obj$tissue %in% unique(proj_epi$tissue)]
-
-proj_epi <- addGeneScoreMatrix(proj_epi, force = T)
-
-proj_epi <- addGeneIntegrationMatrix(proj_epi, useMatrix = "GeneScoreMatrix",
-                                     reducedDims = "peakLSI", seRNA = epi_seurat_obj,
-                                     addToArrow = TRUE,
-                                     force= TRUE,
-                                     groupRNA = "tissue",
-                                     nameCell = "predictedCell",
-                                     nameGroup = "predictedTissue",
-                                     nameScore = "predictedScore", 
-                                     plotUMAP = T, 
-                                     useImputation = F)
-
-proj_epi <- addPeak2GeneLinks(proj_epi,
-                              reducedDims = "peakLSI")
+# # coaccessibility
+# proj_epi <- addCoAccessibility(proj_epi, reducedDims = "peakLSI", dimsToUse = 1:30)
+# 
+# # peak to gene linkage
+# rna_files <- dir(paste(root, "data/19-22w", sep = "/"), pattern = "expr_RNA.rds", recursive = T, full.names = T)
+# rna_files <- grep("RNA/19-22w/expr_RNA.rds", rna_files, value = T)
+# # rna_files <- grep("06_spleen|07_testis", rna_files, value = T, invert = T)
+# tissues <- gsub(paste(root, "data/19-22w/", sep = "/"), "", rna_files) %>% gsub("/.*", "", .) %>% gsub("^.*?_", "", .) %>% gsub("_", " ", .)
+# names(rna_files) <- tissues
+# 
+# my_merge <- function(s1, s2){
+#   if (is.null(s1))
+#     return(s2)
+#   if (is.null(s2))
+#     return(s1)
+#   return(merge(s1, s2))
+# }
+# 
+# epi_seurat_obj <- lapply(seq_along(tissues), function(i) {
+#   sobj <- readRDS(rna_files[i])
+#   sobj$group <- ident2clgrp(sobj$ident)
+#   sobj$tissue <- tissues[i]
+#   cat(tissues[i], "\n")
+#   print(unique(sobj$group))
+#   if ("Epithelial" %in% unique(sobj$group)) {
+#     return(sobj[, sobj$group == "Epithelial"])
+#   } else {
+#     return(NULL)
+#   }
+# }) %>% reduce(my_merge)
+# 
+# epi_seurat_obj <- epi_seurat_obj[, epi_seurat_obj$tissue %in% unique(proj_epi$tissue)]
+# 
+# proj_epi <- addGeneScoreMatrix(proj_epi, force = T)
+# 
+# proj_epi <- addGeneIntegrationMatrix(proj_epi, useMatrix = "GeneScoreMatrix",
+#                                      reducedDims = "peakLSI", seRNA = epi_seurat_obj,
+#                                      addToArrow = TRUE,
+#                                      force= TRUE,
+#                                      groupRNA = "tissue",
+#                                      nameCell = "predictedCell",
+#                                      nameGroup = "predictedTissue",
+#                                      nameScore = "predictedScore", 
+#                                      plotUMAP = T, 
+#                                      useImputation = F)
+# 
+# proj_epi <- addPeak2GeneLinks(proj_epi,
+#                               reducedDims = "peakLSI")
 
 
 # genome track for marker genes in epi of different tissues 
@@ -185,7 +190,7 @@ p <- plotBrowserTrack(
   loops = NULL # getCoAccessibility(proj_epi) # getPeak2GeneLinks(proj_epi)
 )
 
-pdf("epi_tissue_gene_markers_genome_track.pdf", width = 10, height = 10)
+pdf("fig5/epi_tissue_gene_markers_genome_track.pdf", width = 10, height = 10)
 for (fig in p){
   grid::grid.newpage()
   grid::grid.draw(fig)
@@ -205,13 +210,13 @@ proj_epi <- addDeviationsMatrix(
   force = TRUE
 )
 
-proj_epi <- saveArchRProject(proj_epi, outputDirectory = "ArchR_epi", load = T, dropCells = T)
+proj_epi <- saveArchRProject(proj_epi, load = T)
 # proj_epi <- loadArchRProject("ArchR_epi")
 
 
 plotVarDev <- getVarDeviations(proj_epi, name = paste0(use_motif_set, "MotifMatrix"), plot = TRUE)
 
-pdf(paste0("epi_tissue_", use_motif_set, "_motif_markers.pdf"), width = 10, height = 10)
+pdf(paste0("fig5/epi_tissue_", use_motif_set, "_motif_markers.pdf"), width = 10, height = 10)
 plotVarDev
 
 # 1.3.1 Seurat analysis
@@ -237,7 +242,6 @@ top8 <- marker_motifs %>% group_by(cluster) %>% top_n(n = 8, wt = myAUC) # p_val
 
 DoHeatmap(motif_matrix.seurat, features = top8$gene, cells = WhichCells(motif_matrix.seurat, downsample = 200), angle = 60) + NoLegend() + theme(plot.margin = margin(t = 30, r = 40))
 DoHeatmap(motif_matrix.seurat, features = top8$gene, angle = 60) + NoLegend() + theme(plot.margin = margin(t = 30, r = 40))
-
 umap_epi <- getEmbedding(proj_epi, embedding = "peakUMAP")
 if (use_motif_set == "cisbp"){
   # lung
@@ -340,12 +344,12 @@ proj_19_22w <- addDeviationsMatrix(
 )
 
 
-proj_19_22w <- saveArchRProject(proj_19_22w, outputDirectory = "ArchR_19_22w", load = T, dropCells = T)
+proj_19_22w <- saveArchRProject(proj_19_22w, outputDirectory = "ArchR_19_22w", load = T)
 # proj_19_22w <- loadArchRProject(path = "ArchR_19_22w", showLogo = F)
 
 plotVarDev <- getVarDeviations(proj_19_22w, name = paste0(use_motif_set, "MotifMatrix"), plot = TRUE)
 
-pdf(sprintf("group_%s_motif_markers.pdf", use_motif_set), width = 10, height = 10)
+pdf(sprintf("fig5/group_%s_motif_markers.pdf", use_motif_set), width = 10, height = 10)
 plotVarDev
 
 # Seurat analysis
@@ -375,7 +379,7 @@ dev.off()
 
 
 # experimental
-pdf("experiment.pdf", width = 10, height = 10)
+pdf("fig5/experiment.pdf", width = 10, height = 10)
 umap_all <- getEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP")
 plotEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "cellColData", name = "group")
 # Epithelial
@@ -430,30 +434,37 @@ markers_peaks <- getMarkerFeatures(
 cut_off <- "FDR <= 0.01 & Log2FC >= 1"
 marker_peak_list <- getMarkers(markers_peaks, cutOff = cut_off)
 
-# determine if marker peaks are specific to one group
-for (i in seq_along(groups_to_cmp)) {
-  marker_peak_list[[i]]$group <- groups_to_cmp[i]
-  group_spec <- rep(TRUE, nrow(marker_peak_list[[i]]))
-  for (j in seq_along(groups_to_cmp)) {
-    if (i == j) next
-    cat(sprintf("Compare %s with %s\n", groups_to_cmp[i], groups_to_cmp[j]))
-    group_spec_markers <- getMarkerFeatures(
-      ArchRProj = proj_19_22w[proj_19_22w$group %in% groups_to_cmp[c(i, j)]],
-      useMatrix = "PeakMatrix",
-      groupBy = "group",
-      useGroups = groups_to_cmp[c(i, j)],
-      bias = c("TSSEnrichment", "log10(nFrags)"),
-      testMethod = "wilcoxon"
-    )
-    group_spec_markers_list <- getMarkers(group_spec_markers, cutOff = cut_off)
-    
-    group_spec <- group_spec & (rownames(marker_peak_list[[i]]) %in% 
-                                  rownames(group_spec_markers_list[[1]]))
-  }
-  marker_peak_list[[i]]$spec <- group_spec
+for(i in names(marker_peak_list)) {
+  marker_peak_list[[i]]$cluster <- i
 }
 
+marker_peak_list_combined <- rbind(unlist(marker_peak_list))
+marker_peak_list_combined$idx <- NULL
+marker_peak_list_combined$end <- marker_peak_list_combined$end - 1 # bed transformation
+write.table(marker_peak_list_combined, file = "fig5/group_marker_peaks.bed", col.names = T, quote = F, row.names = F, sep = "\t")
 
+# determine if marker peaks are specific to one group
+# for (i in seq_along(groups_to_cmp)) {
+#   marker_peak_list[[i]]$group <- groups_to_cmp[i]
+#   group_spec <- rep(TRUE, nrow(marker_peak_list[[i]]))
+#   for (j in seq_along(groups_to_cmp)) {
+#     if (i == j) next
+#     cat(sprintf("Compare %s with %s\n", groups_to_cmp[i], groups_to_cmp[j]))
+#     group_spec_markers <- getMarkerFeatures(
+#       ArchRProj = proj_19_22w[proj_19_22w$group %in% groups_to_cmp[c(i, j)]],
+#       useMatrix = "PeakMatrix",
+#       groupBy = "group",
+#       useGroups = groups_to_cmp[c(i, j)],
+#       bias = c("TSSEnrichment", "log10(nFrags)"),
+#       testMethod = "wilcoxon"
+#     )
+#     group_spec_markers_list <- getMarkers(group_spec_markers, cutOff = cut_off)
+#     
+#     group_spec <- group_spec & (rownames(marker_peak_list[[i]]) %in% 
+#                                   rownames(group_spec_markers_list[[1]]))
+#   }
+#   marker_peak_list[[i]]$spec <- group_spec
+# }
 
 assayNames <- names(assays(markers_peaks))
 for (an in assayNames) {
@@ -469,23 +480,23 @@ peaks <- getPeakSet(proj_19_22w)
 peaks_sub <- peaks[idx, ]
 
 # write marker peaks
-peaksDF <- data.frame(chr=seqnames(peaks_sub), start=start(peaks_sub) - 1, end=end(peaks_sub))
-peaksDF <- cbind(peaksDF, mcols(peaks_sub))
-write.table(peaksDF, file = "marker_peaks.bed", col.names = T, quote = F, row.names = F, sep = "\t")
+# peaksDF <- data.frame(chr=seqnames(peaks_sub), start=start(peaks_sub) - 1, end=end(peaks_sub))
+# peaksDF <- cbind(peaksDF, mcols(peaks_sub))
+# write.table(peaksDF, file = "marker_peaks.bed", col.names = T, quote = F, row.names = F, sep = "\t")
 
 peak_matrix_sub <- subsetByOverlaps(peak_matrix, peaks_sub)
 
 use_colors <- cg_color[groups_to_cmp]
 
-pdf(file = "circos.pdf", width = 10, height = 10)
+pdf(file = "fig5/circos.pdf", width = 10, height = 10)
 plotCircosFromRangeSE(peak_matrix_sub, groups_to_cmp = groups_to_cmp, use_colors = use_colors)
 dev.off()
 
-pdf(file = "circos2.pdf", width = 10, height = 10)
+pdf(file = "fig5/circos2.pdf", width = 10, height = 10)
 plotCircosFromRangeSE(peak_matrix_sub, groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 5e4, max.clip = 10)
 dev.off()
 
-pdf(file = "circos3.pdf", width = 10, height = 10)
+pdf(file = "fig5/circos3.pdf", width = 10, height = 10)
 epcam_df <- data.frame(chr = "chr2", start = 47345158, end = 47387601, name = "EPCAM")
 cytoband_epcam <- list(df = data.frame(V1 = "chr2",
                                        V2 = 47000000,
@@ -498,7 +509,7 @@ plotCircosFromRangeSE(peak_matrix_sub, groups_to_cmp = groups_to_cmp, use_colors
                       cytoband = cytoband_epcam, genes_df = epcam_df)
 dev.off()
 
-pdf(file = "circos4.pdf", width = 10, height = 10)
+pdf(file = "fig5/circos4.pdf", width = 10, height = 10)
 plotCircosFromRangeSE(peak_matrix, groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 1e3, max.clip = 3,
                       cytoband = cytoband_epcam, genes_df = epcam_df)
 dev.off()
