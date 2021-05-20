@@ -45,8 +45,9 @@ unionPeaks_file <- paste(root, "data", "paired", tissue, opt$unionPeaks, sep = "
 unionPeaks <- readRDS(unionPeaks_file)
 
 cell_metas <- lapply(stages, function(stage){
-  cell_meta_file <- paste(root, "data", stage, tissue, "results", "filtered_cellMeta_internal.txt", sep = "/")
-  cell_meta <- read.table(cell_meta_file, header = T, sep = "\t", quote = "", comment.char = "") %>% column_to_rownames(var = "X")
+  cell_meta_file <- paste(root, "data", stage, tissue, "results", "tuned_filtered_cellMeta_internal.txt", sep = "/")
+  # cell_meta <- read.table(cell_meta_file, header = T, sep = "\t", quote = "", comment.char = "") %>% column_to_rownames(var = "X")
+  cell_meta <- read_tsv(cell_meta_file, col_names = T, col_types = cols(group = col_character(), tuned_group = col_character()), quote = "") %>% column_to_rownames(var = "X1")
 })
 cell_meta <- rbind(cell_metas[[1]], cell_metas[[2]])
 
@@ -149,4 +150,5 @@ pdf("paired_stage.pdf", width = 10, height = 10)
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "stage", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "ident", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "group", size = 1.5))
+print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "tuned_group", size = 1.5))
 dev.off()

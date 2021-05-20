@@ -41,6 +41,8 @@ setwd(organ_wd)
 lix_script_dir <- paste(root, .lix_script, sep = "/")
 source(paste(lix_script_dir, "QC_utils.R", sep = "/"))
 
+RNGkind("L'Ecuyer-CMRG")
+
 # 0 Cell metadata setup --------------------------------------------------------
 
 meta_table <- read.delim("../../../meta/meta_table_ATAC_GeACT.txt", row.names = 1,
@@ -106,6 +108,7 @@ doubScores <- addDoubletScores(
   knnMethod = "UMAP", #Refers to the embedding to use for nearest neighbor search with doublet projection.
   LSIMethod = 1
 ) 
+runif(1) # reset the Random state
 
 # 2.2 Creating An ArchRProject -------------------------------------------------
 proj <- ArchRProject(
@@ -186,6 +189,8 @@ proj$num_mito_frag_decon = cellMetaData$num_mito_frag_decon
 proj$con_rate = cellMetaData$con_rate
 proj$mito_ratio = cellMetaData$mito_ratio
 
+# remove cells in S5_plate3
+proj <- proj[!proj$plate %in% "PD10_HCA_15_12-14w_S5_Plate3"]
 
 # Plotting Sample Fragment Size Distribution and TSS Enrichment Profiles.
 p1 <- plotFragmentSizes(ArchRProj = proj)

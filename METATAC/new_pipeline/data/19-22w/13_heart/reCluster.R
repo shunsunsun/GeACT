@@ -32,6 +32,8 @@ suppressPackageStartupMessages({
 })
 
 root <- opt$root
+stage <- "19-22w"
+
 setwd(paste(root, "data/19-22w/13_heart/results", sep = "/"))
 
 utils_file <- paste(root, "scripts/src/utils.R", sep = "/")
@@ -39,18 +41,9 @@ source(utils_file)
 
 proj <- loadArchRProject("ArchR/ArchR_output/", showLogo = F)
 
-# proj <- addUMAP(
-#   ArchRProj = proj,
-#   reducedDims = "peakLSI",
-#   name = "peakUMAP",
-#   nNeighbors = 30,
-#   minDist = 0.6,
-#   metric = "cosine",
-#   force = T
-# )
 
 
-
+# de novo clustering
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "group", plotAs = "points", size = 1.5))
 # print(plotEmbedding(proj, embedding = "peakTSNE", colorBy = "cellColData", name = "group", plotAs = "points", size = 1.5))
 
@@ -59,25 +52,25 @@ proj <- addClusters(proj, reducedDims = "peakLSI", name = "clusters", dimsToUse 
 print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "clusters", plotAs = "points", size = 1.5))
 print(plotEmbedding(proj, embedding = "peakTSNE", colorBy = "cellColData", name = "clusters", plotAs = "points", size = 1.5))
 
-proj$tuned_label <- mapvalues(proj$clusters, from = paste0("C", 1:11),
-                              to = c("CM", "Glial", "Fibro", "C4", "Erythrocyte", 
-                                     "Endo", "Endo", "C8", "C9", "Immune", "Macro"))
+proj$tuned_ident <- mapvalues(proj$clusters, from = paste0("C", 1:10),
+                              to = c("Cardiomyocyte", "Glial", "Fibro", "Unknown", "Erythrocyte", 
+                                     "Endo", "Unknown", "Unknown", "Immune-nonmacro", "Macro"))
 
-print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "tuned_label", plotAs = "points", size = 1.5))
+print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "tuned_ident", plotAs = "points", size = 1.5))
 
 # manual curation of clusters, two version, (1) fixed coordination; (2) shiny interactive session ----
-# interactive_choose_cell(proj, c("PECAM1", "MS4A1", "ACTG2", "COL1A1"), log2Norm = T, group_bys = "tuned_label")
+# interactive_choose_cell(proj, c("PECAM1", "MS4A1", "ACTG2", "COL1A1"), log2Norm = T, group_bys = "tuned_ident")
 # 
 # endo_cell_names  <- static_choose_cell(proj, xlimit = c(-1.83, -1.08), ylimit = c(-4.42, -3.48))
 # immune_cell_names  <- static_choose_cell(proj, xlimit = c(-0.12, 0.64), ylimit = c(-3.70, -2.68))
 # 
-# tuned_labels <- getCellColData(proj, select = "tuned_label")
-# tuned_labels[endo_cell_names, ] <- "Endo"
-# tuned_labels[immune_cell_names, ] <- "Immune"
+# tuned_idents <- getCellColData(proj, select = "tuned_ident")
+# tuned_idents[endo_cell_names, ] <- "Endo"
+# tuned_idents[immune_cell_names, ] <- "Immune"
 # 
-# proj <- addCellColData(proj, data = tuned_labels[[1]], name = "tuned_label", cells = rownames(tuned_labels), force = T)
+# proj <- addCellColData(proj, data = tuned_idents[[1]], name = "tuned_ident", cells = rownames(tuned_idents), force = T)
 
-print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "tuned_label", plotAs = "points", size = 1.5))
+print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "tuned_ident", plotAs = "points", size = 1.5))
 
 
 # DE analysis of unknown clusters ----------------------------------------------
@@ -95,7 +88,7 @@ matDR <- getReducedDims(
 geneScore[['lsi']] <- Seurat::CreateDimReducObject(embeddings = matDR, key = 'LSI_', assay = 'ACTIVITY')
 geneScore <- FindVariableFeatures(geneScore, nfeatures = 3000)
 
-Idents(geneScore) <- geneScore[["tuned_label"]]
+Idents(geneScore) <- geneScore[["tuned_ident"]]
 
 geneScore <- RunTSNE(geneScore, reduction = "lsi", dims = seq_len(Embeddings(geneScore, "lsi") %>% ncol))
 geneScore <- RunUMAP(geneScore, reduction = "lsi", dims = seq_len(Embeddings(geneScore, "lsi") %>% ncol), min.dist = 0.5)
@@ -109,52 +102,11 @@ pdf("markers/tuned_signature_genes.pdf")
 tunedSignatureGenesPlot(proj, topn_df, geneScore)
 dev.off()
 
-topn_df$gene <- standardize_genename(topn_df$gene, getGeneAnnotation(proj)$genes$symbol)
-write.table(topn_df, file = "markers/tuned_signature_genes.txt", quote = F, 
+markers <- markers %>% filter(myAUC >= 0.5)
+markers$gene <- standardize_genename(markers$gene, getGeneAnnotation(proj)$genes$symbol)
+write.table(markers, file = "markers/tuned_signature_genes.txt", quote = F, 
             sep = "\t", row.names = F)
 
-
-# helper functions, not run ----------------------------------------------------
-# confusion matrix to exclude batch clusters
-cM <- confusionMatrix(paste0(proj$clusters), paste0(proj$plate))
-cM
-library(pheatmap)
-cM <- cM / Matrix::rowSums(cM)
-p <- pheatmap::pheatmap(
-  mat = as.matrix(cM), 
-  color = paletteContinuous("whiteBlue"), 
-  border_color = "black"
-)
-p
-
-
-# SNN graph on tSNE to explain some weird clustering results
-matDR <- getReducedDims(
-  ArchRProj = proj, 
-  reducedDims = "peakLSI", 
-  dimsToUse = 1:30, 
-  corCutOff = 0.75, 
-  scaleDims = NULL
-)
-
-tmp <- matrix(rnorm(nrow(matDR) * 3, 10), ncol = nrow(matDR), nrow = 3)
-colnames(tmp) <- rownames(matDR)
-rownames(tmp) <- paste0("t", seq_len(nrow(tmp)))
-
-obj <- Seurat::CreateSeuratObject(tmp, project='scATAC', min.cells=0, min.features=0)
-obj[['lsi']] <- Seurat::CreateDimReducObject(embeddings=matDR, key='LSI_', assay='RNA')
-
-obj <- RunTSNE(obj, reduction = "lsi", dims = seq_len(ncol(matDR)))
-obj <- RunUMAP(obj, reduction = "lsi", dims = seq_len(ncol(matDR)), min.dist = 0.5)
-
-obj <- FindNeighbors(obj, dims = seq_len(ncol(matDR)), reduction = "lsi", do.plot = T, k.param = 15, prune.SNN = 1/5)
-
-obj <- FindClusters(obj, resolution = 0.1)
-
-DimPlot(obj, label = T, reduction = "tsne")
-DimPlot(obj, label = T)
-
-proj$clusters <- Idents(obj)[getCellNames(proj)]
 
 pdf("markers/CM.pdf")
 plotMarker(proj, "TNNT2", do_plot = F)
@@ -163,3 +115,41 @@ dev.off()
 pdf("markers/epicadial.pdf")
 plotMarker(proj, "WT1", do_plot = F)
 dev.off()
+
+
+# save results
+proj$tuned_group <- ident2clgrp(proj$tuned_ident)
+
+cellMeta <- getCellColData(proj)[, c("seqID", "tissue", "samplingPos", "plate", "individual", "PassQC", "predictedIdent", "Reads", "Aligned_ratio",
+                                     "nFrags", "FRIP", "mito_ratio", "BlacklistRatio", "DoubletScore", "nPeak", "group", "tuned_group")]
+colnames(cellMeta) <- c("seqID", "tissue", "samplingPos", "plate", "individual", "QC", "ident", "cleanReads", "mpRatio",
+                        "nFrags", "FRIP", "MitoRatio", "BlacklistRatio", "DoubletScore", "nPeak", "group", "tuned_group")
+
+cellMeta$stage <- stage
+cellMeta$species <- "human"
+cellMeta$QC <- as.logical(cellMeta$QC)
+
+# add umap/tsne embedding
+peakTSNE <- getEmbedding(proj, embedding = "peakTSNE")
+peakUMAP <- getEmbedding(proj, embedding = "peakUMAP")
+
+colnames(peakTSNE) <- c("tSNE_1", "tSNE_2")
+colnames(peakUMAP) <- c("UMAP_1", "UMAP_2")
+
+cellMeta <- cbind(cellMeta, peakTSNE)
+cellMeta <- cbind(cellMeta, peakUMAP)
+
+write.table(cellMeta, file = "tuned_filtered_cellMeta_internal.txt", sep = "\t", quote = F, col.names = NA)
+
+rownames(cellMeta) <- gsub("^.*#", "", rownames(cellMeta))
+
+if (stage == "19-22w") {
+  rownames(cellMeta) <- gsub("^(.*?_)", "\\1A_", rownames(cellMeta)) 
+} else{
+  rownames(cellMeta) <- gsub("^(.*?_)", "\\1B_", rownames(cellMeta))
+}
+
+write.table(cellMeta, file = "tuned_filtered_cellMeta.txt", sep = "\t", quote = F, col.names = NA)
+
+saveArchRProject(proj, load = F)
+
