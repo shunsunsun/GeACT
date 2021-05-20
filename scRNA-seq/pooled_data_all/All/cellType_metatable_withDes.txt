@@ -1,240 +1,240 @@
-tissue	ident	color	description
-esophagus	Epi	#F8766D	Epithelial cells
-esophagus	Endo	#DB8E00	Endothelial cells
-esophagus	SM	#AEA200	Smooth muscle cells
-esophagus	Fibro-LRRC17	#64B200	Fibroblasts with the high expression of LRRC17
-esophagus	Fibro-PLPPR4	#00BD5C	Fibroblasts with the high expression of PLPPR4
-esophagus	Fibro-C7	#00C1A7	Fibroblasts with the high expression of C7
-esophagus	Fibro-Prol	#00BADE	Fibroblasts (Proliferative)
-esophagus	Glial	#00A6FF	Glial cells
-esophagus	Immune	#B385FF	Immune cells
-esophagus	MSC	#EF67EB	Mesenchymal stem cells
-esophagus	Erythrocyte	#FF63B6	Erythrocytes
-stomach	Epi	#F8766D	Epithelial cells
-stomach	Endo	#E9842C	Endothelial cells
-stomach	SM-Visceral	#D69100	Smooth muscle cells (Visceral)
-stomach	SM-Vascular	#BC9D00	Smooth muscle cells (Vascular)
-stomach	Fibro-KCNJ8	#9CA700	Fibroblasts with the high expression of KCNJ8
-stomach	Fibro-ADAM28	#6FB000	Fibroblasts with the high expression of ADAM28
-stomach	Fibro-IRF1	#00B813	Fibroblasts with the high expression of IRF1
-stomach	Fibro-VSTM2A	#00BD61	Fibroblasts with the high expression of VSTM2A
-stomach	Fibro-FBLN1	#00C08E	Fibroblasts with the high expression of FBLN1
-stomach	Fibro-NRK	#00C0B4	Fibroblasts with the high expression of NRK
-stomach	Fibro-KIT	#CAFF70	Fibroblasts with the high expression of KIT
-stomach	Fibro-PRSS35	#00BDD4	Fibroblasts with the high expression of PRSS35
-stomach	Fibro-Prol	#00B5EE	Fibroblasts (Proliferative)
-stomach	Glial	#00A7FF	Glial cells
-stomach	B	#7F96FF	B cells
-stomach	DC/Macro	#BC81FF	Dendritic cells / Macrophages
-stomach	T	#E26EF7	T cells
-stomach	CACNA1A-ELF3+	#F863DF	CACNA1A+ cells with the high expression of ELF3
-stomach	CACNA1A-ELF3-	#FF62BF	CACNA1A+ cells with the low expression of ELF3
-stomach	Erythrocyte	#FF6A9A	Erythrocytes
-stomach	Unknown	#B3B3B3	Unknown
-small intestine	Epi	#F8766D	Epithelial cells
-small intestine	Endo	#E9842C	Endothelial cells
-small intestine	SM-Visceral	#D69100	Smooth muscle cells (Visceral)
-small intestine	SM-Vascular	#BC9D00	Smooth muscle cells (Vascular)
-small intestine	Fibro-COL14A1	#9CA700	Fibroblasts with the high expression of COL14A1
-small intestine	Fibro-GPC3	#6FB000	Fibroblasts with the high expression of GPC3
-small intestine	Fibro-VCAM1	#00B813	Fibroblasts with the high expression of VCAM1
-small intestine	Fibro-KCNN3	#00BD61	Fibroblasts with the high expression of KCNN3
-small intestine	Fibro-COL6A5	#00C08E	Fibroblasts with the high expression of COL6A5
-small intestine	Fibro-SCARA5	#CAFF70	Fibroblasts with the high expression of SCARA5
-small intestine	Fibro-CXCL14	#00C0B4	Fibroblasts with the high expression of CXCL14
-small intestine	Fibro-ZEB1	#00BDD4	Fibroblasts with the high expression of ZEB1
-small intestine	Fibro-Prol	#00B5EE	Fibroblasts (Proliferative)
-small intestine	Glial	#00A7FF	Glial cells
-small intestine	B	#7F96FF	B cells
-small intestine	DC/Macro	#BC81FF	Dendritic cells / Macrophages
-small intestine	T	#E26EF7	T cells
-small intestine	T-Prog	#F863DF	T cells (Progenitor)
-small intestine	CACNA1A	#FF62BF	CACNA1A+ cells
-small intestine	Erythrocyte	#FF6A9A	Erythrocytes
-small intestine	Unknown	#B3B3B3	Unknown
-large intestine	Epi	#F8766D	Epithelial cells
-large intestine	Endo	#E58700	Endothelial cells
-large intestine	SM-Visceral	#C99800	Smooth muscle cells (Visceral)
-large intestine	SM-Vascular	#A3A500	Smooth muscle cells (Vascular)
-large intestine	Fibro-VCAN	#6BB100	Fibroblasts with the high expression of VCAN
-large intestine	Fibro-DPT	#00BA38	Fibroblasts with the high expression of DPT
-large intestine	Fibro-ADAMDEC1	#00BF7D	Fibroblasts with the high expression of ADAMDEC1
-large intestine	Fibro-BMP5	#00C0AF	Fibroblasts with the high expression of BMP5
-large intestine	Fibro-Prol	#00BCD8	Fibroblasts (Proliferative)
-large intestine	Glial	#00B0F6	Glial cells
-large intestine	DC/Macro	#619CFF	Dendritic cells / Macrophages
-large intestine	Mast	#B983FF	Mast cells
-large intestine	T	#E76BF3	T cells
-large intestine	CACNA1A	#FD61D1	CACNA1A+ cells
-large intestine	Erythrocyte	#FF67A4	Erythrocytes
-pancreas	Epi-CADPS	#F8766D	Epithelial cells with the high expression of CADPS
-pancreas	Epi-SPINK1	#E9842C	Epithelial cells with the high expression of SPINK1
-pancreas	Endo-FLT1	#D69100	Endothelial cells with the high expression of FLT1
-pancreas	Endo-NTS	#BC9D00	Endothelial cells with the high expression of NTS
-pancreas	SM	#9CA700	Smooth muscle cells
-pancreas	Fibro-PAMR1+SOX6+	#6FB000	Fibroblasts (PAMR1:high;SOX6:high)
-pancreas	Fibro-PAMR1+SOX6-	#00B813	Fibroblasts (PAMR1:high;SOX6:low)
-pancreas	Fibro-THBS2	#00BD61	Fibroblasts with the high expression of THBS2
-pancreas	Fibro-IGFBP3	#00C08E	Fibroblasts with the high expression of IGFBP3
-pancreas	Fibro-ITGA8	#00C0B4	Fibroblasts with the high expression of ITGA8
-pancreas	Fibro-Prol	#00BDD4	Fibroblasts (Proliferative)
-pancreas	Glial	#00B5EE	Glial cells
-pancreas	B-IGHM	#00A7FF	B cells with the high expression of IGHM
-pancreas	B-MME	#7F96FF	B cells with the high expression of MME
-pancreas	B-Prol	#BC81FF	B cells (Proliferative)
-pancreas	NKT	#E26EF7	NKT cells
-pancreas	T	#F863DF	T cells
-pancreas	CACNA1A	#FF62BF	CACNA1A+ cells
-pancreas	Erythrocyte	#FF6A9A	Erythrocytes
-liver	Epi	#F8766D	Epithelial cells (Cholangiocytes)
-liver	Endo-DNTT	#E88526	Endothelial cells with the high expression of DNTT
-liver	LSEC	#D39200	Liver sinusoidal endothelial cells
-liver	Endo-Prol	#B79F00	Endothelial cells (Proliferative)
-liver	Fibro	#93AA00	Fibroblasts
-liver	MPP	#5EB300	Multipotent progenitors
-liver	B-MS4A1+	#00BA38	B cells with the high expression of MS4A1
-liver	B-MS4A1-	#00BF74	B cells with the low expression of MS4A1
-liver	B-Prol	#00C19F	B cells (Proliferative)
-liver	DC/Macro	#00BFC4	Dendritic cells / Macrophages (Containing Kupffer cells)
-liver	Mast-Prog	#00B9E3	Mast cells (Progenitor)
-liver	NKT-IL2RB	#00ADFA	NKT cells with the high expression of IL2RB
-liver	NKT-SYNE1	#619CFF	NKT cells with the high expression of SYNE1
-liver	NKT-Prol	#AE87FF	NKT cells (Proliferative)
-liver	T	#DB72FB	T cells
-liver	Hepatocyte	#F564E3	Hepatocytes
-liver	Erythrocyte	#FF61C3	Erythrocytes
-liver	Erythrocyte-Prol	#FF699C	Erythrocytes (Proliferative)
-kidney	PT	#F8766D	Proximal tubule cells
-kidney	LoH	#EE8043	Loop of Henle cells
-kidney	LoH-Prog	#E18A00	Loop of Henle cells (Progenitor)
-kidney	DT	#D19300	Distal tubule cells
-kidney	PC-CLU	#BE9C00	Principal cells with the high expression of CLU
-kidney	PC-BCAT1	#A8A400	Principal cells with the high expression of BCAT1
-kidney	Epi-Ureter	#8CAB00	Epithelial cells (Ureter)
-kidney	Epi-Prol	#68B100	Epithelial cells (Proliferative)
-kidney	Podocyte-GPC3	#24B700	Podocytes with the high expression of GPC3
-kidney	Podocyte-PLA2R1	#00BB49	Podocytes with the high expression of PLA2R1
-kidney	CM	#00BE70	Cap mesenchyme cells
-kidney	Endo-TEK	#00C090	Endothelial cells with the high expression of TEK
-kidney	Endo-FLT1	#00C1AB	Endothelial cells with the high expression of FLT1
-kidney	Endo-Glomerular	#00BFC4	Endothelial cells (Glomerular)
-kidney	SM	#00BBDA	Smooth muscle cells
-kidney	Fibro-ALDH1A2	#00B5ED	Fibroblasts with the high expression of ALDH1A2
-kidney	Fibro-APCDD1	#00ACFC	Fibroblasts with the high expression of APCDD1
-kidney	Fibro-COL14A1	#42A0FF	Fibroblasts with the high expression of COL14A1
-kidney	Fibro-CYP1B1	#8B93FF	Fibroblasts with the high expression of CYP1B1
-kidney	Fibro-PTGER2	#B684FF	Fibroblasts with the high expression of PTGER2
-kidney	Fibro-GUCY1A2	#D575FE	Fibroblasts with the high expression of GUCY1A2
-kidney	Fibro-SFRP2	#CAFF70	Fibroblasts with the high expression of SFRP2
-kidney	Fibro-Prol	#EB69F0	Fibroblasts (Proliferative)
-kidney	Glial	#F962DD	Glial cells
-kidney	Immune	#FF61C6	Immune cells
-kidney	CACNA1A	#FF65AC	CACNA1A+ cells
-kidney	Erythrocyte	#FF6D8E	Erythrocytes
-kidney	Unknown	#B3B3B3	Unknown
-bladder	Endo-ENTPD1	#C49A00	Endothelial cells with the high expression of ENTPD1
-bladder	Endo-PODXL	#53B400	Endothelial cells with the high expression of PODXL
-bladder	SM	#00C094	Smooth muscle cells
-bladder	Fibro	#00B6EB	Fibroblasts
-bladder	Immune	#A58AFF	Immune cells
-bladder	Erythrocyte	#FB61D7	Erythrocytes
-lung	Epi	#F8766D	Epithelial cells
-lung	Endo	#DB8E00	Endothelial cells
-lung	SM-STC1	#AEA200	Smooth muscle cells with the high expression of STC1
-lung	SM-HHIP	#64B200	Smooth muscle cells with the high expression of HHIP
-lung	SM-0	#CAFF70	Smooth muscle cells (Basic)
-lung	Fibro-0	#00BD5C	Fibroblasts (Basic)
-lung	Fibro-FOSB	#00C1A7	Fibroblasts with the high expression of FOSB
-lung	Fibro-TNC	#00BADE	Fibroblasts with the high expression of TNC
-lung	Fibro-Prol	#00A6FF	Fibroblasts (Proliferative)
-lung	Pericyte	#B385FF	Pericytes
-lung	Immune	#EF67EB	Immune cells
-lung	Erythrocyte	#FF63B6	Erythrocytes
-lung	Unknown	#B3B3B3	Unknown
-bronchus	Epi	#F8766D	Epithelial cells
-bronchus	Endo	#D39200	Endothelial cells
-bronchus	SM	#93AA00	Smooth muscle cells
-bronchus	Fibro	#00BA38	Fibroblasts
-bronchus	B-Immature	#00C19F	Immature B cells
-bronchus	B-Mature	#00B9E3	Mature B cells
-bronchus	DC	#619CFF	Dendritic cells
-bronchus	NKT	#DB72FB	NKT cells
-bronchus	T	#FF61C3	T cells
-diaphragm	Endo	#DB8E00	Endothelial cells
-diaphragm	SM	#AEA200	Smooth muscle cells
-diaphragm	SKM	#64B200	Skeletal muscle cells
-diaphragm	Fibro-SCN7A	#00BD5C	Fibroblasts with the high expression of SCN7A
-diaphragm	Fibro-GUCY1A3	#00C1A7	Fibroblasts with the high expression of GUCY1A3
-diaphragm	Fibro-SFRP2	#00BADE	Fibroblasts with the high expression of SFRP2
-diaphragm	Fibro-COL11A1	#00A6FF	Fibroblasts with the high expression of COL11A1
-diaphragm	Fibro-Prol	#B385FF	Fibroblasts (Proliferative)
-diaphragm	Glial	#EF67EB	Glial cells
-diaphragm	Immune	#FF63B6	Immune cells
-spleen	MPP	#F8766D	Multipotent progenitors
-spleen	B-CD83	#D89000	B cells with the high expression of CD83
-spleen	B-HLA-DRB5	#A3A500	B cells with the high expression of HLA-DRB5
-spleen	B-Prol	#39B600	B cells (Proliferative)
-spleen	DC/Macro	#00BF7D	Dendritic cells / Macrophages
-spleen	NKT	#00BFC4	NKT cells
-spleen	T-GIMAP7	#00B0F6	T cells with the high expression of GIMAP7
-spleen	T-TNFAIP3	#9590FF	T cells with the high expression of TNFAIP3
-spleen	Erythrocyte	#E76BF3	Erythrocytes
-spleen	Erythrocyte-Prol	#FF62BC	Erythrocytes (Proliferative)
-bone marrow	Pro-B	#F8766D	Pro-B cells
-bone marrow	Pre-B	#CD9600	Pre-B cells
-bone marrow	B-Prol	#7CAE00	B cells (Proliferative)
-bone marrow	Mast	#00BE67	Mast cells
-bone marrow	Neutrophil	#00BFC4	Neutrophils
-bone marrow	Neutrophil-Prol	#00A9FF	Neutrophils (Proliferative)
-bone marrow	Erythrocyte	#C77CFF	Erythrocytes
-bone marrow	Erythrocyte-Prol	#FF61CC	Erythrocytes (Proliferative)
-thymus	Endo	orange	Endothelial cells
-thymus	Fibro	#B79F00	Fibroblasts
-thymus	Pre-T	#00BA38	Pre-T cells
-thymus	T-DP	#00BFC4	T cells (Double positive)
-thymus	T-Prol	#619CFF	T cells (Proliferative)
-thymus	T-CACNA1A	#F564E3	T cells with the high expression of CACNA1A
-thymus	CACNA1A	dodgerblue2	CACNA1A+ cells
-thymus	Erythrocyte	violetred3	Erythrocytes
-heart	Endo	#E7851E	Endothelial cells
-heart	SM-ACTG2	#D09400	Smooth muscle cells with the high expression of ACTG2
-heart	SM-NOTCH3	#B2A100	Smooth muscle cells with the high expression of NOTCH3
-heart	Fibro-ADAMTS19	#89AC00	Fibroblasts with the high expression of ADAMTS19
-heart	Fibro-FMOD	#45B500	Fibroblasts with the high expression of FMOD
-heart	Fibro-ITM2A	#00BC51	Fibroblasts with the high expression of ITM2A
-heart	Fibro-HTR2A	#00C087	Fibroblasts with the high expression of HTR2A
-heart	Fibro-Prol	#00C0B2	Fibroblasts (Proliferative)
-heart	Glial	#00BCD6	Glial cells
-heart	B	#00B3F2	B cells
-heart	DC/Macro	#29A3FF	Dendritic cells / Macrophages
-heart	Mast	#9C8DFF	Mast cells
-heart	NKT	#D277FF	NKT cells
-heart	T	#F166E8	T cells
-heart	CACNA1A	#FF61C7	CACNA1A+ cells
-heart	Erythrocyte	#FF689E	Erythrocytes
-ovary	FGC	#F8766D	Fetal germ cells
-ovary	FGC/Granulosa	#E68613	Fetal germ cells / Granulosa cells
-ovary	Epi/Mes	#CD9600	Epithelial cells / Mesenchymal cells
-ovary	Endo	#ABA300	Endothelial cells
-ovary	Fibro-VCAN	#7CAE00	Fibroblasts with the high expression of VCAN
-ovary	Fibro-CCDC80	#0CB702	Fibroblasts with the high expression of CCDC80
-ovary	Glial	#00BE67	Glial cells
-ovary	Immune	#00C19A	Immune cells
-ovary	Granulosa-R+	#00BFC4	Granulosa cells (RDH10:high)
-ovary	Granulosa-R-Ah	#00B8E7	Granulosa cells (RDH10:low;ARL5B:high)
-ovary	Granulosa-R-Am	#00A9FF	Granulosa cells (RDH10:low;ARL5B:medium)
-ovary	Granulosa-R-Al	#8494FF	Granulosa cells (RDH10:low;ARL5B:low)
-ovary	Granulosa-R-CALB2	#C77CFF	Granulosa cells (RDH10:low;CALB2:high)
-ovary	Granulosa-Prol	#ED68ED	Granulosa (Proliferative)
-ovary	CACNA1A	#FF61CC	CACNA1A+ cells
-ovary	Erythrocyte	#FF68A1	Erythrocytes
-testis	SSC	#F8766D	Spermatogonial stem cells
-testis	Endo	#D89000	Endothelial cells
-testis	Fibro-FOSB+	#A3A500	Fibroblasts with the high expression of FOSB
-testis	Fibro-FOSB-	#39B600	Fibroblasts with the low expression of FOSB
-testis	Fibro-Prol	#00BF7D	Fibroblasts (Proliferative)
-testis	Sertoli-EGR3+	#00BFC4	Sertoli cells with the high expression of EGR3
-testis	Sertoli-EGR3-	#00B0F6	Sertoli cells with the low expression of EGR3
-testis	Sertoli-Prol	#9590FF	Sertoli cells (Proliferative)
-testis	Immune	#E76BF3	Immune cells
-testis	Erythrocyte	#FF62BC	Erythrocytes
+tissue	ident	color	description	group
+esophagus	Epi	#F8766D	Epithelial cells	Epithelial
+esophagus	Endo	#DB8E00	Endothelial cells	Endothelial
+esophagus	SM	#AEA200	Smooth muscle cells	Smooth muscle
+esophagus	Fibro-LRRC17	#64B200	Fibroblasts with the high expression of LRRC17	Fibroblast
+esophagus	Fibro-PLPPR4	#00BD5C	Fibroblasts with the high expression of PLPPR4	Fibroblast
+esophagus	Fibro-C7	#00C1A7	Fibroblasts with the high expression of C7	Fibroblast
+esophagus	Fibro-Prol	#00BADE	Fibroblasts (Proliferative)	Fibroblast
+esophagus	Glial	#00A6FF	Glial cells	Glial
+esophagus	Immune	#B385FF	Immune cells	Immune
+esophagus	MSC	#EF67EB	Mesenchymal stem cells	MSC
+esophagus	Erythrocyte	#FF63B6	Erythrocytes	Erythrocyte
+stomach	Epi	#F8766D	Epithelial cells	Epithelial
+stomach	Endo	#E9842C	Endothelial cells	Endothelial
+stomach	SM-Visceral	#D69100	Smooth muscle cells (Visceral)	Smooth muscle
+stomach	SM-Vascular	#BC9D00	Smooth muscle cells (Vascular)	Smooth muscle
+stomach	Fibro-KCNJ8	#9CA700	Fibroblasts with the high expression of KCNJ8	Fibroblast
+stomach	Fibro-ADAM28	#6FB000	Fibroblasts with the high expression of ADAM28	Fibroblast
+stomach	Fibro-IRF1	#00B813	Fibroblasts with the high expression of IRF1	Fibroblast
+stomach	Fibro-VSTM2A	#00BD61	Fibroblasts with the high expression of VSTM2A	Fibroblast
+stomach	Fibro-FBLN1	#00C08E	Fibroblasts with the high expression of FBLN1	Fibroblast
+stomach	Fibro-NRK	#00C0B4	Fibroblasts with the high expression of NRK	Fibroblast
+stomach	Fibro-KIT	#CAFF70	Fibroblasts with the high expression of KIT	Fibroblast
+stomach	Fibro-PRSS35	#00BDD4	Fibroblasts with the high expression of PRSS35	Fibroblast
+stomach	Fibro-Prol	#00B5EE	Fibroblasts (Proliferative)	Fibroblast
+stomach	Glial	#00A7FF	Glial cells	Glial
+stomach	B	#7F96FF	B cells	B
+stomach	DC/Macro	#BC81FF	Dendritic cells / Macrophages	DC/Macrophage
+stomach	T	#E26EF7	T cells	T
+stomach	CACNA1A-ELF3+	#F863DF	CACNA1A+ cells with the high expression of ELF3	CACNA1A
+stomach	CACNA1A-ELF3-	#FF62BF	CACNA1A+ cells with the low expression of ELF3	CACNA1A
+stomach	Erythrocyte	#FF6A9A	Erythrocytes	Erythrocyte
+stomach	Unknown	#B3B3B3	Unknown	Unknown
+small intestine	Epi	#F8766D	Epithelial cells	Epithelial
+small intestine	Endo	#E9842C	Endothelial cells	Endothelial
+small intestine	SM-Visceral	#D69100	Smooth muscle cells (Visceral)	Smooth muscle
+small intestine	SM-Vascular	#BC9D00	Smooth muscle cells (Vascular)	Smooth muscle
+small intestine	Fibro-COL14A1	#9CA700	Fibroblasts with the high expression of COL14A1	Fibroblast
+small intestine	Fibro-GPC3	#6FB000	Fibroblasts with the high expression of GPC3	Fibroblast
+small intestine	Fibro-VCAM1	#00B813	Fibroblasts with the high expression of VCAM1	Fibroblast
+small intestine	Fibro-KCNN3	#00BD61	Fibroblasts with the high expression of KCNN3	Fibroblast
+small intestine	Fibro-COL6A5	#00C08E	Fibroblasts with the high expression of COL6A5	Fibroblast
+small intestine	Fibro-SCARA5	#CAFF70	Fibroblasts with the high expression of SCARA5	Fibroblast
+small intestine	Fibro-CXCL14	#00C0B4	Fibroblasts with the high expression of CXCL14	Fibroblast
+small intestine	Fibro-ZEB1	#00BDD4	Fibroblasts with the high expression of ZEB1	Fibroblast
+small intestine	Fibro-Prol	#00B5EE	Fibroblasts (Proliferative)	Fibroblast
+small intestine	Glial	#00A7FF	Glial cells	Glial
+small intestine	B	#7F96FF	B cells	B
+small intestine	DC/Macro	#BC81FF	Dendritic cells / Macrophages	DC/Macrophage
+small intestine	T	#E26EF7	T cells	T
+small intestine	T-Prog	#F863DF	T cells (Progenitor)	T
+small intestine	CACNA1A	#FF62BF	CACNA1A+ cells	CACNA1A
+small intestine	Erythrocyte	#FF6A9A	Erythrocytes	Erythrocyte
+small intestine	Unknown	#B3B3B3	Unknown	Unknown
+large intestine	Epi	#F8766D	Epithelial cells	Epithelial
+large intestine	Endo	#E58700	Endothelial cells	Endothelial
+large intestine	SM-Visceral	#C99800	Smooth muscle cells (Visceral)	Smooth muscle
+large intestine	SM-Vascular	#A3A500	Smooth muscle cells (Vascular)	Smooth muscle
+large intestine	Fibro-VCAN	#6BB100	Fibroblasts with the high expression of VCAN	Fibroblast
+large intestine	Fibro-DPT	#00BA38	Fibroblasts with the high expression of DPT	Fibroblast
+large intestine	Fibro-ADAMDEC1	#00BF7D	Fibroblasts with the high expression of ADAMDEC1	Fibroblast
+large intestine	Fibro-BMP5	#00C0AF	Fibroblasts with the high expression of BMP5	Fibroblast
+large intestine	Fibro-Prol	#00BCD8	Fibroblasts (Proliferative)	Fibroblast
+large intestine	Glial	#00B0F6	Glial cells	Glial
+large intestine	DC/Macro	#619CFF	Dendritic cells / Macrophages	DC/Macrophage
+large intestine	Mast	#B983FF	Mast cells	Mast
+large intestine	T	#E76BF3	T cells	T
+large intestine	CACNA1A	#FD61D1	CACNA1A+ cells	CACNA1A
+large intestine	Erythrocyte	#FF67A4	Erythrocytes	Erythrocyte
+pancreas	Epi-CADPS	#F8766D	Epithelial cells with the high expression of CADPS	Epithelial
+pancreas	Epi-SPINK1	#E9842C	Epithelial cells with the high expression of SPINK1	Epithelial
+pancreas	Endo-FLT1	#D69100	Endothelial cells with the high expression of FLT1	Endothelial
+pancreas	Endo-NTS	#BC9D00	Endothelial cells with the high expression of NTS	Endothelial
+pancreas	SM	#9CA700	Smooth muscle cells	Smooth muscle
+pancreas	Fibro-PAMR1+SOX6+	#6FB000	Fibroblasts (PAMR1:high;SOX6:high)	Fibroblast
+pancreas	Fibro-PAMR1+SOX6-	#00B813	Fibroblasts (PAMR1:high;SOX6:low)	Fibroblast
+pancreas	Fibro-THBS2	#00BD61	Fibroblasts with the high expression of THBS2	Fibroblast
+pancreas	Fibro-IGFBP3	#00C08E	Fibroblasts with the high expression of IGFBP3	Fibroblast
+pancreas	Fibro-ITGA8	#00C0B4	Fibroblasts with the high expression of ITGA8	Fibroblast
+pancreas	Fibro-Prol	#00BDD4	Fibroblasts (Proliferative)	Fibroblast
+pancreas	Glial	#00B5EE	Glial cells	Glial
+pancreas	B-IGHM	#00A7FF	B cells with the high expression of IGHM	B
+pancreas	B-MME	#7F96FF	B cells with the high expression of MME	B
+pancreas	B-Prol	#BC81FF	B cells (Proliferative)	B
+pancreas	NKT	#E26EF7	NKT cells	NKT
+pancreas	T	#F863DF	T cells	T
+pancreas	CACNA1A	#FF62BF	CACNA1A+ cells	CACNA1A
+pancreas	Erythrocyte	#FF6A9A	Erythrocytes	Erythrocyte
+liver	Epi	#F8766D	Epithelial cells (Cholangiocytes)	Epithelial
+liver	Endo-DNTT	#E88526	Endothelial cells with the high expression of DNTT	Endothelial
+liver	LSEC	#D39200	Liver sinusoidal endothelial cells	Endothelial
+liver	Endo-Prol	#B79F00	Endothelial cells (Proliferative)	Endothelial
+liver	Fibro	#93AA00	Fibroblasts	Fibroblast
+liver	MPP	#5EB300	Multipotent progenitors	MPP
+liver	B-MS4A1+	#00BA38	B cells with the high expression of MS4A1	B
+liver	B-MS4A1-	#00BF74	B cells with the low expression of MS4A1	B
+liver	B-Prol	#00C19F	B cells (Proliferative)	B
+liver	DC/Macro	#00BFC4	Dendritic cells / Macrophages (Containing Kupffer cells)	DC/Macrophage
+liver	Mast-Prog	#00B9E3	Mast cells (Progenitor)	Mast
+liver	NKT-IL2RB	#00ADFA	NKT cells with the high expression of IL2RB	NKT
+liver	NKT-SYNE1	#619CFF	NKT cells with the high expression of SYNE1	NKT
+liver	NKT-Prol	#AE87FF	NKT cells (Proliferative)	NKT
+liver	T	#DB72FB	T cells	T
+liver	Hepatocyte	#F564E3	Hepatocytes	Hepatocyte
+liver	Erythrocyte	#FF61C3	Erythrocytes	Erythrocyte
+liver	Erythrocyte-Prol	#FF699C	Erythrocytes (Proliferative)	Erythrocyte
+kidney	PT	#F8766D	Proximal tubule cells	Epithelial
+kidney	LoH	#EE8043	Loop of Henle cells	Epithelial
+kidney	LoH-Prog	#E18A00	Loop of Henle cells (Progenitor)	Epithelial
+kidney	DT	#D19300	Distal tubule cells	Epithelial
+kidney	PC-CLU	#BE9C00	Principal cells with the high expression of CLU	Epithelial
+kidney	PC-BCAT1	#A8A400	Principal cells with the high expression of BCAT1	Epithelial
+kidney	Epi-Ureter	#8CAB00	Epithelial cells (Ureter)	Epithelial
+kidney	Epi-Prol	#68B100	Epithelial cells (Proliferative)	Epithelial
+kidney	Podocyte-GPC3	#24B700	Podocytes with the high expression of GPC3	Epithelial
+kidney	Podocyte-PLA2R1	#00BB49	Podocytes with the high expression of PLA2R1	Epithelial
+kidney	CM	#00BE70	Cap mesenchyme cells	CM
+kidney	Endo-TEK	#00C090	Endothelial cells with the high expression of TEK	Endothelial
+kidney	Endo-FLT1	#00C1AB	Endothelial cells with the high expression of FLT1	Endothelial
+kidney	Endo-Glomerular	#00BFC4	Endothelial cells (Glomerular)	Endothelial
+kidney	SM	#00BBDA	Smooth muscle cells	Smooth muscle
+kidney	Fibro-ALDH1A2	#00B5ED	Fibroblasts with the high expression of ALDH1A2	Fibroblast
+kidney	Fibro-APCDD1	#00ACFC	Fibroblasts with the high expression of APCDD1	Fibroblast
+kidney	Fibro-COL14A1	#42A0FF	Fibroblasts with the high expression of COL14A1	Fibroblast
+kidney	Fibro-CYP1B1	#8B93FF	Fibroblasts with the high expression of CYP1B1	Fibroblast
+kidney	Fibro-PTGER2	#B684FF	Fibroblasts with the high expression of PTGER2	Fibroblast
+kidney	Fibro-GUCY1A2	#D575FE	Fibroblasts with the high expression of GUCY1A2	Fibroblast
+kidney	Fibro-SFRP2	#CAFF70	Fibroblasts with the high expression of SFRP2	Fibroblast
+kidney	Fibro-Prol	#EB69F0	Fibroblasts (Proliferative)	Fibroblast
+kidney	Glial	#F962DD	Glial cells	Glial
+kidney	Immune	#FF61C6	Immune cells	Immune
+kidney	CACNA1A	#FF65AC	CACNA1A+ cells	CACNA1A
+kidney	Erythrocyte	#FF6D8E	Erythrocytes	Erythrocyte
+kidney	Unknown	#B3B3B3	Unknown	Unknown
+bladder	Endo-ENTPD1	#C49A00	Endothelial cells with the high expression of ENTPD1	Endothelial
+bladder	Endo-PODXL	#53B400	Endothelial cells with the high expression of PODXL	Endothelial
+bladder	SM	#00C094	Smooth muscle cells	Smooth muscle
+bladder	Fibro	#00B6EB	Fibroblasts	Fibroblast
+bladder	Immune	#A58AFF	Immune cells	Immune
+bladder	Erythrocyte	#FB61D7	Erythrocytes	Erythrocyte
+lung	Epi	#F8766D	Epithelial cells	Epithelial
+lung	Endo	#DB8E00	Endothelial cells	Endothelial
+lung	SM-STC1	#AEA200	Smooth muscle cells with the high expression of STC1	Smooth muscle
+lung	SM-HHIP	#64B200	Smooth muscle cells with the high expression of HHIP	Smooth muscle
+lung	SM-0	#CAFF70	Smooth muscle cells (Basic)	Smooth muscle
+lung	Fibro-0	#00BD5C	Fibroblasts (Basic)	Fibroblast
+lung	Fibro-FOSB	#00C1A7	Fibroblasts with the high expression of FOSB	Fibroblast
+lung	Fibro-TNC	#00BADE	Fibroblasts with the high expression of TNC	Fibroblast
+lung	Fibro-Prol	#00A6FF	Fibroblasts (Proliferative)	Fibroblast
+lung	Pericyte	#B385FF	Pericytes	Pericyte
+lung	Immune	#EF67EB	Immune cells	Immune
+lung	Erythrocyte	#FF63B6	Erythrocytes	Erythrocyte
+lung	Unknown	#B3B3B3	Unknown	Unknown
+bronchus	Epi	#F8766D	Epithelial cells	Epithelial
+bronchus	Endo	#D39200	Endothelial cells	Endothelial
+bronchus	SM	#93AA00	Smooth muscle cells	Smooth muscle
+bronchus	Fibro	#00BA38	Fibroblasts	Fibroblast
+bronchus	B-Immature	#00C19F	Immature B cells	B
+bronchus	B-Mature	#00B9E3	Mature B cells	B
+bronchus	DC	#619CFF	Dendritic cells	DC
+bronchus	NKT	#DB72FB	NKT cells	NKT
+bronchus	T	#FF61C3	T cells	T
+diaphragm	Endo	#DB8E00	Endothelial cells	Endothelial
+diaphragm	SM	#AEA200	Smooth muscle cells	Smooth muscle
+diaphragm	SKM	#64B200	Skeletal muscle cells	Skeletal muscle
+diaphragm	Fibro-SCN7A	#00BD5C	Fibroblasts with the high expression of SCN7A	Fibroblast
+diaphragm	Fibro-GUCY1A3	#00C1A7	Fibroblasts with the high expression of GUCY1A3	Fibroblast
+diaphragm	Fibro-SFRP2	#00BADE	Fibroblasts with the high expression of SFRP2	Fibroblast
+diaphragm	Fibro-COL11A1	#00A6FF	Fibroblasts with the high expression of COL11A1	Fibroblast
+diaphragm	Fibro-Prol	#B385FF	Fibroblasts (Proliferative)	Fibroblast
+diaphragm	Glial	#EF67EB	Glial cells	Glial
+diaphragm	Immune	#FF63B6	Immune cells	Immune
+spleen	MPP	#F8766D	Multipotent progenitors	MPP
+spleen	B-CD83	#D89000	B cells with the high expression of CD83	B
+spleen	B-HLA-DRB5	#A3A500	B cells with the high expression of HLA-DRB5	B
+spleen	B-Prol	#39B600	B cells (Proliferative)	B
+spleen	DC/Macro	#00BF7D	Dendritic cells / Macrophages	DC/Macrophage
+spleen	NKT	#00BFC4	NKT cells	NKT
+spleen	T-GIMAP7	#00B0F6	T cells with the high expression of GIMAP7	T
+spleen	T-TNFAIP3	#9590FF	T cells with the high expression of TNFAIP3	T
+spleen	Erythrocyte	#E76BF3	Erythrocytes	Erythrocyte
+spleen	Erythrocyte-Prol	#FF62BC	Erythrocytes (Proliferative)	Erythrocyte
+bone marrow	Pro-B	#F8766D	Pro-B cells	B
+bone marrow	Pre-B	#CD9600	Pre-B cells	B
+bone marrow	B-Prol	#7CAE00	B cells (Proliferative)	B
+bone marrow	Mast	#00BE67	Mast cells	Mast
+bone marrow	Neutrophil	#00BFC4	Neutrophils	Neutrophil
+bone marrow	Neutrophil-Prol	#00A9FF	Neutrophils (Proliferative)	Neutrophil
+bone marrow	Erythrocyte	#C77CFF	Erythrocytes	Erythrocyte
+bone marrow	Erythrocyte-Prol	#FF61CC	Erythrocytes (Proliferative)	Erythrocyte
+thymus	Endo	orange	Endothelial cells	Endothelial
+thymus	Fibro	#B79F00	Fibroblasts	Fibroblast
+thymus	Pre-T	#00BA38	Pre-T cells	T
+thymus	T-DP	#00BFC4	T cells (Double positive)	T
+thymus	T-Prol	#619CFF	T cells (Proliferative)	T
+thymus	T-CACNA1A	#F564E3	T cells with the high expression of CACNA1A	T
+thymus	CACNA1A	dodgerblue2	CACNA1A+ cells	CACNA1A
+thymus	Erythrocyte	violetred3	Erythrocytes	Erythrocyte
+heart	Endo	#E7851E	Endothelial cells	Endothelial
+heart	SM-ACTG2	#D09400	Smooth muscle cells with the high expression of ACTG2	Smooth muscle
+heart	SM-NOTCH3	#B2A100	Smooth muscle cells with the high expression of NOTCH3	Smooth muscle
+heart	Fibro-ADAMTS19	#89AC00	Fibroblasts with the high expression of ADAMTS19	Fibroblast
+heart	Fibro-FMOD	#45B500	Fibroblasts with the high expression of FMOD	Fibroblast
+heart	Fibro-ITM2A	#00BC51	Fibroblasts with the high expression of ITM2A	Fibroblast
+heart	Fibro-HTR2A	#00C087	Fibroblasts with the high expression of HTR2A	Fibroblast
+heart	Fibro-Prol	#00C0B2	Fibroblasts (Proliferative)	Fibroblast
+heart	Glial	#00BCD6	Glial cells	Glial
+heart	B	#00B3F2	B cells	B
+heart	DC/Macro	#29A3FF	Dendritic cells / Macrophages	DC/Macrophage
+heart	Mast	#9C8DFF	Mast cells	Mast
+heart	NKT	#D277FF	NKT cells	NKT
+heart	T	#F166E8	T cells	T
+heart	CACNA1A	#FF61C7	CACNA1A+ cells	CACNA1A
+heart	Erythrocyte	#FF689E	Erythrocytes	Erythrocyte
+ovary	FGC	#F8766D	Fetal germ cells	FGC
+ovary	FGC/Granulosa	#E68613	Fetal germ cells / Granulosa cells	FGC/Granulosa
+ovary	Epi/Mes	#CD9600	Epithelial cells / Mesenchymal cells	Epithelial
+ovary	Endo	#ABA300	Endothelial cells	Endothelial
+ovary	Fibro-VCAN	#7CAE00	Fibroblasts with the high expression of VCAN	Fibroblast
+ovary	Fibro-CCDC80	#0CB702	Fibroblasts with the high expression of CCDC80	Fibroblast
+ovary	Glial	#00BE67	Glial cells	Glial
+ovary	Immune	#00C19A	Immune cells	Immune
+ovary	Granulosa-R+	#00BFC4	Granulosa cells (RDH10:high)	Granulosa
+ovary	Granulosa-R-Ah	#00B8E7	Granulosa cells (RDH10:low;ARL5B:high)	Granulosa
+ovary	Granulosa-R-Am	#00A9FF	Granulosa cells (RDH10:low;ARL5B:medium)	Granulosa
+ovary	Granulosa-R-Al	#8494FF	Granulosa cells (RDH10:low;ARL5B:low)	Granulosa
+ovary	Granulosa-R-CALB2	#C77CFF	Granulosa cells (RDH10:low;CALB2:high)	Granulosa
+ovary	Granulosa-Prol	#ED68ED	Granulosa (Proliferative)	Granulosa
+ovary	CACNA1A	#FF61CC	CACNA1A+ cells	CACNA1A
+ovary	Erythrocyte	#FF68A1	Erythrocytes	Erythrocyte
+testis	SSC	#F8766D	Spermatogonial stem cells	FGC
+testis	Endo	#D89000	Endothelial cells	Endothelial
+testis	Fibro-FOSB+	#A3A500	Fibroblasts with the high expression of FOSB	Fibroblast
+testis	Fibro-FOSB-	#39B600	Fibroblasts with the low expression of FOSB	Fibroblast
+testis	Fibro-Prol	#00BF7D	Fibroblasts (Proliferative)	Fibroblast
+testis	Sertoli-EGR3+	#00BFC4	Sertoli cells with the high expression of EGR3	Sertoli
+testis	Sertoli-EGR3-	#00B0F6	Sertoli cells with the low expression of EGR3	Sertoli
+testis	Sertoli-Prol	#9590FF	Sertoli cells (Proliferative)	Sertoli
+testis	Immune	#E76BF3	Immune cells	Immune
+testis	Erythrocyte	#FF62BC	Erythrocytes	Erythrocyte
