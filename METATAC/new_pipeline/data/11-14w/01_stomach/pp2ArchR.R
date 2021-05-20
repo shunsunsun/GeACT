@@ -4,10 +4,11 @@ suppressMessages({
 })
 
 # Argument parsing -------------------------------------------------------------
-doc <- "Usage: main_ArchR_pipeline.R [-h] [--root ROOT]
+doc <- "Usage: main_ArchR_pipeline.R [-h] [--root ROOT] [--seed SEED]
 
 -h --help           show help message
 --root ROOT         root directory of ATAC analysis [default: /data/Lab/otherwork/GeACT/ATAC]
+--seed SEED         random seed [default: 0]
 "
 
 opt <- docopt(doc)
@@ -40,6 +41,8 @@ setwd(organ_wd)
 
 lix_script_dir <- paste(root, .lix_script, sep = "/")
 source(paste(lix_script_dir, "QC_utils.R", sep = "/"))
+
+RNGkind("L'Ecuyer-CMRG")
 
 # 0 Cell metadata setup --------------------------------------------------------
 
@@ -106,6 +109,7 @@ doubScores <- addDoubletScores(
   knnMethod = "UMAP", #Refers to the embedding to use for nearest neighbor search with doublet projection.
   LSIMethod = 1
 ) 
+runif(1) # reset the Random state
 
 # 2.2 Creating An ArchRProject -------------------------------------------------
 proj <- ArchRProject(

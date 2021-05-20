@@ -309,6 +309,7 @@ cellMeta$species <- "human"
 cellMeta$QC <- as.logical(cellMeta$QC)
 cellMeta$group <- ident2clgrp(cellMeta$ident)
 proj$group <- cellMeta[, "group", drop = F][getCellNames(proj), ]
+proj$nPeak <- cellMeta[, "nPeak", drop = F][getCellNames(proj), ]
 
 # add umap/tsne embedding
 peakTSNE <- getEmbedding(proj, embedding = "peakTSNE")
@@ -364,7 +365,19 @@ dev.off()
 
 # marker gene visualization ----------------------------------------------------
 # generate geneScore again to get group info
-geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix")
-geneScore <- summarizedExperiment2Seurat(se = geneScore, assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
+geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix") %>% 
+  summarizedExperiment2Seurat(assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
 
-simpleMarkersPlot(proj, geneScore)
+dir.create("markers", showWarnings = F)
+
+pdf("markers/simple_markers1.pdf", width = 10, height = 10)
+simpleMarkersPlot1(proj, geneScore)
+dev.off()
+
+pdf("markers/simple_markers2.pdf", width = 10, height = 10)
+simpleMarkersPlot2(proj, geneScore, tissue = tissue, root = root)
+dev.off()
+
+pdf("markers/signature_genes.pdf", width = 10, height = 10)
+signatureGenesPlot(proj, geneScore, tissue = tissue, root = root)
+dev.off()

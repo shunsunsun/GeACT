@@ -41,6 +41,8 @@ setwd(organ_wd)
 lix_script_dir <- paste(root, .lix_script, sep = "/")
 source(paste(lix_script_dir, "QC_utils.R", sep = "/"))
 
+RNGkind("L'Ecuyer-CMRG")
+
 # 0 Cell metadata setup --------------------------------------------------------
 
 meta_table <- read.delim("../../../meta/meta_table_ATAC_GeACT.txt", row.names = 1,
@@ -113,6 +115,7 @@ doubScores <- addDoubletScores(
   knnMethod = "UMAP", #Refers to the embedding to use for nearest neighbor search with doublet projection.
   LSIMethod = 1
 ) 
+runif(1) # reset the Random state
 
 # 2.2 Creating An ArchRProject -------------------------------------------------
 proj <- ArchRProject(

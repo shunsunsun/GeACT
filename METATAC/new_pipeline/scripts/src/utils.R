@@ -8,6 +8,11 @@ suppressPackageStartupMessages({
   library(networkD3)
   library(GenomicRanges)
   library(assertthat)
+  
+  library(miniUI)
+  library(shiny)
+  
+  library(RColorBrewer)
 })
 
 my_clip <- function(x, lb, ub){
@@ -232,14 +237,17 @@ ident2clgrp <- function(ident.input) {
   ident.input[grepl("^Pre-B", ident.input)] <- "B" 
   ident.input[grepl("^DC/Macro", ident.input)] <- "DC/Macrophage"
   ident.input[grepl("^Mast-", ident.input)] <- "Mast"
+  ident.input[grepl("^Macro", ident.input)] <- "Macrophage"
   ident.input[grepl("^Neutrophil-", ident.input)] <- "Neutrophil"
   ident.input[grepl("^NKT-", ident.input)] <- "NKT"
   ident.input[grepl("^T-", ident.input)] <- "T" 
   ident.input[grepl("^Pre-T", ident.input)] <- "T" 
+  ident.input[grepl("^Immune-", ident.input)] <- "Immune"
   #
   ident.input[grepl("^Erythrocyte-", ident.input)] <- "Erythrocyte"
   ident.input[grepl("^CACNA1A-", ident.input)] <- "CACNA1A"
   ident.input[ident.input %in% c("PT", "LoH", "LoH-Prog", "DT", "PC-CLU", "PC-BCAT1", "Podocyte-GPC3", "Podocyte-PLA2R1")] <- "Epithelial"
+  ident.input[ident.input %in% c("LSEC")] <- "Endothelial"
   ident.input[grepl("^Sertoli-", ident.input)] <- "Sertoli"
   ident.input[grepl("^Granulosa-", ident.input)] <- "Granulosa"
   # FGC
@@ -247,105 +255,423 @@ ident2clgrp <- function(ident.input) {
   return(ident.input)
 }
 
-plotMarker <- function(proj, geneScore, genes, do_plot = T, group_by = "group"){
+# standardize genes to deal with seurat substitution of "_" with "_" problem
+standardize_genename <- function(genes, genes_nomenclature) {
+  genes_nomenclature[match(gsub("_", "-", genes), gsub("_", "-", genes_nomenclature))]
+}
+
+plotMarker <- function(proj, genes, geneScore = NULL, do_plot = T, group_by = "group"){
   figs <- list()
+  
+  if( is.null(geneScore) ) geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix", verbose = F) %>% 
+      summarizedExperiment2Seurat(assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
+  
+  # check genes to deal with seurat substitution of "_" with "_" problem
+  genes_anno <- getGeneAnnotation(proj)$genes$symbol
+  genes <- standardize_genename(genes, genes_anno)
+  
   for (gene in genes){
-    if (!(gene %in% rownames(geneScore))) next
+    if (!any(c(gene, gsub(gene, "_", "-")) %in% rownames(geneScore))) next
+    
+    # trycatch block to deal with seurat substitution of "_" with "_" problem
     f1 <- plotEmbedding(proj, embedding = "peakUMAP", colorBy = "GeneScoreMatrix", name = gene, plotAs = "points", size = 1.5, continuousSet = "whiteBlue", imputeWeights = NULL)
-    f2 <- VlnPlot(geneScore, features = gene, group.by = group_by)
-    f3 <- plotBrowserTrack(
-      ArchRProj = proj, 
-      groupBy = group_by, 
-      geneSymbol = gene, 
-      upstream = 100000,
-      downstream = 100000,
-      baseSize = 12,
-      facetbaseSize = 12,
-      loops = NULL # getCoAccessibility(proj_epi) # getPeak2GeneLinks(proj_epi)
+    
+    f2 <- tryCatch({
+      VlnPlot(geneScore, features = gene, group.by = group_by)
+    }, 
+    error = function(cond) {
+      VlnPlot(geneScore, features = gsub("_", "-", gene), group.by = group_by)
+    }
     )
+    
+    # f3 <- plotBrowserTrack(
+    #   ArchRProj = proj, 
+    #   groupBy = group_by, 
+    #   geneSymbol = gene, 
+    #   upstream = 100000,
+    #   downstream = 100000,
+    #   baseSize = 12,
+    #   facetbaseSize = 12,
+    #   loops = NULL # getCoAccessibility(proj_epi) # getPeak2GeneLinks(proj_epi)
+    # )
     if (do_plot){
       print(f1)
       print(f2)
-      grid::grid.newpage()
-      grid::grid.draw(f3[[1]])
+      # grid::grid.newpage()
+      # grid::grid.draw(f3[[1]])
     }
-    figs[[gene]] <- list(f1, f2, f3)
+    figs[[gene]] <- list(f1, f2) #, f3)
   }
   figs
 }
 
-simpleMarkersPlot <- function(proj, geneScore){
-  pdf("markers.pdf", width = 10, height = 10)
+# plot general markers
+simpleMarkersPlot1 <- function(proj, geneScore = NULL){
   print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "group", plotAs = "points", size = 1.5))
   
+  # for performance issue，take geneScore as a parameter
+  if( is.null(geneScore) ) geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix", verbose = F) %>% 
+      summarizedExperiment2Seurat(assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
+  
   # Epithelial
-  plotMarker(proj, geneScore, "EPCAM")
+  grid::grid.newpage()
+  grid::grid.text("Epithelial", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("EPCAM", "KRT5"), geneScore)
   
   # Endothelial
-  plotMarker(proj, geneScore, "PECAM1")
+  grid::grid.newpage()
+  grid::grid.text("Endothelial", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("PECAM1", "VWF", "CDH13"), geneScore)
   
   # Smooth muscle
-  plotMarker(proj, geneScore, "ACTG2")
+  grid::grid.newpage()
+  grid::grid.text("Smooth muscle", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("ACTG2", "ACTA2", "CNN1", "TAGLN", "MYH11"), geneScore)
   
   # Fibroblast
-  plotMarker(proj, geneScore, c("COL1A1", "COL2A1"))
+  grid::grid.newpage()
+  grid::grid.text("Fibroblast", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("COL1A1", "COL2A1", "PDGFRA"), geneScore)
+  
+  # Pericyte
+  grid::grid.newpage()
+  grid::grid.text("Pericyte", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("CSPG4", "TRPC6", "PDGFRB"), geneScore)
   
   # Glial
-  plotMarker(proj, geneScore, "PLP1")
+  grid::grid.newpage()
+  grid::grid.text("Glial", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("PLP1", "S100B"), geneScore)
   
   # Immune
-  plotMarker(proj, geneScore, "PTPRC")
+  grid::grid.newpage()
+  grid::grid.text("Immune", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, "PTPRC", geneScore)
   
   # T
-  plotMarker(proj, geneScore, "CD3D")
+  grid::grid.newpage()
+  grid::grid.text("T", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, "CD3D", geneScore)
+  
+  # NKT
+  grid::grid.newpage()
+  grid::grid.text("NKT", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("CD3E", "CD8A", "FCER1G", "TYROBP"), geneScore)
+  
   # B
-  plotMarker(proj, geneScore, c("CD19", "CD79A"))
+  grid::grid.newpage()
+  grid::grid.text("B", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("CD19", "CD79A", "CD24", "MS4A1"), geneScore)
+  
+  # DC
+  # grid::grid.newpage()
+  # grid::grid.text("DC", gp = gpar(fontsize = 32, fontface = "bold"))
+  # plotMarker(proj, "MHCII", geneScore)
+  
+  # Macrophage
+  grid::grid.newpage()
+  grid::grid.text("Macrophage", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("MARCO", "MSR1", "MRC1"), geneScore)
+  
+  # NK
+  grid::grid.newpage()
+  grid::grid.text("NK", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("KLRD1", "NKG7", "TYROBP"), geneScore)
+  
+  # Mast
+  grid::grid.newpage()
+  grid::grid.text("Mast", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("MS4A2", "CPA3", "TPSAB1"), geneScore)
   
   # Erythrocyte
-  plotMarker(proj, geneScore, "HBG1")
+  grid::grid.newpage()
+  grid::grid.text("Erythrocyte", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("HBB", "HBG1", "HBG2"), geneScore)
   
   # Proliferative
-  plotMarker(proj, geneScore, "TOP2A")
+  grid::grid.newpage()
+  grid::grid.text("Proliferative", gp = grid::gpar(fontsize = 32, fontface = "bold"))
+  plotMarker(proj, c("TOP2A", "MKI67"), geneScore)
   
-  dev.off()
+  return(NULL)
 }
 
-# not used
-fullMarkersPlot <- function(proj, geneScore){
-  dir.create("markers_plot", showWarnings = F)
+# plot general markers to compare with RNA dotplot
+simpleMarkersPlot2 <- function(proj, geneScore = NULL, tissue = "01_stomach", root = "/data/Lab/otherwork/GeACT/ATAC"){
+  print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "group", plotAs = "points", size = 1.5))
   
-  pdf("Epithelial.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, c("EPCAM", "VIM", "PTPRC", "HBG1", "PECAM1", "COL1A1"))
-  dev.off()
-  # epi, emt基质, immune, ery, endo,  
+  # for performance issue，take geneScore as a parameter
+  if( is.null(geneScore) ) {
+    geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix", verbose = F) %>% 
+      summarizedExperiment2Seurat(assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
+  }
   
-  pdf("Endothelial.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, "EPCAM")
-  dev.off()
+  tissue_marker_table <- read.table( paste(root, "meta/marker_genes/marker_genes_ploted.txt", sep = "/"), sep = "\t", header = F, stringsAsFactors = F)
   
-  pdf("Smooth_muscle.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, c("ACTG2", "CNN1", "ACTA2", "TAGLN", "NOTCH3", "LGR5", "DES", "LGR6", "MYH11"))
-  dev.off()
+  markers_to_plot <- tissue_marker_table %>% filter(V1 == tissue) %>% .[[2]]
   
-  pdf("Glial.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, "EPCAM")
-  dev.off()
+  cat(markers_to_plot, "\n")
+  plotMarker(proj, markers_to_plot, geneScore)
   
-  pdf("Fibroblast.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, c("COL1A1", "COL2A1", "PDGFRA", "ELN", "ACTA2", "PLIN2", "APOE"))
-  dev.off()
+  Idents(geneScore) <- geneScore[["predictedIdent"]]
+  print(DotPlot(geneScore, features = markers_to_plot, idents = ) + RotatedAxis())
+  Idents(geneScore) <- geneScore[["group"]]
+  print(DotPlot(geneScore, features = markers_to_plot, idents = ) + RotatedAxis())
   
-  pdf("B.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, c("CD79A", "CD24", "MS4A1", "CD19"))
-  dev.off()
+  return(NULL)
+}
+
+# plot signature/marker genes from DE analysis of RNA
+signatureGenesPlot <- function(proj, geneScore = NULL, tissue = "01_stomach", root = "/data/Lab/otherwork/GeACT/ATAC") {
+  print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "group", plotAs = "points", size = 1.5))
   
-  pdf("T.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, c("CD3D", "CCR7", "LEF1"))
-  dev.off()
+  # for performance issue，take geneScore as a parameter
+  if( is.null(geneScore) ) geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix", verbose = F) %>% 
+      summarizedExperiment2Seurat(assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
   
-  pdf("DCMC.pdf", width = 10, height = 10)
-  plotMarker(proj, geneScore, c("HLA-DRB1", "CLEC9A", "LAMP3", "CD1C", "PLD4", "CD14", "S100A8", "FCGR3A"))
-  dev.off()
+  tissue_signature_table <- read.table( paste(root, "meta/marker_genes/cellType_signatureGenes.txt", sep = "/"), sep = "\t", header = T, stringsAsFactors = F)
+  
+  tissue_raw <- gsub("^.*?_", "", tissue) %>% gsub("_", " ", .)
+  signatures_df <- tissue_signature_table %>% filter(tissue == tissue_raw) %>% group_by(ident) %>% top_n(n = 2, wt = myAUC) %>% select(ident, gene)
+  
+  print(signatures_df)
+  for(.ident in unique( signatures_df$ident )){
+    signature_genes <- signatures_df %>% subset(ident == .ident) %>% .$gene
+    
+    grid::grid.newpage()
+    grid::grid.text(.ident, gp = grid::gpar(fontsize = 32, fontface = "bold"))
+    plotMarker(proj, signature_genes, geneScore)
+  }
+  
+  return(NULL)
+}
+
+tunedSignatureGenesPlot <- function(proj, topn_df, geneScore = NULL) {
+  print(plotEmbedding(proj, embedding = "peakUMAP", colorBy = "cellColData", name = "tuned_ident", plotAs = "points", size = 1.5))
+  
+  # for performance issue，take geneScore as a parameter
+  if( is.null(geneScore) ) geneScore <- getMatrixFromProject(proj, useMatrix = "GeneScoreMatrix", verbose = F) %>% 
+      summarizedExperiment2Seurat(assay = "GeneScoreMatrix", rename_assay = "ACTIVITY")
+  
+  for(.cluster in levels(topn_df$cluster)){
+    cluster_signatures <- topn_df %>% filter(cluster == .cluster) %>% pull(gene)
+    
+    grid::grid.newpage()
+    grid::grid.text(paste0("cluster: ", .cluster), gp = grid::gpar(fontsize = 32, fontface = "bold"))
+    plotMarker(proj, genes = cluster_signatures, geneScore = geneScore, group_by = "tuned_ident")
+  }
+}
+
+extend_range <- function(lower_bound, upper_bound, extend_ratio = 0.1) {
+  range_len <- upper_bound - lower_bound
+  c(lower_bound - extend_ratio * range_len, upper_bound + extend_ratio * range_len)
+}
+
+# helper function, data_df contains x, y coordination, and features to plot
+# feature should be a continuous value column, 
+# group_bys should be discrete/factor-like value columns
+interactive_choose_df <- function(data_df, features = NULL, point_size = 1.5, group_bys = NULL) {
+  assert_that(all(c("x", "y") %in% colnames(data_df)))
+  
+  if (!is.null(group_bys)) {
+    assert_that(all(group_bys %in% colnames(data_df)))
+  }
+  
+  if (!is.null(features)) {
+    assert_that(all(features %in% colnames(data_df)))
+  }
+  
+  need_choose_color_by <- (!is.null(features)) | (!is.null(group_bys))
+  if(need_choose_color_by) {
+    color_by_options <- c("none", if( !is.null(features) ) "features" else NULL,
+                          if( !is.null(group_bys) ) "groups" else NULL)
+  }
+  
+  # helper function for color scales
+  getPalette <- colorRampPalette(brewer.pal(9, "Set1"))
+  
+  # generage color scales
+  color_scales <- lapply(group_bys, function(.group_by) {
+    num_of_colors <- data_df[[.group_by]] %>% unique %>% length
+    color_scale <- getPalette(num_of_colors)
+    names(color_scale) <- data_df[[.group_by]] %>% unique
+    return(color_scale)
+  })
+  names(color_scales) <- group_bys
+  
+  ui <- miniPage(
+    gadgetTitleBar("Select Cells"), 
+    fillRow(flex = c(5, 1), 
+            miniContentPanel(
+              padding = 0,
+              plotOutput("plot1", height = "100%", brush = "brush", click = "plot_click")
+            ),
+            miniContentPanel(
+              if (need_choose_color_by) selectInput("color_by", "Color by features, groups, or none", choices = color_by_options) else NULL, 
+              
+              if (!is.null(features)) uiOutput("chooseFeatures") else NULL, 
+              
+              if (!is.null(group_bys)) selectInput("group_by", "Group cells by", choices = group_bys) else NULL, 
+              if (!is.null(group_bys)) uiOutput("visableGroups") else NULL, 
+              
+              htmlOutput('click_info'),
+              htmlOutput('brush_info')
+            )
+    ), 
+    miniButtonBlock(
+      actionButton("add", "", icon = icon("thumbs-up")),
+      actionButton("sub", "", icon = icon("thumbs-down")),
+      actionButton("none", "", icon = icon("refresh")),
+      # actionButton("all", "", icon = icon("refresh"))
+    )
+  )
+  
+  server <- function(input, output) {
+    # TODO, when default values are not selected, how to do plot problem, including input$visable_group, input$feature, etc. any better realizations than req implementation?
+    
+    # dynamic UIs
+    output$visableGroups <- renderUI({
+      groups_to_choose <- c("all", data_df[[input$group_by]] %>% unique)
+      selectInput("visable_group", "Groups to visualize", choices = groups_to_choose, multiple = T, selected = "all")
+    })
+    
+    output$chooseFeatures <- renderUI(({
+      # need_choose_color_by is true gurantees that input$color_by exists
+      if(need_choose_color_by && input$color_by == "features") selectInput("feature", "Feature to colorby", 
+                                                                           choices = features) else NULL
+    }))
+    
+    
+    # For storing selected points
+    vals <- reactiveValues(keep = rep(F, nrow(data_df)), xy = c(0, 0))
+    
+    observeEvent(input$done, stopApp(vals$keep))
+    
+    # compute x, y range for plots, in case it changes according to subsets
+    x_range <- extend_range(data_df$x %>% min, data_df$x %>% max)
+    y_range <- extend_range(data_df$y %>% min, data_df$y %>% max)
+    
+    # remove all legends for consistent visualization
+    
+    output$plot1 <- renderPlot({
+      # Plot the kept and excluded points as two separate data sets
+      keep <- data_df[vals$keep, , drop = F]
+      exclude <- data_df[!vals$keep, , drop = F]
+      
+      if(!is.null(group_bys)) {
+        req(input$visable_group)
+        
+        if ("all" %in% input$visable_group){
+        } else {
+          keep    <- keep[keep[[input$group_by]] %in% input$visable_group, , drop = F]
+          exclude <- exclude[exclude[[input$group_by]] %in% input$visable_group, , drop = F]
+        }
+      }
+      
+      fig <- ggplot(exclude, aes(x, y)) + 
+        xlim(x_range[1], x_range[2]) + 
+        ylim(y_range[1], y_range[2]) + 
+        theme(
+          plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+          
+          panel.background = element_rect(fill = 'white', colour = "white"),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          
+          axis.line = element_blank(),
+          axis.title = element_blank(), 
+          axis.ticks = element_blank(), 
+          axis.text = element_blank(), 
+          
+          legend.position = "none"
+        ) + 
+        geom_point(data = keep, color = "green", size = point_size)
+      
+      if(need_choose_color_by) req(input$color_by)
+      if(need_choose_color_by & input$color_by == "features") {
+        req(input$feature)
+        fig <- fig + geom_point(size = point_size, mapping = aes_string(colour = input$feature)) + 
+          scale_color_gradient(low = "#e7e8ea", high = "blue", limits = c(0, max(data_df[[input$feature]]) ) ) + 
+          ggtitle(input$feature)
+      } else if (need_choose_color_by & input$color_by == "groups") {
+        req(input$group_by)
+        fig <- fig + geom_point(size = point_size, mapping = aes_string(colour = input$group_by)) + 
+          scale_color_manual(values = color_scales[[input$group_by]]) + 
+          ggtitle(input$group_by)
+      } else if (!need_choose_color_by || input$color_by == "none") {
+        fig <- fig + geom_point(size = point_size) + 
+          ggtitle("default")
+      } else {
+        stopApp(stop("Oops, something goes wrong!!!"))
+      }
+      
+      fig
+    })
+    
+    # Update selected points
+    selected <- reactive({
+      if(!is.null(input$visable_group) & !("all" %in% input$visable_group) ) brushedPoints(data_df, input$brush, allRows = T)$selected_ & (data_df[[input$group_by]] %in% input$visable_group ) else 
+        brushedPoints(data_df, input$brush, allRows = T)$selected_
+    })
+    
+    observeEvent(input$add, vals$keep <- vals$keep | selected())
+    observeEvent(input$sub, vals$keep <- vals$keep & !selected())
+    observeEvent(input$none, vals$keep <- rep(F, nrow(data_df)))
+    # observeEvent(input$all, vals$keep <- rep(T, nrow(data_df)))
+    
+    # coordinate info
+    observeEvent(input$plot_click, vals$xy <- c(input$plot_click$x, input$plot_click$y))
+    
+    output$click_info <- renderUI({
+      paste0(sprintf("x: %.2f<br/>", vals$xy[1]),
+             sprintf("y: %.2f", vals$xy[2]) ) %>% HTML
+    })
+    
+    output$brush_info <- renderUI({
+      req(input$brush)
+      paste0(sprintf("x: [%.2f, %.2f]<br/>", input$brush$xmin, input$brush$xmax), 
+             sprintf("y: [%.2f, %.2f]",   input$brush$ymin, input$brush$ymax)) %>% HTML
+    })
+  }
+  
+  runGadget(ui, server, viewer = dialogViewer("choose_cell", width = 1000, height = 1000))
+}
+
+# bridge function between ArchR proj and interactive_choose_cell
+interactive_choose_cell <- function(proj, features = NULL, embedding = "peakUMAP", log2Norm = F, group_bys = NULL) {
+  data_df <- getEmbedding(proj, embedding = embedding)
+  names(data_df) <- c("x", "y")
+  if(!is.null(feature)) {
+    feature_df <- ArchR:::.getMatrixValues(proj, name = features, matrixName = "GeneScoreMatrix") %>% t %>% as.data.frame
+    if(log2Norm) feature_df <- log2(feature_df + 1)
+    data_df <- merge(data_df, feature_df, by = 0) %>% column_to_rownames("Row.names")
+  }
+  
+  if(!is.null(group_bys)) {
+    meta_df <- getCellColData(proj, select = group_bys)
+    data_df <- merge(data_df, meta_df %>% as.data.frame, by = 0) %>% column_to_rownames("Row.names")
+  }
+  
+  rownames(data_df[interactive_choose_df(data_df, features, group_bys = group_bys), , drop = F])
+}
+
+# choose cell based on embedding, static fine tuning tool for cell type annotation
+static_choose_cell <- function(proj, embedding = "peakUMAP", xlimit = c(0, 10), ylimit = c(0, 10), group_by = NULL, used_groups = NULL) {
+  assert_that(length(xlimit) == 2 && is.numeric(xlimit) && xlimit[1] <= xlimit[2])
+  assert_that(length(ylimit) == 2 && is.numeric(ylimit) && ylimit[1] <= ylimit[2])
+  
+  data_df <- getEmbedding(proj, embedding = embedding)
+  names(data_df) <- c("x", "y")
+  
+  if(!is.null(group_by)) {
+    meta_df <- getCellColData(proj, select = group_by)
+    data_df <- merge(data_df, meta_df %>% as.data.frame, by = 0) %>% column_to_rownames("Row.names")
+    
+    data_df <- data_df[data_df[[group_by]] %in% used_groups, , drop = T]
+  }
+  
+  data_df[data_df$x >= xlimit[1] & data_df$x <= xlimit[2] &
+           data_df$y >= ylimit[1] & data_df$y <= ylimit[2], , drop = F] %>% rownames
 }
 
 chromVARFeaturePlot <- function(object, feature, data = NULL, reduction = NULL, dims = c(1, 2), cells = NULL, size = 3) {
@@ -1527,7 +1853,7 @@ plot_peak2gene_link <- function(Arch_proj, genes = NULL, regions = NULL, upstrea
       ArchR:::.logThis(x = getReducedDims(proj_one_group, reducedDims = "peakLSI"), name = "peakLSI", logFile = logFile)
       
       proj_one_group <- addUMAP(ArchRProj = proj_one_group, reducedDims = "peakLSI", name = "peakUMAP", 
-                                     nNeighbors = 30, minDist = 0.5, metric = "cosine", force = T, verbose = F)
+                                nNeighbors = 30, minDist = 0.5, metric = "cosine", force = T, verbose = F)
       ArchR:::.logThis(x = getEmbedding(proj_one_group, embedding = "peakUMAP"), name = "peakUMAP", logFile = logFile)
       # p1 <- plotEmbedding(proj_one_group, embedding = "peakUMAP", colorBy = "cellColData", name = groupby, size = 1)
       
@@ -1608,8 +1934,8 @@ plot_peak2gene_link <- function(Arch_proj, genes = NULL, regions = NULL, upstrea
     
     if(save_p2g_mat) {
       p2g_heatmap_mat <- plotPeak2GeneHeatmap(proj_one_group, corCutOff = cor_cut_off, FDRCutOff = FDR_cut_off, 
-                                            k = min( length(loops[[1]]) * 0.2, 25) %>% floor, groupBy = groupby, 
-                                            returnMatrices = T, verbose = F)
+                                              k = min( length(loops[[1]]) * 0.2, 25) %>% floor, groupBy = groupby, 
+                                              returnMatrices = T, verbose = F)
       saveRDS(p2g_heatmap_mat, paste(proj_one_group_path, "Peak2GeneLinks/p2g_heatmap_mat.rds", sep = "/") )
       
       write.table(p2g_heatmap_mat$Peak2GeneLinks, file = paste(proj_one_group_path, "Peak2GeneLinks/filtered_peak2gene.txt", sep = "/"), 
@@ -1652,23 +1978,23 @@ plot_peak2gene_link <- function(Arch_proj, genes = NULL, regions = NULL, upstrea
         promoter_region <- promoter_regions[names(regions)[i]]
         
         loops <- loops[(start(loops) > start(promoter_region) & start(loops) < end(promoter_region)) |
-                              (end(loops) > start(promoter_region) & end(loops) < end(promoter_region))]
+                         (end(loops) > start(promoter_region) & end(loops) < end(promoter_region))]
         # print(loops)
         loops
       })
     }
     loop_track <- my_loopTracks(loops = loops_by_groups, 
-                        region = regions[i], 
-                        facetbaseSize = title_size,
-                        hideX = TRUE,
-                        hideY = TRUE,
-                        title = "Loops",
-                        logFile = NULL) + theme(plot.margin = unit(c(0.1, 0.75, 0.1, 0.75), "cm"))
+                                region = regions[i], 
+                                facetbaseSize = title_size,
+                                hideX = TRUE,
+                                hideY = TRUE,
+                                title = "Loops",
+                                logFile = NULL) + theme(plot.margin = unit(c(0.1, 0.75, 0.1, 0.75), "cm"))
     
     # add gene track
     gene_track <- ArchR:::.geneTracks(geneAnnotation = geneAnnotation, region = regions[i], facetbaseSize = title_size, title = "Genes", 
                                       labelSize = gene_size, logFile = createLogFile(name = "plot_peak2gene_links")) + 
-                  theme(plot.margin = unit(c(0.1, 0.75, 0.1, 0.75), "cm"))
+      theme(plot.margin = unit(c(0.1, 0.75, 0.1, 0.75), "cm"))
     
     p_list <- SimpleList(loop_track, gene_track)
     # TODO viewpoint

@@ -23,16 +23,14 @@ suppressPackageStartupMessages({
 })
 
 root <- opt$root
-stage <- "11-14w"
+stage <- "19-22w"
 
-setwd(paste(root, "data/11-14w/03_kidney/results", sep = "/"))
+setwd(paste(root, "data/19-22w/17_thymus/results", sep = "/"))
 
 utils_file <- paste(root, "scripts/src/utils.R", sep = "/")
 source(utils_file)
 
 proj <- loadArchRProject("ArchR/ArchR_output/", showLogo = F)
-
-proj$group[grepl("CM", proj$group)] <- "Cap mesenchyme cells"
 
 cellMeta <- getCellColData(proj)[, c("seqID", "tissue", "samplingPos", "plate", "individual", "PassQC", "predictedIdent", "Reads", "Aligned_ratio",
                                      "nFrags", "FRIP", "mito_ratio", "BlacklistRatio", "DoubletScore", "nPeak", "group")]
