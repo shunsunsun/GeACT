@@ -3,6 +3,7 @@ setwd("~/lustre/06-Human_cell_atlas/pooled_data_all/All/")
 
 library("parallel")
 suppressMessages(library("arrow"))
+source("../../scripts/cellType_tools.r")
 
 # options
 dts <- data.frame(tissue = list.files(path = "..", pattern = "^[0-9]"), stringsAsFactors = F)
@@ -197,6 +198,11 @@ cellMeta_global <- cbind(cellMeta_final_filtered_ali, cell_coord[match(cellMeta_
 
 ### adj
 cellMeta_St <- read.table(file = "../../pooled_data/01_stomach/03-expression/merged/cellCluster_adj/Seurat_metaData.txt", header = T, sep = "\t", stringsAsFactors = F, row.names = 1)
+
+cellMeta_final_filtered_plus_adj <- cellMeta_final_filtered_plus
+cellMeta_final_filtered_plus_adj[match(rownames(cellMeta_St), cellMeta_final_filtered_plus_adj$cell), "ident"] <- cellMeta_St$ident
+write.table(x = cellMeta_final_filtered_plus_adj, file = "cell_metatable_filtered_plus_adj.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+
 cellMeta_global_adj <- cellMeta_global
 cellMeta_global_adj[match(rownames(cellMeta_St), cellMeta_global_adj$cell), "ident"] <- cellMeta_St$ident
 write.table(x = cellMeta_global_adj, file = "cell_metatable_RNA_global.txt", row.names = F, col.names = T, quote = F, sep = "\t")
@@ -218,5 +224,7 @@ ctMeta_LS <- lapply(mt7_LS, function(x) {
   return(y)
 })
 ctMeta_DF <- do.call("rbind", ctMeta_LS[match(gsub(" ", "_", ts_ordered$tissue), gsub("^[0-9][0-9]_", "", dts$tissue))])[, 1:3]
+ctMeta_DF$group <- ident2clgrp(ctMeta_DF$ident)
 rownames(ctMeta_DF) <- NULL
-write.table(x = ctMeta_DF, file = "cellType_metatable.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+write.table(x = ctMeta_DF[, 1:3], file = "cellType_metatable.txt", row.names = F, col.names = T, quote = F, sep = "\t")
+write.table(x = ctMeta_DF, file = "cellType_metatable_RNA.txt", row.names = F, col.names = T, quote = F, sep = "\t")
