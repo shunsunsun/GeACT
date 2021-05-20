@@ -12,7 +12,7 @@ Dataset means the data from one sequencing experiment (e.g. datasets/13_D1_48).
 
 Pipeline:
 1. Demultiplexing  
-Reads (R1) were assigned into one of 96 cells according to the [cell barcodes](/scRNA-seq/experiments/cell_barcodes_0x96.txt) localized in the first 8bp in reads (R2).  
+Reads (R1) were assigned into one of 96 cells according to the [Cell barcode table](/scRNA-seq/experiments/cell_barcodes_0x96.txt) localized in the first 8bp in reads (R2).  
 Unique molecular identifiers (UMIs) (20bp) in reads (R2) were extracted and added into the corresponding name in reads (R1).  
 PolyA sequences were trimmed and reads (R1) were filtered based on reads length and quality.  
 ```
