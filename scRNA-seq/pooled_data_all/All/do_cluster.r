@@ -186,7 +186,7 @@ dim(cellStat)
 cellMetaData <- merge(cellMetaData, cellStat[, -c(4, 5)], by.x = 1, by.y = 0, sort = F)
 colnames(cellMetaData)[1] <- "cell"
 # add tissue/samplingPos/ident/group
-cell_metatable <- read.table("cell_metatable_filtered_plus.txt", header = T, sep = "\t", stringsAsFactors = F)
+cell_metatable <- read.table("cell_metatable_filtered_plus_adj.txt", header = T, sep = "\t", stringsAsFactors = F)
 dim(cell_metatable)
 cellMetaData <- merge(cellMetaData, cell_metatable[, c("cell", "tissue", "samplingPos", "ident", "group")], by = "cell", sort = F)
 cellMetaData$tissue <- gsub("_", " ", Hmisc::capitalize(cellMetaData$tissue))
@@ -197,6 +197,7 @@ group_shown <- c("Epithelial", "Endothelial", "Smooth muscle", "Fibroblast", "B"
                  "Granulosa", "Sertoli", "Erythrocyte", "Other")
 cellMetaData$group_new[! cellMetaData$group_new %in% group_shown] <- "Other"
 cellMetaData$group_new <- factor(cellMetaData$group_new, levels = group_shown)
+saveRDS(object = cellMetaData, file = file.path(OUT, "cellMetaData.rds"))
 
 write.table(x = cellMetaData[, colnames(cellMetaData) != "orig.ident"], file = "cell_metatable_merged.txt", row.names = F, col.names = T, quote = F, sep = "\t")
 
@@ -402,6 +403,22 @@ ggplot(cellMetaData, aes(x = tSNE_1, y = tSNE_2, color = tissue)) + geom_point(s
 
 dev.off()
 
+png(paste0(OUT, "/Seurat_UMAP_simple.png"), bg = "transparent", width = 3000, height = 3000, res = 600)
+
+# color by tissue
+ggplot(cellMetaData, aes(x = UMAP1, y = UMAP2, color = tissue)) + geom_point(size = 0.2, show.legend = F) +
+  #theme(legend.position = "bottom", legend.justification = c("center")) + 
+  theme(aspect.ratio = 1) + 
+  #theme(legend.box.margin = margin(t = -15), plot.margin = margin(t = 10, l = -20, r = 20)) + 
+  #theme(legend.key.width = unit(0.2, "cm")) + 
+  theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) + 
+  #guides(color = guide_legend(ncol = 4, override.aes = list(size = 3.6))) + 
+  scale_color_manual(values = ct_color) #+ 
+#annotate("segment", x=-Inf,xend=Inf,y=-Inf,yend=-Inf,arrow=arrow(length = unit(0.5, "cm"))) + 
+#annotate("segment", x=-Inf,xend=-Inf,y=-Inf,yend=Inf,arrow=arrow(length = unit(0.5, "cm")))
+
+dev.off()
+
 pdf(paste0(OUT, "/Seurat_tSNE_spMarker.pdf"), width = 4, height = 5, useDingbats = F)
 
 # FeaturePlot
@@ -419,10 +436,11 @@ dev.off()
 ident.ori <- expr@ident
 expr_assigned <- expr
 
+cellMetaData <- readRDS(file = file.path(OUT, "cellMetaData.rds"))
 cell_metatable <- cellMetaData
 rownames(cell_metatable) <- cell_metatable$cell
 cell_metatable$ts_ident <- Hmisc::capitalize(paste(cell_metatable$tissue, cell_metatable$ident, sep = "."))
-# sort
+# sort (e.g. Bronchus.Epi, Esophagus.Epi, Kidney.Podocyte-GPC3, ...)
 cell_metatable <- cell_metatable[order(cell_metatable$tissue), ]
 cell_metatable_LS <- split(cell_metatable, cell_metatable$group_new)
 names(cell_metatable_LS) <- NULL
@@ -434,14 +452,15 @@ cell_type_ti <- factor(cell_type_ti, levels = unique(cell_metatable_sorted$ts_id
 levels(cell_type_ti) <- 1:length(levels(cell_type_ti))
 expr_assigned@ident <- cell_type_ti
 
-signatureGenes <- read.table("../../pooled_data/All/cellType_signatureGenes.txt", header = T, sep = "\t", stringsAsFactors = F)
+signatureGenes <- read.table("../../pooled_data/All/03-expression/merged/cellCluster/Seurat_markerGenes.txt", header = T, sep = "\t", stringsAsFactors = F)
+signatureGenes <- signatureGenes[, c(12, 1, 10, 2, 3, 4, 5, 6, 7, 8, 9, 11)]
 dim(signatureGenes)
 signatureGenes$ts_ident <- Hmisc::capitalize(paste(signatureGenes$tissue, signatureGenes$ident, sep = "."))
 signatureGenes <- merge(x = signatureGenes, y = unique(cell_metatable[, c("ts_ident", "group_new")]), by = "ts_ident", sort = F)
 signatureGenes <- signatureGenes[, c(2:13,1,14)]
-###
+# only show primary cell groups
 signatureGenes <- subset(signatureGenes, ! group_new %in% "Other")
-###
+# sort
 signatureGenes_LS <- split(signatureGenes, signatureGenes$ts_ident)
 signatureGenes_LS <- signatureGenes_LS[unique(cell_metatable_sorted$ts_ident)]
 signatureGenes_LS <- lapply(signatureGenes_LS, function(x) { head(x, 2) })
@@ -470,11 +489,9 @@ pdf(paste0(OUT, "/Seurat_tSNE_assigned_heatmap.pdf"), width = 10, height = 6, us
 #   theme(legend.position = "bottom", legend.justification = "center", legend.box.spacing = unit(0.25, units = "cm")) + 
 #   guides(fill = guide_colorbar(title.position = "top", title.hjust = 0.5, barwidth = unit(4, units = "cm")))
 
-
 library("ComplexHeatmap")
 col_fun <- circlize::colorRamp2(c(-2.5, 0, 2.5), c("#4575B4", "white", "#D73027"))
 
-ht_opt(legend_title_gp = gpar(fontsize = 12), legend_labels_gp = gpar(fontsize = 12))
 ht1 <- Heatmap(matrix = data_use_MT, col = col_fun, name = "Expression", 
                #row_title = "Signature gene", row_title_side = "right", row_title_rot = 0, row_title_gp = gpar(fontsize = 12), 
                column_title = "Cell", column_title_side = "bottom", column_title_gp = gpar(fontsize = 14), 
@@ -482,18 +499,25 @@ ht1 <- Heatmap(matrix = data_use_MT, col = col_fun, name = "Expression",
                cluster_columns = F, 
                show_row_names = F, row_names_gp = gpar(fontsize = 3), 
                show_column_names = F, column_names_gp = gpar(fontsize = 12), column_names_rot = 45, 
-               top_annotation = columnAnnotation(Tissue = cell_metatable_sel$tissue, Group = cell_metatable_sel$group_new, 
-                                                 col = list(Tissue = ct_color[as.character(cell_metatable_sel$tissue)], 
+               top_annotation = columnAnnotation(Organ = cell_metatable_sel$tissue, Group = cell_metatable_sel$group_new, 
+                                                 col = list(Organ = ct_color[as.character(cell_metatable_sel$tissue)], 
                                                             Group = cg_color[as.character(cell_metatable_sel$group_new)]), 
-                                                 simple_anno_size = unit(0.3, "cm"), 
+                                                 simple_anno_size = unit(0.5, "cm"), 
                                                  gap = unit(0.08, "cm"), 
-                                                 annotation_name_gp = gpar(fontsize = 12)), 
-               right_annotation = rowAnnotation(foo = anno_mark(at = match(gene_hlt, rownames(data_use_MT)), labels = gene_hlt, side = "right", labels_gp = gpar(fontsize = 10), link_width = unit(3, "mm"))),
-               heatmap_legend_param = list(direction = "vertical", at = c(-2.5, 0, 2.5), legend_height = unit(2.5, "cm"))
+                                                 annotation_name_gp = gpar(fontsize = 12), 
+                                                 show_legend = F), 
+               right_annotation = rowAnnotation(foo = anno_mark(at = match(gene_hlt, rownames(data_use_MT)), labels = gene_hlt, side = "right", labels_gp = gpar(fontsize = 12), link_width = unit(3, "mm"))), 
+               show_heatmap_legend = F
 )
-draw(ht1, row_title = "Signature gene", row_title_gp = gpar(fontsize = 14), 
-     merge_legend = F, heatmap_legend_side = "right")
-ht_opt(RESET = T)
+lgd0 <- Legend(col_fun = col_fun, title = "Expression", title_gp = gpar(fontsize = 12), title_gap = unit(3, "mm"), labels_gp = gpar(fontsize = 12),
+               at = c(-2.5, 0, 2.5), legend_height = unit(2.5, units = "cm"))
+lgd1 <- Legend(at = levels(cell_metatable_sel$tissue), title = "Organ", legend_gp = gpar(fill = ct_color[levels(cell_metatable_sel$tissue)]), title_gp = gpar(fontsize = 12), title_gap = unit(3, "mm"), labels_gp = gpar(fontsize = 12))
+lgd2 <- Legend(at = setdiff(levels(cell_metatable_sel$group_new), "Other"), title = "Group", legend_gp = gpar(fill = cg_color[setdiff(levels(cell_metatable_sel$group_new), "Other")]), title_gp = gpar(fontsize = 12), title_gap = unit(3, "mm"), labels_gp = gpar(fontsize = 12))
+lgd <- packLegend(lgd1, lgd2, direction = "vertical", row_gap = unit(0.5, "cm"))
+
+draw(ht1, row_title = "Signature gene", row_title_gp = gpar(fontsize = 14), padding = unit(c(5.5, 5.5, 5.5, 185), units = "points"))
+draw(lgd0, x = unit(0.8, "npc"), y = unit(0.5, "npc"), just = c("center", "center"))
+draw(lgd, x = unit(0.925, "npc"), y = unit(0.525, "npc"), just = c("center", "center"))
 
 dev.off()
 ###
