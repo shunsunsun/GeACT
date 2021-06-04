@@ -37,7 +37,7 @@ if(dir.exists("ArchR_epi")){
   proj_epi <- loadArchRProject("ArchR_epi", showLogo = F)
 } else {
   proj_19_22w <- loadArchRProject(path = "ArchR_19_22w/", showLogo = F)
-  proj_epi <- proj_19_22w[proj_19_22w$group == "Epithelial", ]
+  proj_epi <- proj_19_22w[proj_19_22w$tuned_group == "Epithelial", ]
   
   # 1.1 visualize clusters -----------------------------------------------------
   proj_epi <- addIterativeLSI(proj_epi, useMatrix = "PeakMatrix", 
@@ -101,6 +101,12 @@ markerGenes  <- c(
 # peak to gene links in epithelial/fibroblast
 proj_epi
 
+
+
+# tissue_order <- c("esophagus", "stomach", "small intestine", "large intestine", "pancreas", "liver", "kidney", "bladder", "lung", "bronchus", "diaphragm", 
+#                   "spleen", "bone marrow", "thymus", "heart", "ovary", "testis")
+# tissues <- proj_epi$tissue %>% unique
+# tissues <- tissues[match(tissues, tissue_order) %>% order]
 tissues <- c("esophagus", "stomach", "small intestine", "large intestine", "pancreas", "liver", "kidney", "lung")
 names(tissues) <- tissues
 

@@ -19,6 +19,11 @@ my_clip <- function(x, lb, ub){
   pmax(lb, pmin(x, ub))
 }
 
+first_case_up <- function(x) {
+  substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+  x
+}
+
 change_assay <- function(sobj, assayin = "RNA", assayout = "ACTIVITY"){
   sobj[[assayout]] <- sobj[[assayin]]
   DefaultAssay(sobj) <- assayout
@@ -695,7 +700,7 @@ chromVARFeaturePlot <- function(object, feature, data = NULL, reduction = NULL, 
     ggtitle(feature) +# ggtitle(gsub("-", "_", feature)) +
     xlab(paste(toupper(reduction), "1", sep = "_")) + ylab(paste(toupper(reduction), "2", sep = "_")) +
     theme(
-      plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+      plot.title = element_text(face = "bold", size = 30, hjust = 0.5),
       
       panel.background = element_rect(fill = 'white', colour = "white"),
       panel.grid.major = element_blank(),
@@ -828,11 +833,12 @@ gr2df <- function(gr, keep_strand_width = F) {
 }
 
 plotCircosFromRangeSE <- function(peak_matrix, group_by = "group", groups_to_cmp = NULL, window.size = 1e6, max.clip = 30, 
-                                  cytoband = NULL, chrs = 1:22, use_colors = NULL, genes_df = NULL){
+                                  cytoband = NULL, chrs = 1:22, use_colors = NULL, genes_df = NULL, 
+                                  legend_fontsize = 8){
   if (is.null(groups_to_cmp)) groups_to_cmp  <- colData(peak_matrix)[, group_by] %>% table %>% sort(decreasing = T) %>% head(7) %>% names
   
   pseu_bulk_gr_list <- lapply(groups_to_cmp, function(group){
-    group_peak_matrix <- peak_matrix[, peak_matrix$group == group]
+    group_peak_matrix <- peak_matrix[, peak_matrix[[group_by]] == group]
     group_pseu_bulk <- rowMeans(assay(group_peak_matrix))
     group_pseu_bulk_gr <- rowRanges(group_peak_matrix)
     group_pseu_bulk_gr$value <- group_pseu_bulk
@@ -861,7 +867,7 @@ plotCircosFromRangeSE <- function(peak_matrix, group_by = "group", groups_to_cmp
   circos.par(start.degree = 90, gap.degree = 3)
   
   if (is.null(cytoband)){
-    circos.initializeWithIdeogram(species = "hg38", plotType = c("axis", "labels"), chromosome.index = paste0("chr", chrs))
+    circos.initializeWithIdeogram(species = "hg38", plotType = c("axis", "labels"), chromosome.index = paste0("chr", chrs), track.height = 0.15)
   } else {
     circos.initializeWithIdeogram(cytoband = cytoband_df, plotType = c("axis", "labels"), tickLabelsStartFromZero = F, chromosome.index = paste0("chr", chrs))
   }
@@ -894,7 +900,7 @@ plotCircosFromRangeSE <- function(peak_matrix, group_by = "group", groups_to_cmp
   
   lgd_points <- Legend(at = names(use_colors), type = "points", 
                        legend_gp = gpar(col = use_colors), title_position = "topleft", 
-                       title = "Cell Group")
+                       background = "white", labels_gp = gpar(fontsize = legend_fontsize)) # title = "Cell Group", 
   draw(lgd_points)
 }
 

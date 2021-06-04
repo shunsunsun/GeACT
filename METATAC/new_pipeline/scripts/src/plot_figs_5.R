@@ -99,7 +99,7 @@ if(dir.exists("ArchR_epi")){
   
   p1 <- plotEmbedding(proj_epi, embedding = "peakUMAP", colorBy = "cellColData", name = "tissue", size = 1)
   pdf("fig5/dimred.pdf", width = 10, height = 10)
-  p1
+  print(p1)
   dev.off()
   
   cell_meta <- getCellColData(proj_epi, select = "tissue")
@@ -108,7 +108,7 @@ if(dir.exists("ArchR_epi")){
   df_umap <- merge(cell_meta, dimred, by = 0) %>% as.data.frame %>% column_to_rownames("Row.names")
   names(df_umap) <- c("tissue", "UMAP_1", "UMAP_2")
   
-  write.table(df_umap, file = "epi_dimred.txt", sep = "\t", quote = F, col.names = NA)
+  write.table(df_umap, file = "fig5/epi_dimred.txt", sep = "\t", quote = F, col.names = NA)
 }
 
 
@@ -166,6 +166,10 @@ if(dir.exists("ArchR_epi")){
 
 
 # genome track for marker genes in epi of different tissues 
+tissue_order <- c("esophagus", "stomach", "small intestine", "large intestine", "pancreas", "liver", "kidney", "bladder", "lung", "bronchus", "diaphragm", 
+                  "spleen", "bone marrow", "thymus", "heart", "ovary", "testis")
+# proj_epi$tissue <- factor(proj_epi$tissue, levels = tissue_order)
+
 markerGenes  <- c(
   "KRT15", # Esophagus
   "CLDN18", # Stomach
@@ -178,6 +182,9 @@ markerGenes  <- c(
   # "ANXA1", # Bronchus, Esophagus
   # "CCDC170" # Ovary
 )
+
+# change to first case up
+# proj_epi$tissue <- first_case_up(proj_epi$tissue)
 
 p <- plotBrowserTrack(
   ArchRProj = proj_epi, 
@@ -216,32 +223,44 @@ proj_epi <- saveArchRProject(proj_epi, load = T)
 
 plotVarDev <- getVarDeviations(proj_epi, name = paste0(use_motif_set, "MotifMatrix"), plot = TRUE)
 
-pdf(paste0("fig5/epi_tissue_", use_motif_set, "_motif_markers.pdf"), width = 10, height = 10)
+pdf(paste0("fig5/epi_tissue_", use_motif_set, "_motif_markers.pdf"), width = 8, height = 8) # , width = 10, height = 10
 plotVarDev
 
 # 1.3.1 Seurat analysis
 motif_matrix <- getMatrixFromProject(proj_epi, useMatrix = paste0(use_motif_set, "MotifMatrix"))
 rownames(motif_matrix) <- gsub("_.*", "", rownames(motif_matrix))
 
-# motif_matrix.seurat <- as.Seurat(motif_matrix, counts = "deviations", data = "z", project = "chromVAR")
-# colnames(motif_matrix)
-motif_matrix.seurat <- CreateSeuratObject(counts = assays(motif_matrix)$z, project = "chromVAR", assay = "TF", names.delim = "#", meta.data = as.data.frame(colData(motif_matrix)))
+# # standardize JASPAR motif names
+motif_matrix_zscore <- assays(motif_matrix)$z
+if (use_motif_set == "JASPAR2020") {
+  rownames(motif_matrix_zscore) <- rownames(motif_matrix_zscore) %>% gsub("\\.\\.", "::", .) %>% 
+    gsub("\\.(var\\.[0-9]*)$", "(\\1)", .) %>%
+    gsub("(?<!var)\\.", "-", ., perl = T)
+}
+
+motif_matrix.seurat <- CreateSeuratObject(counts = motif_matrix_zscore, project = "chromVAR", assay = "TF", names.delim = "#", meta.data = as.data.frame(colData(motif_matrix)))
 motif_matrix.seurat <- ScaleData(motif_matrix.seurat)
 Idents(motif_matrix.seurat) <- "tissue"
-levels(motif_matrix.seurat) <- c("esophagus", "stomach", "small intestine", "large intestine", "pancreas", "liver", "kidney", "lung")
+
+Idents(motif_matrix.seurat) <- first_case_up(Idents(motif_matrix.seurat) %>% as.character)
+levels(motif_matrix.seurat) <- levels(motif_matrix.seurat)[match(levels(motif_matrix.seurat), first_case_up(tissue_order) ) %>% order]
 
 motif_matrix.seurat <- RunPCA(motif_matrix.seurat, features = rownames(motif_matrix.seurat))
 motif_matrix.seurat <- RunUMAP(motif_matrix.seurat, dims = 1:30)
 DimPlot(motif_matrix.seurat, label = T)
 
-marker_motifs <- FindAllMarkers(motif_matrix.seurat, test.use = "roc", only.pos = TRUE, min.pct = 0.25)
+marker_motifs <- FindAllMarkers(motif_matrix.seurat, test.use = "roc", only.pos = TRUE, min.pct = 0.1)
 marker_motifs$motif <- gsub("-.*", "", marker_motifs$gene)
-marker_motifs <- marker_motifs[!duplicated(marker_motifs$motif), ]
 
-top8 <- marker_motifs %>% group_by(cluster) %>% top_n(n = 8, wt = myAUC) # p_val_adj)
+# change this remove process to group level
+marker_motifs <- marker_motifs %>% group_by(cluster)
+marker_motifs <- group_map(marker_motifs, ~.x[!duplicated(.x$motif), ], .keep = T) %>% bind_rows()
+# marker_motifs <- marker_motifs[!duplicated(marker_motifs$motif), ]
 
-DoHeatmap(motif_matrix.seurat, features = top8$gene, cells = WhichCells(motif_matrix.seurat, downsample = 200), angle = 60) + NoLegend() + theme(plot.margin = margin(t = 30, r = 40))
-DoHeatmap(motif_matrix.seurat, features = top8$gene, angle = 60) + NoLegend() + theme(plot.margin = margin(t = 30, r = 40))
+topx <- marker_motifs %>% group_by(cluster) %>% top_n(n = 5, wt = myAUC) # p_val_adj)
+
+DoHeatmap(motif_matrix.seurat, features = topx$gene, cells = WhichCells(motif_matrix.seurat, downsample = 150), angle = 60) + NoLegend() + theme(plot.margin = margin(t = 30, r = 40))
+DoHeatmap(motif_matrix.seurat, features = topx$gene, angle = 60) + NoLegend() + theme(plot.margin = margin(t = 30, r = 40))
 umap_epi <- getEmbedding(proj_epi, embedding = "peakUMAP")
 if (use_motif_set == "cisbp"){
   # lung
@@ -262,7 +281,7 @@ if (use_motif_set == "cisbp"){
   print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "PAX1", data = umap_epi, size = 3))
 } else if (use_motif_set == "JASPAR2020"){
   # lung
-  print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "NKX2.8", data = umap_epi, size = 3))
+  print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "NKX2-8", data = umap_epi, size = 3))
   # esophagus
   print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "SOX4", data = umap_epi, size = 3))
   # stomach
@@ -273,7 +292,7 @@ if (use_motif_set == "cisbp"){
   # large intestine
   print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "HOXC13", data = umap_epi, size = 3))
   # liver
-  print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "GATA1..TAL1", data = umap_epi, size = 3))
+  print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "GATA1::TAL1", data = umap_epi, size = 3))
   # pancreas
   print(chromVARFeaturePlot(object = motif_matrix.seurat, feature = "ONECUT2", data = umap_epi, size = 3))
   # kidney
@@ -349,16 +368,23 @@ proj_19_22w <- saveArchRProject(proj_19_22w, outputDirectory = "ArchR_19_22w", l
 
 plotVarDev <- getVarDeviations(proj_19_22w, name = paste0(use_motif_set, "MotifMatrix"), plot = TRUE)
 
-pdf(sprintf("fig5/group_%s_motif_markers.pdf", use_motif_set), width = 10, height = 10)
+pdf(sprintf("fig5/group_%s_motif_markers.pdf", use_motif_set), width = 8, height = 8)
 plotVarDev
 
 # Seurat analysis
 motif_matrix <- getMatrixFromProject(proj_19_22w, useMatrix = paste0(use_motif_set, "MotifMatrix"))
 rownames(motif_matrix) <- gsub("_.*", "", rownames(motif_matrix))
 
-motif_matrix.seurat <- CreateSeuratObject(counts = assays(motif_matrix)$z, project = "chromVAR", assay = "TF", names.delim = "#", meta.data = as.data.frame(colData(motif_matrix)))
+motif_matrix_zscore <- assays(motif_matrix)$z
+if (use_motif_set == "JASPAR2020") {
+  rownames(motif_matrix_zscore) <- rownames(motif_matrix_zscore) %>% gsub("\\.\\.", "::", .) %>% 
+    gsub("\\.(var\\.[0-9]*)$", "(\\1)", .) %>%
+    gsub("(?<!var)\\.", "-", ., perl = T)
+}
+
+motif_matrix.seurat <- CreateSeuratObject(counts = motif_matrix_zscore, project = "chromVAR", assay = "TF", names.delim = "#", meta.data = as.data.frame(colData(motif_matrix)))
 motif_matrix.seurat <- ScaleData(motif_matrix.seurat)
-Idents(motif_matrix.seurat) <- "group"
+Idents(motif_matrix.seurat) <- "tuned_group"
 
 marker_motifs <- FindAllMarkers(motif_matrix.seurat, only.pos = TRUE, test.use = "roc", min.pct = 0.25)
 
@@ -370,7 +396,7 @@ marker_motifs <- marker_motifs[marker_motifs$cluster %in% groups_to_keep, ]
 marker_motifs$cluster <- factor(marker_motifs$cluster, levels = groups_to_keep)
 marker_motifs <- marker_motifs[order(marker_motifs$cluster), ]
 
-top10 <- marker_motifs %>% group_by(cluster) %>% top_n(n = 10, wt = myAUC) # p_val_adj)
+top10 <- marker_motifs %>% group_by(cluster) %>% top_n(n = 11, wt = myAUC) # p_val_adj)
 DoHeatmap(motif_matrix.seurat, features = top10$gene, cells = WhichCells(motif_matrix.seurat, downsample = 200), group.colors = cg_color, angle = 60, raster = T) + NoLegend() +
   theme(plot.margin = margin(t = 20, r = 40))
 DoHeatmap(motif_matrix.seurat, features = top10$gene, group.colors = cg_color, angle = 60, raster = T) + NoLegend() +
@@ -380,24 +406,24 @@ dev.off()
 
 # experimental
 pdf("fig5/experiment.pdf", width = 10, height = 10)
-umap_all <- getEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP")
-plotEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "cellColData", name = "group")
+umap_all <- getEmbedding(proj_19_22w[proj_19_22w$tuned_group %in% groups_to_keep, ], embedding = "peakUMAP")
+plotEmbedding(proj_19_22w[proj_19_22w$tuned_group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "cellColData", name = "group")
 # Epithelial
 chromVARFeaturePlot(object = motif_matrix.seurat, feature = "ZEB1", data = umap_all, size = 3)
 # Endothelial
 chromVARFeaturePlot(object = motif_matrix.seurat, feature = "SOX8", data = umap_all, size = 3)
 # Fibroblast
-chromVARFeaturePlot(object = motif_matrix.seurat, feature = "TAL1..TCF3", data = umap_all, size = 3)
+chromVARFeaturePlot(object = motif_matrix.seurat, feature = "TAL1::TCF3", data = umap_all, size = 3)
 # Glial
 chromVARFeaturePlot(object = motif_matrix.seurat, feature = "SOX4", data = umap_all, size = 3)
 # Erythrocyte
-chromVARFeaturePlot(object = motif_matrix.seurat, feature = "SREBF1.var.2", data = umap_all, size = 3)
+chromVARFeaturePlot(object = motif_matrix.seurat, feature = "SREBF1(var.2)", data = umap_all, size = 3)
 
 
 
 p <- plotBrowserTrack(
-  ArchRProj = proj_19_22w[proj_19_22w$group %in% groups_to_keep], 
-  groupBy = "group", 
+  ArchRProj = proj_19_22w[proj_19_22w$tuned_group %in% groups_to_keep], 
+  groupBy = "tuned_group", 
   geneSymbol = "EPCAM", 
   upstream = 50000,
   downstream = 50000,
@@ -412,8 +438,8 @@ for (fig in p){
 }
 
 proj_19_22w <- addGeneScoreMatrix(proj_19_22w, force = T)
-plotEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "GeneScoreMatrix", name = "HBG1", plotAs = "points", size = 1, continuousSet = "whiteBlue", imputeWeights = NULL)
-plotEmbedding(proj_19_22w[proj_19_22w$group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "cellColData", name = "group", imputeWeights = NULL)
+plotEmbedding(proj_19_22w[proj_19_22w$tuned_group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "GeneScoreMatrix", name = "HBG1", plotAs = "points", size = 1, continuousSet = "whiteBlue", imputeWeights = NULL)
+plotEmbedding(proj_19_22w[proj_19_22w$tuned_group %in% groups_to_keep, ], embedding = "peakUMAP", colorBy = "cellColData", name = "group", imputeWeights = NULL)
 
 dev.off()
 
@@ -426,7 +452,7 @@ groups_to_cmp <- groups_to_keep
 markers_peaks <- getMarkerFeatures(
   ArchRProj = proj_19_22w,
   useMatrix = "PeakMatrix",
-  groupBy = "group",
+  groupBy = "tuned_group",
   useGroups = groups_to_cmp,
   bias = c("TSSEnrichment", "log10(nFrags)"),
   testMethod = "wilcoxon"
@@ -488,12 +514,12 @@ peak_matrix_sub <- subsetByOverlaps(peak_matrix, peaks_sub)
 
 use_colors <- cg_color[groups_to_cmp]
 
-pdf(file = "fig5/circos.pdf", width = 10, height = 10)
-plotCircosFromRangeSE(peak_matrix_sub, groups_to_cmp = groups_to_cmp, use_colors = use_colors)
+pdf(file = "fig5/circos.pdf")
+plotCircosFromRangeSE(peak_matrix_sub, group_by = "tuned_group", groups_to_cmp = groups_to_cmp, use_colors = use_colors)
 dev.off()
 
-pdf(file = "fig5/circos2.pdf", width = 10, height = 10)
-plotCircosFromRangeSE(peak_matrix_sub, groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 5e4, max.clip = 10)
+pdf(file = "fig5/circos2.pdf")
+plotCircosFromRangeSE(peak_matrix_sub, group_by = "tuned_group", groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 5e4, max.clip = 10)
 dev.off()
 
 pdf(file = "fig5/circos3.pdf", width = 10, height = 10)
@@ -505,12 +531,12 @@ cytoband_epcam <- list(df = data.frame(V1 = "chr2",
                                        V5 = "gpos50"), 
                        chromosome = "chr1", 
                        chr.len = setNames("chr1", 249250621))
-plotCircosFromRangeSE(peak_matrix_sub, groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 1e3, max.clip = 3,
+plotCircosFromRangeSE(peak_matrix_sub, group_by = "tuned_group", groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 1e3, max.clip = 3,
                       cytoband = cytoband_epcam, genes_df = epcam_df)
 dev.off()
 
 pdf(file = "fig5/circos4.pdf", width = 10, height = 10)
-plotCircosFromRangeSE(peak_matrix, groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 1e3, max.clip = 3,
+plotCircosFromRangeSE(peak_matrix, group_by = "tuned_group", groups_to_cmp = groups_to_cmp, use_colors = use_colors, chrs = 2, window.size = 1e3, max.clip = 3,
                       cytoband = cytoband_epcam, genes_df = epcam_df)
 dev.off()
 
