@@ -329,16 +329,20 @@ if(runCicero){
 write.table(cellMeta, file = "filtered_cellMeta_internal.txt", sep = "\t", quote = F, col.names = NA)
 
 rownames(cellMeta) <- gsub("^.*#", "", rownames(cellMeta))
+rownames(geneScore_inte$tsne.data)[geneScore_inte$tsne.data$tech == "atac"] <- rownames(geneScore_inte$tsne.data)[geneScore_inte$tsne.data$tech == "atac"] %>% gsub("^.*#", "", .)
+
 
 if (stage == "19-22w") {
   rownames(cellMeta) <- gsub("^(.*?_)", "\\1A_", rownames(cellMeta)) 
+  rownames(geneScore_inte$tsne.data)[geneScore_inte$tsne.data$tech == "atac"] <- rownames(geneScore_inte$tsne.data)[geneScore_inte$tsne.data$tech == "atac"] %>% gsub("^(.*?_)", "\\1A_", .)
 } else{
   rownames(cellMeta) <- gsub("^(.*?_)", "\\1B_", rownames(cellMeta))
+  rownames(geneScore_inte$tsne.data)[geneScore_inte$tsne.data$tech == "atac"] <- rownames(geneScore_inte$tsne.data)[geneScore_inte$tsne.data$tech == "atac"] %>% gsub("^(.*?_)", "\\1B_", .)
 }
 
 write.table(cellMeta, file = "filtered_cellMeta.txt", sep = "\t", quote = F, col.names = NA)
 
-# write integration dimension reduction results
+# write integration dimension reduction results 
 write.table(geneScore_inte$tsne.data, file = "integration_dimreduc.txt", sep = "\t", quote = F, col.names = NA)
 
 # close pdf device
