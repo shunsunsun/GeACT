@@ -1,23 +1,26 @@
 workdir: "/data/Lab/otherwork/GeACT/ATAC"
-localrules: all, test, clear
+localrules: all, test, clear, cmp_stage_transfer_all
 
+# global settings
 root = "/data/Lab/otherwork/GeACT/ATAC"
-run_cicero = True
+run_cicero = False
 peaks_by_summit = False
-transfer_to_11_14w = False
+transfer_to_11_14w = True
 
+
+# generation of configs based upon global settings
 use_peaks = "summitPeaks.rds" if peaks_by_summit else "normalPeaks.rds"
 
 stages = ["19-22w", "11-14w"]
 stage_tissues = {"19-22w": ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", "06_spleen", 
-                            "07_testis", "08_bladder", "09_bone_marrow", "11_diaphragm", "12_esophagus", "14_large_intestine", "15_liver", "16_ovary", "17_thymus"],
+                            "07_testis", "08_bladder", "09_bone_marrow", "11_diaphragm", "12_esophagus", "13_heart", "14_large_intestine", "15_liver", "16_ovary", "17_thymus"],
                  "11-14w": ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", "06_spleen",
-                            "07_testis", "08_bladder", "09_bone_marrow", "10_bronchus", "12_esophagus", "15_liver", "16_ovary", "17_thymus"]}
+                            "07_testis", "08_bladder", "09_bone_marrow", "10_bronchus", "12_esophagus", "13_heart", "15_liver", "16_ovary", "17_thymus"]}
 stage_tissues_use = {"19-22w": ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", "06_spleen", 
-                                "07_testis", "08_bladder", "09_bone_marrow", "11_diaphragm", "12_esophagus", "14_large_intestine", "15_liver", "16_ovary", "17_thymus"],
+                                "07_testis", "08_bladder", "09_bone_marrow", "11_diaphragm", "12_esophagus", "13_heart", "14_large_intestine", "15_liver", "16_ovary", "17_thymus"],
                      "11-14w": ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "05_pancreas", 
-                                "08_bladder", "09_bone_marrow", "10_bronchus", "12_esophagus", "15_liver", "16_ovary", "17_thymus"]}
-both_tissues = list(set(stage_tissues["19-22w"]) & set(stage_tissues["11-14w"]))
+                                "08_bladder", "09_bone_marrow", "10_bronchus", "12_esophagus", "13_heart", "15_liver", "16_ovary", "17_thymus"]}
+both_tissues = list(set(stage_tissues_use["19-22w"]) & set(stage_tissues_use["11-14w"]))
 with_RNA_11_14w = ["01_stomach", "02_small_intestine", "03_kidney", "04_lung", "17_thymus"]
 merge_stage_dict = {i: {tissue: ("11-14w" if(i == "11-14w" and (tissue in with_RNA_11_14w)) else "19-22w") for tissue in stage_tissues[i]} for i in stages} if transfer_to_11_14w else \
     {i: {tissue: "19-22w" for tissue in stage_tissues[i]} for i in stages}
@@ -35,12 +38,13 @@ rule cmp_stage_transfer_all:
 
 rule test:
     input:
-        "data/11-14w/01_stomach/results/filtered_cellMeta.txt"
+        "data/11-14w/01_stomach/results/filtered_cellMeta.txt", 
+        "data/19-22w/01_stomach/results/filtered_cellMeta.txt"
 
 rule clear:
     shell:
         "rm -rf data/[01]*/*/results;"
-        "rm -rf data/[01]*/*/RNA/19-22w/expr_RNA.rds;"
+        "rm -rf data/[01]*/*/RNA/*/expr_RNA.rds;"
         "rm -rf data/paired/*;"
         "rm -rf data/all/*;"
         "rm -rf database/annotation/*"
@@ -52,13 +56,15 @@ rule peak_calling:
         "database/annotation/genomeAnnotation.rds"
     output:
         "data/{{stage}}/{{tissue}}/results/peak_calling/{}".format(use_peaks)
-    threads: 2
+    threads: 4
     log:
         "data/{stage}/{tissue}/results/peak_calling/peak_calling.log"
     conda:
         "envs/atac.yaml"
     params:
         summit="-s" if peaks_by_summit else ""
+    resources:
+        cpus=4
     shell:
         "scripts/src/call_peaks.sh -f data/{wildcards.stage}/{wildcards.tissue}/frag_and_meta/merge_human_frag_decon.bed.gz "
         "-o data/{wildcards.stage}/{wildcards.tissue}/results/peak_calling "
@@ -76,6 +82,9 @@ rule to_ArchR:
     log:
         "data/{stage}/{tissue}/results/pp2ArchR.log"
     threads: 8
+    resources:
+        cpus=8, 
+        time_min=120
     shell:
         "Rscript data/{wildcards.stage}/{wildcards.tissue}/pp2ArchR.R --root {root} > {log} 2>&1"
 
@@ -87,9 +96,14 @@ rule main_pipeline:
     output:
         "data/{stage}/{tissue}/results/filtered_cellMeta.txt",
         "data/{stage}/{tissue}/results/filtered_cellMeta_internal.txt"
+    # conda:
+    #     "envs/pandoc.yaml"
     log:
         "data/{stage}/{tissue}/results/main_pipeline.log"
     threads: 8
+    resources:
+        cpus=8,
+        time_min=240
     params: 
         merge_stage=lambda wildcards: merge_stage_dict[wildcards.stage][wildcards.tissue],
         cicero="--cicero" if run_cicero else ""
@@ -97,6 +111,18 @@ rule main_pipeline:
         "scripts/src/main_ArchR_pipeline.R -s {wildcards.stage} -t {wildcards.tissue} --root {root} --threads {threads} --merge_rna_stage {params.merge_stage} "
         "--peaks {use_peaks} {params.cicero} "
         "> {log} 2>&1"
+
+rule tune_ident:
+    input:
+        "data/{stage}/{tissue}/results/filtered_cellMeta.txt"
+    output:
+        "data/{stage}/{tissue}/results/tuned_filtered_cellMeta.txt",
+        "data/{stage}/{tissue}/results/tuned_filtered_cellMeta_internal.txt"
+    log:
+        "data/{stage}/{tissue}/results/tune_ident.log"
+    threads: 4
+    shell:
+        "r data/{wildcards.stage}/{wildcards.tissue}/reCluster.R --root {root} > {log} 2>&1"
 
 rule create_merge_rnadata:
     input:
@@ -107,14 +133,14 @@ rule create_merge_rnadata:
     shell:
         "scripts/src/construct_seurat.R -s {wildcards.stage} -t {wildcards.tissue} --root {root} --buildstage {wildcards.rna_stage}"
 
-rule cmp_transfer_stage:
-    input:
-        "data/11-14w/{tissue}/results/filtered_cellMeta.txt",
-        "data/11-14w/{tissue}/results/filtered_cellMeta_A.txt"
-    output:
-        "data/11-14w/{tissue}/results/cmp_transfer_stage/cmp_ident.html"
-    shell:
-        "scripts/src/cmp_transfer.R --root {root} -t {wildcards.tissue}"
+# rule cmp_transfer_stage:
+#     input:
+#         "data/11-14w/{tissue}/results/filtered_cellMeta.txt",
+#         "data/11-14w/{tissue}/results/filtered_cellMeta_A.txt"
+#     output:
+#         "data/11-14w/{tissue}/results/cmp_transfer_stage/cmp_ident.html"
+#     shell:
+#         "scripts/src/cmp_transfer.R --root {root} -t {wildcards.tissue}"
 
 rule merge_pair_stage_peaks:
     input:
@@ -132,12 +158,16 @@ rule pair_stage_analysis:
         "database/annotation/geneAnnotation.rds",
         "database/annotation/genomeAnnotation.rds",
         "data/paired/{tissue}/unionPeaks.rds",
-        expand("data/{stage}/{{tissue}}/results/filtered_cellMeta_internal.txt", stage=stages)
+        expand("data/{stage}/{{tissue}}/results/tuned_filtered_cellMeta_internal.txt", stage=stages)
     output:
-        "data/paired/{tissue}/cellMeta.txt"
+        "data/paired/{tissue}/cellMeta.txt",
+        "data/paired/{tissue}/cellMeta_internal.txt",
     log:
         "data/paired/{tissue}/pipeline.log"
     threads: 4
+    resources:
+        cpus=4,
+        time_min=120
     shell:
         "scripts/src/merge_stage_pipeline.R -t {wildcards.tissue} --root {root} --threads {threads} > {log} 2>&1"
 
@@ -157,11 +187,15 @@ rule all_analysis:
         "database/annotation/geneAnnotation.rds",
         "database/annotation/genomeAnnotation.rds",
         peaks="data/all/unionPeaks.rds",
-        cellmeta=[val for i in stages for val in expand("data/{stage}/{sample}/results/filtered_cellMeta_internal.txt", stage=i, sample=stage_tissues_use[i])],
-        frag_file=[val for i in stages for val in expand("data/{stage}/{sample}/frag_and_meta/merge_human_frag_decon.bed.gz", stage=i, sample=stage_tissues_use[i])]
+        cellmeta=[val for i in stages for val in expand("data/{stage}/{tissue}/results/tuned_filtered_cellMeta_internal.txt", stage=i, tissue=stage_tissues_use[i])],
+        frag_file=[val for i in stages for val in expand("data/{stage}/{tissue}/frag_and_meta/merge_human_frag_decon.bed.gz", stage=i, tissue=stage_tissues_use[i])],
+        pair_meta=expand("data/paired/{tissue}/cellMeta_internal.txt", tissue=both_tissues)
     output:
         "data/all/cellMeta.txt"
     threads: 16
+    resources:
+        cpus=16,
+        time_min=240
     log: "data/all/merge_all.log"
     shell:
         "scripts/src/merge_all.R --root {root} -u unionPeaks.rds --threads {threads} > {log} 2>&1"
@@ -176,3 +210,50 @@ rule build_annotation:
         "database/annotation/genomeAnnotation.rds"
     shell:
         "scripts/src/build_archR_anno.R --root {root}"
+
+
+# peaks testing
+rule test_peak_calling:
+    input:
+        "data/{stage}/{tissue}/frag_and_meta/merge_human_frag_decon.bed.gz",
+        "database/annotation/geneAnnotation.rds",
+        "database/annotation/genomeAnnotation.rds"
+    output:
+        "data/{{stage}}/{{tissue}}/results/test_10000_peak_calling/{}".format(use_peaks)
+    threads: 4
+    log:
+        "data/{stage}/{tissue}/results/test_10000_peak_calling/peak_calling.log"
+    conda:
+        "envs/atac.yaml"
+    params:
+        summit="-s" if peaks_by_summit else ""
+    resources:
+        cpus=4
+    shell:
+        "scripts/src/call_peaks.sh -f data/{wildcards.stage}/{wildcards.tissue}/frag_and_meta/merge_human_frag_decon.bed.gz "
+        "-o data/{wildcards.stage}/{wildcards.tissue}/results/test_10000_peak_calling "
+        "--root {root} -n {wildcards.stage}_{wildcards.tissue} --maxPeaks 10000"
+        "{params.summit} "
+        "> {log} 2>&1"
+
+# rule test_merge_pair_stage_peaks:
+#     input:
+#         "database/annotation/geneAnnotation.rds",
+#         "database/annotation/genomeAnnotation.rds",
+#         peak1="data/{}/{{tissue}}/results/test_peak_calling/{}".format(stages[0], use_peaks),
+#         peak2="data/{}/{{tissue}}/results/test_peak_calling/{}".format(stages[1], use_peaks)
+#     output:
+#         "data/paired/{tissue}/test_unionPeaks.rds"
+#     shell:
+#         "scripts/src/merge_peakSet.R -o data/paired/{wildcards.tissue}/unionPeaks -a {root}/database/annotation {input.peak1} {input.peak2}"
+
+rule test_merge_all_peaks:
+    input:
+        "database/annotation/geneAnnotation.rds",
+        "database/annotation/genomeAnnotation.rds",
+        peakset1=expand("data/{}/{{tissue}}/results/test_10000_peak_calling/{}".format(stages[0], use_peaks), tissue=stage_tissues_use[stages[0]]),
+        peakset2=expand("data/{}/{{tissue}}/results/test_10000_peak_calling/{}".format(stages[1], use_peaks), tissue=stage_tissues_use[stages[1]])
+    output:
+        "data/all/test_10000_unionPeaks.rds"
+    shell:
+        "scripts/src/merge_peakSet.R -o data/all/test_10000_unionPeaks -a {root}/database/annotation {input.peakset1} {input.peakset2}"
