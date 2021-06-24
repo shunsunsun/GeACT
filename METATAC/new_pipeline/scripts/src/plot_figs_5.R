@@ -205,7 +205,46 @@ for (fig in p){
 dev.off()
 
 
+# find marker peaks across epi of different tissues, overlap with genes (+2kb)
+gene_promoter_width <- 2000
+cut_off <- "FDR <= 0.01 & Log2FC >= 1"
 
+tissues_epi_RNA <- c("bronchus", "esophagus", "kidney", "large intestine", "liver", "lung", "ovary", "pancreas", "small intestine", "stomach")
+proj_epi_match_RNA <- proj_epi[proj_epi$tissue %in% tissues_epi_RNA]
+
+
+markers_peaks <- getMarkerFeatures(
+  ArchRProj = proj_epi_match_RNA,
+  useMatrix = "PeakMatrix",
+  groupBy = "tissue",
+  bias = c("TSSEnrichment", "log10(nFrags)"),
+  testMethod = "wilcoxon"
+)
+
+marker_peak_list <- getMarkers(markers_peaks, cutOff = cut_off)
+
+genes <- getGeneAnnotation(proj_epi_match_RNA)$genes
+promoter_regions <- promoters(genes, upstream = gene_promoter_width, downstream = gene_promoter_width)
+
+marker_peaks_around_genes <- lapply(names(marker_peak_list), function(i){
+  marker_peaks <- marker_peak_list[[i]]
+  marker_peaks_gr <- GRanges(seqnames = marker_peaks$seqnames, ranges = IRanges(start = marker_peaks$start, end = marker_peaks$end))
+  
+  mcols(marker_peaks_gr) <- marker_peaks[c("idx", "Log2FC", "FDR", "MeanDiff")]
+  
+  overlaps <- findOverlaps(marker_peaks_gr, promoter_regions)
+  
+  marker_peaks_around_genes_tissue <- marker_peaks_gr[from(overlaps)]
+  mcols(marker_peaks_around_genes_tissue)$gene <- promoter_regions[to(overlaps)]$symbol
+  
+  mcols(marker_peaks_around_genes_tissue)$tissue <- i
+  
+  marker_peaks_around_genes_tissue
+}) %>% GRangesList %>% unlist
+
+# rtracklayer::export(marker_peaks_around_genes, "fig5/marker_peaks_around_genes.bed", format = "bed")
+# end(marker_peaks_around_genes) <- end(marker_peaks_around_genes) - 1 # bed transformation
+write.table(marker_peaks_around_genes, file = "fig5/tissue_marker_peaks_around_genes.txt", col.names = T, quote = F, row.names = F, sep = "\t")
 
 
 # 1.3 chromVAR TF motif analysis -----------------------------------------------
@@ -466,8 +505,9 @@ for(i in names(marker_peak_list)) {
 
 marker_peak_list_combined <- rbind(unlist(marker_peak_list))
 marker_peak_list_combined$idx <- NULL
-marker_peak_list_combined$end <- marker_peak_list_combined$end - 1 # bed transformation
-write.table(marker_peak_list_combined, file = "fig5/group_marker_peaks.bed", col.names = T, quote = F, row.names = F, sep = "\t")
+# marker_peak_list_combined$end <- marker_peak_list_combined$end - 1 # bed transformation
+write.table(marker_peak_list_combined, file = "fig5/group_marker_peaks.txt", col.names = T, quote = F, row.names = F, sep = "\t")
+
 
 # determine if marker peaks are specific to one group
 # for (i in seq_along(groups_to_cmp)) {
@@ -505,10 +545,10 @@ idx <- which(rowSums(passMat) > 0)
 peaks <- getPeakSet(proj_19_22w)
 peaks_sub <- peaks[idx, ]
 
-# write marker peaks
-# peaksDF <- data.frame(chr=seqnames(peaks_sub), start=start(peaks_sub) - 1, end=end(peaks_sub))
-# peaksDF <- cbind(peaksDF, mcols(peaks_sub))
-# write.table(peaksDF, file = "marker_peaks.bed", col.names = T, quote = F, row.names = F, sep = "\t")
+# write marker peaks (dedup version)
+peaksDF <- data.frame(chr=seqnames(peaks_sub), start=start(peaks_sub) - 1, end=end(peaks_sub))
+peaksDF <- cbind(peaksDF, mcols(peaks_sub))
+write.table(peaksDF, file = "fig5/group_marker_peaks_dedup.txt", col.names = T, quote = F, row.names = F, sep = "\t")
 
 peak_matrix_sub <- subsetByOverlaps(peak_matrix, peaks_sub)
 
